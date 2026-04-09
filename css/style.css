@@ -1,5 +1,94 @@
 @charset "UTF-8";
 
+/* header.phpここから */
+.site-header {
+  background-color: #98e6c5;
+  border-top: 2px solid #00bfff;
+  padding: 22px 32px;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-name {
+  margin: 0;
+  font-size: 18px;
+  color: #222;
+}
+
+.message-button {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 2px solid #333;
+  background-color: #fff;
+  color: #222;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.message-button:hover {
+  background-color: #f5f5f5;
+  color: #222;
+}
+
+/* header.phpここまで */
+
+
+/* index.php ここから*/
+/* calender section ここから*/
+  .calendar-table th,
+        .calendar-table td {
+            width: 14.285%;
+        }
+
+        .calendar-table td {
+            height: 100px;
+            vertical-align: top;
+            padding: 6px 8px;
+            font-size: 14px;
+        }
+
+        .calendar-table .date-number {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .calendar-table .other-month {
+            color: #adb5bd;
+        }
+
+        .calendar-table .event-item {
+            font-size: 11px;
+            line-height: 1.4;
+            margin-bottom: 2px;
+            word-break: break-all;
+        }
+
+        .calendar-heading-number {
+            font-size: 3rem;
+            line-height: 1;
+        }
+
+        .calendar-heading-month {
+            font-size: 1.5rem;
+        }
+
+        .calendar-heading-year {
+            font-size: 2rem;
+            line-height: 1;
+        }
+/* calender section ここまで*/
+
+/* index.php  ここまで*/
+
+
+/*login.php ここから  */
+/* ログイン共通 */
 
 .l-login_form{
     width: 100%;
@@ -8,3 +97,14 @@
     margin: auto;
     text-align: center;
 }
+
+
+.reserve-list .btn {
+  white-space: nowrap;
+}
+
+.reserve-list .row {
+  min-height: 40px;
+}
+/* ログイン共通ここまで */
+/*login.php ここまで  */
