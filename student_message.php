@@ -1,4 +1,7 @@
-<?php include('./function/function.php'); ?>
+ <?php 
+ require_once __DIR__ . '/functions/functions.php';
+ ?>
+
 <!doctype html>
 <html lang="ja">
 
@@ -11,7 +14,7 @@
 </head>
 
 <body>
-    <?php include('./common/header.php'); ?>
+    <?php require_once('./inc/student_header.php'); ?>
 
     <main class="container py-5">
         <section class="message-section">
@@ -35,7 +38,7 @@
                                     <td>2027/10/1 14:43</td>
                                     <td>事務</td>
                                     <td>
-                                        <a href="message_detail.php?id=1" class="btn btn-success btn-sm">詳細</a>
+                                        <a href="student_message_detail.php?id=1" class="btn btn-success btn-sm">詳細</a>
                                     </td>
                                 </tr>
                                 <tr>
@@ -43,7 +46,7 @@
                                     <td>2027/10/1 14:43</td>
                                     <td>事務</td>
                                     <td>
-                                        <a href="message_detail.php?id=2" class="btn btn-success btn-sm">詳細</a>
+                                        <a href="student_message_detail.php?id=2" class="btn btn-success btn-sm">詳細</a>
                                     </td>
                                 </tr>
                                 <tr>
@@ -51,7 +54,7 @@
                                     <td>2027/10/1 14:43</td>
                                     <td>事務</td>
                                     <td>
-                                        <a href="message_detail.php?id=3" class="btn btn-success btn-sm">詳細</a>
+                                        <a href="student_message_detail.php?id=3" class="btn btn-success btn-sm">詳細</a>
                                     </td>
                                 </tr>
                                 <tr>
@@ -59,7 +62,7 @@
                                     <td>2027/10/1 14:43</td>
                                     <td>事務</td>
                                     <td>
-                                        <a href="message_detail.php?id=4" class="btn btn-success btn-sm">詳細</a>
+                                        <a href="student_message_detail.php?id=4" class="btn btn-success btn-sm">詳細</a>
                                     </td>
                                 </tr>
                             </tbody>

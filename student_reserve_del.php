@@ -1,4 +1,7 @@
-<?php include('./function/function.php'); ?>
+ <?php 
+ require_once __DIR__ . '/functions/functions.php';
+ ?>
+
 <!doctype html>
 <html lang="ja">
 

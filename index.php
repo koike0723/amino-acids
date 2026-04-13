@@ -1,4 +1,6 @@
-<?php include('./function/function.php'); ?>
+ <?php 
+ require_once __DIR__ . '/functions/functions.php';
+ ?>
 
 
 <?php
@@ -62,7 +64,7 @@ $events = [
 </head>
 
 <body>
-    <?php include('./common/header.php'); ?>
+    <?php include('./inc/student_header.php'); ?>
 
     <main role="main" class="container py-4" style="padding:60px 15px 0">
         <section class="reserve-list container py-5">

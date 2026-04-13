@@ -1,11 +1,13 @@
-<?php include('./function/function.php'); ?>
+<?php 
+require_once __DIR__ . '/../functions/functions.php';
+?>
 
 <!doctype html>
 <html lang="ja">
 
 <head>
     <title>ログイン</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 
 
@@ -37,7 +39,7 @@
         </div>
     </main>
 
-    <script src="./js/script.js"></script>
+    <script src="../js/script.js"></script>
 </body>
 
 </html>
