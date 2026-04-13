@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- ホスト: 127.0.0.1
--- 生成日時: 2026-04-13 07:43:33
+-- 生成日時: 2026-04-13 08:27:33
 -- サーバのバージョン： 10.4.32-MariaDB
 -- PHP のバージョン: 8.2.12
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- データベース: `career_consultant`
 --
+CREATE DATABASE IF NOT EXISTS `career_consultant` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `career_consultant`;
 
 -- --------------------------------------------------------
 
