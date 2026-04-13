@@ -108,3 +108,150 @@
 }
 /* ログイン共通ここまで */
 /*login.php ここまで  */
+
+/* student_reserve.phpここから */
+.s-career-frame-section {
+  font-size: 1rem;
+}
+
+.s-career-frame-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.s-career-frame-date {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.s-career-frame-table {
+  max-width: 320px;
+}
+
+.s-career-frame-table th {
+  background-color: #7ea7d8;
+  color: #000;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.s-career-frame-table td,
+.s-career-frame-table th {
+  padding: 0.4rem 0.8rem;
+  vertical-align: middle;
+}
+
+.s-frame-available {
+  background-color: #fff;
+}
+
+.s-frame-unavailable {
+  background-color: #bfbfbf;
+}
+/* student_reserve.phpここまで */
+
+/* studet_reserve_edit.phpここから */
+.student-reservation-apply-section {
+  font-size: 1rem;
+}
+
+.student-reservation-apply-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.student-reservation-apply-detail {
+  max-width: 520px;
+}
+
+.student-reservation-apply-detail .row {
+  align-items: center;
+}
+
+.student-reservation-apply-methods {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.student-reservation-apply-radio {
+  transform: scale(1.2);
+}
+
+.student-reservation-apply-submit {
+  font-weight: 700;
+}
+.student-reservation-apply-buttons .btn{
+  margin: 0 30px;
+}
+/* studet_reserve_edit.phpここまで */
+
+/* studet_cc_detail_require.phpここから */
+.student-required-cc-section {
+  font-size: 1rem;
+}
+
+.student-required-cc-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.student-required-cc-date {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.student-required-cc-table th {
+  background-color: #7ea7d8;
+  color: #000;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.student-required-cc-table td,
+.student-required-cc-table th {
+  padding: 0.25rem 0.9rem;
+  vertical-align: middle;
+}
+
+.student-required-cc-time-link {
+  display: block;
+  color: #000;
+  text-decoration: none;
+}
+
+.student-required-cc-time-link:hover {
+  text-decoration: underline;
+}
+
+.student-required-cc-selected {
+  outline: 2px solid #7aa7ff;
+  outline-offset: -2px;
+}
+/* studet_cc_detail_require.phpここまで */
+
+
+/* studet_reserve_del_confirm.phpここから */
+.student-reservation-detail-section {
+  font-size: 1rem;
+}
+
+.student-reservation-detail-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.student-reservation-detail-body {
+  max-width: 520px;
+}
+
+.student-reservation-detail-body .row {
+  align-items: center;
+}
+
+.student-reservation-detail-cancel-btn {
+  font-weight: 700;
+}
+/* studet_reserve_del_confirm.phpここまで */
+
