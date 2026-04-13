@@ -1,4 +1,7 @@
-<?php include('./function/function.php'); ?>
+ <?php 
+ require_once __DIR__ . '/functions/functions.php';
+ ?>
+
 <!doctype html>
 <html lang="ja">
 
@@ -11,7 +14,7 @@
 </head>
 
 <body>
-    <?php include('./common/header.php'); ?>
+    <?php require_once('./inc/student_header.php'); ?>
 
     <main class="container py-5">
         <section class="message-detail-section">
@@ -46,7 +49,7 @@
                     </div>
 
                     <div class="text-center mt-4">
-                        <a href="./message.php" class="btn btn-secondary">戻る</a>
+                        <a href="./student_message.php" class="btn btn-secondary">戻る</a>
                     </div>
 
                 </div>
