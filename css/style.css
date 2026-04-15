@@ -1,6 +1,13 @@
 @charset "UTF-8";
 
-/* header.phpここから */
+/* コンテンツ幅の設定 */
+/* .wrapper{
+  max-width: 1440px;
+  margin: 0 auto;
+  padding-block-end: 50px;
+} */
+
+/* student_header.phpここから */
 .site-header {
   background-color: #98e6c5;
   border-top: 2px solid #00bfff;
@@ -13,6 +20,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.inner-flex {
+  display: flex;
+  gap: 30px;
 }
 
 .user-name {
@@ -36,52 +48,260 @@
   color: #222;
 }
 
+/* admin_header.php */
+.site-header_admin {
+  background-color: #6CDFFF;
+  border-top: 2px solid #00bfff;
+  padding: 22px 32px;
+}
+
+/* admin_header.php終了 */
+
 /* header.phpここまで */
 
+/* admin_index.phpスタート */
+/* クラス絞り込み欄 開始 */
+.h1 {
+  text-align: center;
+  font-size: 48px;
+  padding-block: 210px 50px;
+}
+
+.cc-area {
+  display: flex;
+  gap: 40px;
+  background-color: #CDFCFF;
+}
+
+.cc-text {
+  margin: 0;
+  padding-block-end: 5px;
+}
+
+.cc-content_area {
+  text-align: left;
+  padding-block-end: 25px;
+}
+
+.cc-content_area:first-child {
+  padding-inline-start: 20px;
+}
+
+.cc-select_style {
+  background-color: #BBBBBB;
+  border: 2px solid #000;
+  appearance: auto;
+}
+
+/* クラス絞り込み欄ここまで */
+
+/* テーブルスタート */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 20px;
+}
+
+td.td-year,
+td.td-month,
+td.va-middle {
+  vertical-align: middle;
+}
+
+th.ad-index-th,
+td.ad-index-td {
+  border: 1px solid #000;
+  padding: 8px;
+  text-align: center;
+  padding-block: 30px;
+}
+
+th.ad-index-th {
+  background-color: #00F7FF;
+}
+
+/* .line-bold{
+  border-bottom: 5px solid #000;
+} */
+
+.cc-plus_select {
+  appearance: auto;
+}
+
+.cc-plus-fz {
+  font-size: 24px;
+}
+
+.btn {
+  background-color: #51FF6B;
+  font-weight: bold;
+  font-size: 20px;
+  text-align: center;
+  border: 2px solid #000;
+  border-radius: 5px;
+}
+
+/* admin_index.php終了 */
+
+/* admin_student_list.phpスタート */
+.admin-student-list {
+  padding-block-end: 100px;
+}
+
+/* 検索欄横の追加ボタン未実装 */
+
+
+
+.admin-student-flex {
+  margin: 0 auto;
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  margin: 0 auto;
+  display: flex;
+  border: 2px solid #000;
+  border-radius: 50px;
+  padding-block: 5px;
+  width: 25%;
+}
+
+.ad-stu_search {
+  margin: 0;
+  align-items: center;
+}
+
+.admin-student-flex-btn {
+  display: flex;
+  gap: 10px;
+}
+
+.search-btn {
+  margin: 0;
+  align-items: center;
+  background-color: #C1F4F7;
+  border-radius: 50px;
+  width: inherit;
+  height: inherit;
+  padding-inline: 10px;
+}
+
+.add-btn {
+  background-color: #2B27FF;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  text-align: center;
+  border-radius: 5px;
+  width: inherit;
+  height: 50px;
+}
+
+.admin-student-select{
+  display: flex;
+  justify-content: center;
+  gap: 100px;
+  padding-block-end: 50px;
+}
+
+.admin-ad-flex{
+
+}
+
+th.ad-stu-list-th{
+  background-color: #9C9C9C;
+  border: 1px solid #000;
+  text-align: center;
+  padding-block: 10px;
+}
+
+td.ad-stu-list-td{
+  border: 1px solid #000;
+  text-align: center;
+  padding-block: 10px;
+}
+
+tr.ad-stu-list-tr:nth-child(even){
+  background-color: #DEDEDE;
+}
+
+.controle-btn{
+  color: #000;
+  border-radius: 5px;
+  width: inherit;
+}
+
+.controle-edit{
+  background-color: #20FF28;
+}
+.controle-detail{
+  background-color: #3BDEFF;
+}
+.controle-delete{
+  background-color: #FF2424;
+}
+
+.previous-btn{
+  margin: 0 auto;
+  text-align: center;
+  padding-block-start: 20px;
+}
+
+.prev-btn{
+  background-color: rgba(6,6,7,0.47);
+  color: #000;
+  font-size: 24px;
+  width: 80px;
+  height: 50px;
+}
+
+/* admin_student_list.php終了 */
 
 /* index.php ここから*/
 /* calender section ここから*/
-  .calendar-table th,
-        .calendar-table td {
-            width: 14.285%;
-        }
+.calendar-table th,
+.calendar-table td {
+  width: 14.285%;
+}
 
-        .calendar-table td {
-            height: 100px;
-            vertical-align: top;
-            padding: 6px 8px;
-            font-size: 14px;
-        }
+.calendar-table td {
+  height: 100px;
+  vertical-align: top;
+  padding: 6px 8px;
+  font-size: 14px;
+}
 
-        .calendar-table .date-number {
-            display: block;
-            margin-bottom: 4px;
-        }
+.calendar-table .date-number {
+  display: block;
+  margin-bottom: 4px;
+}
 
-        .calendar-table .other-month {
-            color: #adb5bd;
-        }
+.calendar-table .other-month {
+  color: #adb5bd;
+}
 
-        .calendar-table .event-item {
-            font-size: 11px;
-            line-height: 1.4;
-            margin-bottom: 2px;
-            word-break: break-all;
-        }
+.calendar-table .event-item {
+  font-size: 11px;
+  line-height: 1.4;
+  margin-bottom: 2px;
+  word-break: break-all;
+}
 
-        .calendar-heading-number {
-            font-size: 3rem;
-            line-height: 1;
-        }
+.calendar-heading-number {
+  font-size: 3rem;
+  line-height: 1;
+}
 
-        .calendar-heading-month {
-            font-size: 1.5rem;
-        }
+.calendar-heading-month {
+  font-size: 1.5rem;
+}
 
-        .calendar-heading-year {
-            font-size: 2rem;
-            line-height: 1;
-        }
+.calendar-heading-year {
+  font-size: 2rem;
+  line-height: 1;
+}
+
 /* calender section ここまで*/
 
 /* index.php  ここまで*/
@@ -90,12 +310,12 @@
 /*login.php ここから  */
 /* ログイン共通 */
 
-.l-login_form{
-    width: 100%;
-    max-width: 330px;
-    padding: 15px;
-    margin: auto;
-    text-align: center;
+.l-login_form {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: auto;
+  text-align: center;
 }
 
 
@@ -106,5 +326,6 @@
 .reserve-list .row {
   min-height: 40px;
 }
+
 /* ログイン共通ここまで */
 /*login.php ここまで  */
