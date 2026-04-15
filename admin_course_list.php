@@ -9,6 +9,7 @@ require_once __DIR__ . '/functions/functions.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/style.csss">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <title>コース一覧</title>
 </head>
 
@@ -41,8 +42,8 @@ require_once __DIR__ . '/functions/functions.php';
                 <tr>
                     <td>6c</td>
                     <td>Webプログラミング科</td>
-                    <td>就職済み</td>
-                    <td>利用可</td>
+                    <td>１０月～４月</td>
+                    <td>求職者支援訓練</td>
                     <td>
                         <a class="list-btn-a" href="./admin_course_edit.php">編集</a>
                         <a class="list-btn-b" href="./admin_course_detail.php">詳細</a>
@@ -52,8 +53,8 @@ require_once __DIR__ . '/functions/functions.php';
                 <tr>
                     <td>6b</td>
                     <td>Webデザイナー科</td>
-                    <td>在籍中</td>
-                    <td>利用不可</td>
+                    <td>１０月～４月</td>
+                    <td>公共職業訓練</td>
                     <td>
                         <a class="list-btn-a" href="./admin_course_edit.php">編集</a>
                         <a class="list-btn-b" href="./admin_course_detail.php">詳細</a>
@@ -63,8 +64,8 @@ require_once __DIR__ . '/functions/functions.php';
                 <tr>
                     <td>6a</td>
                     <td>Webプログラミング科</td>
-                    <td>卒業</td>
-                    <td>利用可</td>
+                    <td>１１月～６月</td>
+                    <td>求職者支援訓練</td>
                     <td>
                         <a class="list-btn-a" href="./admin_course_edit.php">編集</a>
                         <a class="list-btn-b" href="./admin_course_detail.php">詳細</a>
