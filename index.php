@@ -80,48 +80,22 @@
              <div class="row justify-content-center">
                  <div class="col-12 col-md-8 col-lg-6">
                      <h2 class="text-center mb-4 fs-6">予約一覧</h2>
-
                      <div class="d-flex flex-column gap-3">
 
                          <!-- 1件分 -->
-                         <div class="row align-items-center gx-2">
-                             <div class="col-1 text-danger text-center">•</div>
-                             <div class="col-4 text-danger">2027/10/9</div>
-                             <div class="col-3 text-danger">16:00~</div>
-                             <div class="col-2">
-                                 <button type="button" class="btn btn-primary btn-sm w-100" onclick="location.href='./student_reserve.php'">変更</button>
+                         <?php foreach ($student['bookings'] as $booking): ?>
+                             <div class="row align-items-center gx-2">
+                                 <div class="col-1 text-danger text-center">•</div>
+                                 <div class="col-4 text-danger"><?php echo h($booking['cc_date']); ?></div>
+                                 <div class="col-3 text-danger"><?php echo h($booking['cc_time']); ?></div>
+                                 <div class="col-2">
+                                     <button type="button" class="btn btn-primary btn-sm w-100" onclick="location.href='./student_reserve.php'">変更</button>
+                                 </div>
+                                 <div class="col-2">
+                                     <button type="button" class="btn btn-warning btn-sm w-200">キャンセル</button>
+                                 </div>
                              </div>
-                             <div class="col-2">
-                                 <button type="button" class="btn btn-warning btn-sm w-200">キャンセル</button>
-                             </div>
-                         </div>
-
-                         <!-- 2件分 -->
-                         <div class="row align-items-center gx-2">
-                             <div class="col-1 text-primary text-center">•</div>
-                             <div class="col-4 text-primary">2027/10/16</div>
-                             <div class="col-3 text-primary">10:00~</div>
-                             <div class="col-2">
-                                 <button type="button" class="btn btn-primary btn-sm w-100" onclick="location.href='./student_reserve.php'">変更</button>
-                             </div>
-                             <div class="col-2">
-                                 <button type="button" class="btn btn-warning btn-sm w-200">キャンセル</button>
-                             </div>
-                         </div>
-
-                         <!-- 3件分 -->
-                         <div class="row align-items-center gx-2">
-                             <div class="col-1 text-danger text-center">•</div>
-                             <div class="col-4 text-danger">2027/11/13</div>
-                             <div class="col-3 text-danger">10:00~</div>
-                             <div class="col-2">
-                                 <button type="button" class="btn btn-primary btn-sm w-100" onclick="location.href='./student_reserve.php'">変更</button>
-                             </div>
-                             <div class="col-2">
-                                 <button type="button" class="btn btn-warning btn-sm w-200">キャンセル</button>
-                             </div>
-                         </div>
-
+                         <?php endforeach; ?>
                      </div>
                  </div>
              </div>
