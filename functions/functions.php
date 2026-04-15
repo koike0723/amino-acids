@@ -1,11 +1,302 @@
 <?php
-//データベース接続開始
+// DBへの接続情報
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'gyozafes');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+
+/**
+ * データベース接続開始
+ * @return PDO データベース操作用のオブジェクト
+ */
+function db_connect()
+{
+    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8';
+    $db = new PDO($dsn, DB_USER, DB_PASS);
+    $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+    return $db;
+}
 
 //データベース接続終了
 
 // デバックチェック関数
- function check($str){
+function check($str)
+{
     echo "<pre>";
     var_dump($str);
     echo "</pre>";
+}
+
+/**
+ * 生徒ログイン処理
+ * 
+ * ログイン成功時にセッションにIDと生徒名を設定する
+ * @param string $login_id ログインID
+ * @param string $password ログインパスワード
+ * @return bool セッションにメッセージを設定して、ログイン成功時はtrue、失敗時はfalseを返す
+ */
+function student_login($login_id, $password)
+{
+    $db = db_connect();
+    $sql = 'SELECT CONCAT(firs_name,last_name) AS student_name, id FROM m_students WHERE login_id=:login_id ';
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':login_id', $login_id, PDO::PARAM_STR);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($result) {
+        if (password_verify($password, $result['password'])) {
+            $_SESSION['id'] = $result['id'];
+            $_SESSION['student_name'] = $result['student_name'];
+            $_SESSION['res_message'] = ['status_code' => 1, 'msg' => 'ログイン成功'];
+            return true;
+        }
+        $_SESSION['res_message'] = ['status_code' => 0, 'msg' => 'パスワードが間違っています'];
+        return false;
+    }
+    $_SESSION['res_message'] = ['status_code' => 0, 'msg' => 'ログインIDが間違っています'];
+    return false;
+}
+
+/**
+ * 生徒一覧の取得
+ * 
+ * 生徒の構造
+ * 
+ * [
+ * 'student_id',
+ * 'student_name',
+ * 'number',
+ * 'status_name',
+ * 'course_name',
+ * 'room_name',
+ * ]
+ * 
+ * @param 連想配列 $filters 連想配列で絞り込みたい項目を設定可能。
+ * @return 二次元配列 生徒一覧
+ */
+function get_students($filters = [])
+{
+    $db = db_connect();
+
+    // ベースとなるSQL
+    $sql = 'SELECT
+            s.id AS student_id, 
+            CONCAT(s.last_name, s.first_name) AS student_name,
+            s.number,
+            ss.name AS status_name,
+            c.name AS course_name,
+            c.end_date,
+            r.name AS room_name
+            FROM m_students s
+            JOIN m_student_status ss ON s.status_id = ss.id
+            JOIN m_courses c ON s.course_id = c.id
+            JOIN m_rooms r ON c.room_id = r.id
+            JOIN m_course_categories cc ON c.category_id = cc.id';
+
+    // 1. 検索対象のカラム定義（フィルタのキー => SQL上のカラム名）
+    $filter_definition = [
+        'course_id' => 's.course_id',
+        'status_id' => 's.status_id',
+        'number'    => 's.number',
+    ];
+
+    $where_clauses = [];
+    $params = [];
+
+    // 2. ループで一括処理
+    foreach ($filter_definition as $key => $column) {
+        // フィルタに値が存在し、かつ空文字でない場合のみ追加
+        if (isset($filters[$key]) && $filters[$key] !== '') {
+            $where_clauses[] = "{$column} = :{$key}";
+            $params[":{$key}"] = $filters[$key];
+        }
+    }
+
+    // 3. WHERE句の組み立て
+    if (!empty($where_clauses)) {
+        $sql .= ' WHERE ' . implode(' AND ', $where_clauses);
+    }
+    $sql .= ' ORDER BY s.number ASC';
+    $stmt = $db->prepare($sql);
+
+    // 4. まとめてバインドして実行
+    $stmt->execute($params);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * 生徒詳細の取得
+ * 
+ * 生徒IDから生徒を取得する
+ * 生徒の構造
+ * [
+ * 'student_id',
+ * 'student_name',
+ * 'number',
+ * 'status_name',
+ * 'course_name',
+ * 'room_name',
+ * 'bookings' => [
+ *  'cc_slot_id',
+ *  'is_cc_plus',
+ *  'cc_consultant',
+ *  'cc_room',
+ *  'cc_date',
+ *  'cc_time',
+ *  'cc_style',
+ *  ],
+ * ]
+ * @return 連想配列 生徒配列
+ */
+function get_student($student_id)
+{
+    $db = db_connect();
+    $sql = 'SELECT
+            s.id AS student_id,
+            CONCAT(s.last_name, s.first_name) AS student_name,
+            s.number,
+            ss.name AS status_name,
+            c.name AS course_name,
+            r.name AS room_name,
+            b.cc_slot_id AS cc_slot_id,
+            sl.is_cc_plus AS is_cc_plus,
+            CONCAT(con.last_name,con.first_name) AS cc_consultant,
+            br.name AS cc_room,
+            sl.date AS cc_date,
+            t.start_time AS cc_time,
+            t.display_name AS cc_display_time,
+            ms.name AS cc_style
+            FROM m_students s
+            JOIN m_student_status ss ON s.status_id = ss.id
+            JOIN m_courses c ON s.course_id = c.id
+            JOIN m_rooms r ON c.room_id = r.id
+            LEFT JOIN t_cc_bookings b ON s.id = b.student_id
+            LEFT JOIN t_cc_slots sl ON b.cc_slot_id = sl.id
+            LEFT JOIN m_times t ON b.time_id = t.id
+            LEFT JOIN m_consultants con ON sl.consultant_id = con.id
+            LEFT JOIN m_rooms br ON sl.room_id = br.id
+            LEFT JOIN m_meating_styles ms ON b.style_id = ms.id
+            WHERE s.id = :id';
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':login_id', $login_id, PDO::PARAM_STR);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $student = [];
+    foreach ($result as $row) {
+        if (empty($student)) {
+            $student = [
+                'student_id'   => $row['student_id'],
+                'student_name' => $row['student_name'],
+                'number'       => $row['number'],
+                'status_name'  => $row['status_name'],
+                'course_name'  => $row['course_name'],
+                'room_name'    => $row['room_name'],
+                'bookings'     => []
+            ];
+        }
+        // 予約レコードがある場合のみ追加
+        if ($row['cc_slot_id']) {
+            $student['bookings'][] = [
+                'cc_slot_id'    => $row['cc_slot_id'],
+                'is_cc_plus'    => $row['is_cc_plus'],
+                'cc_consultant' => $row['cc_consultant'],
+                'cc_room'       => $row['cc_room'],
+                'cc_date'       => $row['cc_date'],
+                'cc_time'       => $row['cc_time'],
+                'cc_style'      => $row['cc_style'],
+            ];
+        }
+    }
+
+    return $student;
+}
+
+/**
+ * 生徒の追加
+ * 
+ * $studentsに複数生徒を渡すことで一括登録可能
+ * 
+ * 生徒一人の構造
+ * [
+ *  'first_name',
+ *  'last_name',
+ *  'number',
+ *  'login_id',
+ *  'password',
+ *  'status_id',
+ *  'course_id',
+ * ]
+ */
+function add_students($course_id, $students)
+{
+    $db = db_connect();
+
+    // コース情報からlogin_id用のプレフィックスを取得
+    $sql = 'SELECT c.start_date, r.name as room_name 
+            FROM m_courses c
+            JOIN m_rooms r ON c.room_id = r.id
+            WHERE c.id = :course_id';
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':course_id', $course_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $course = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $date = new DateTime($course['start_date']);
+    $login_id_prefix = $date->format('Ym') . '_' . $course['room_name'];
+
+    // カラム定義
+    $student_definition = [
+        'first_name',
+        'last_name',
+        'number',
+        'login_id',
+        'password',
+        'status_id',
+        'course_id',
+    ];
+
+    $sql = 'INSERT INTO m_students (' . implode(', ', $student_definition) . ') VALUES ';
+
+    $values_queries = [];
+    $params = [];
+    $password_hash = password_hash('password', PASSWORD_DEFAULT);
+
+    // 2. ループで生徒ごとのプレースホルダとパラメータを生成
+    foreach ($students as $i => $student) {
+        $row_placeholders = [];
+
+        // login_idを生成 (例: 202604_6A01)
+        // numberが1桁の場合に備え str_pad で2桁に揃える
+        $formatted_number = str_pad($student['number'], 2, '0', STR_PAD_LEFT);
+        $login_id = $login_id_prefix . $formatted_number;
+
+        // 各カラムの値をセット
+        $row_values = [
+            'first_name' => $student['first_name'],
+            'last_name'  => $student['last_name'],
+            'number'     => $student['number'],
+            'login_id'   => $login_id,
+            'password'   => $password_hash,
+            'status_id'  => 1, // 在校中
+            'course_id'  => $course_id,
+        ];
+
+        foreach ($student_definition as $column) {
+            $placeholder = ":" . $column . "_" . $i; // 例: :first_name_0
+            $row_placeholders[] = $placeholder;
+            $params[$placeholder] = $row_values[$column];
+        }
+
+        $values_queries[] = '(' . implode(', ', $row_placeholders) . ')';
+    }
+
+    // 3. 結合して実行
+    if (!empty($values_queries)) {
+        $sql .= implode(', ', $values_queries);
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+    }
 }
