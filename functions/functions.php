@@ -182,9 +182,9 @@ function get_student($student_id)
             LEFT JOIN m_consultants con ON sl.consultant_id = con.id
             LEFT JOIN m_rooms br ON sl.room_id = br.id
             LEFT JOIN m_meating_styles ms ON b.style_id = ms.id
-            WHERE s.id = :id';
+            WHERE s.id = :student_id';
     $stmt = $db->prepare($sql);
-    $stmt->bindParam(':login_id', $login_id, PDO::PARAM_STR);
+    $stmt->bindParam(':student_id', $student_id, PDO::PARAM_STR);
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
