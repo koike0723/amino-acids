@@ -26,6 +26,7 @@ require_once __DIR__ . '/functions/functions.php';
                 <input type="text" name="訓練タイプ">
                 <a href="./admin_course_detail.php" class="">詳細設定</a>
                 <input type="submit" value="検索">
+                <a href="./admin_course_add.php" class="">追加</a>
             </form>
         </div>
         <div class="course-list">
