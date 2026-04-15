@@ -1,9 +1,9 @@
 <?php
 // DBへの接続情報
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'gyozafes');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_USER', 'cc_user');
+define('DB_PASS', 'password');
+define('DB_NAME', 'career_consultant');
 
 /**
  * データベース接続開始
@@ -11,9 +11,13 @@ define('DB_PASS', '');
  */
 function db_connect()
 {
-    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8';
+    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
     $db = new PDO($dsn, DB_USER, DB_PASS);
     $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+    // エラーモードを例外に設定
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // フェッチモードを連想配列形式に設定
+    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     return $db;
 }
 
