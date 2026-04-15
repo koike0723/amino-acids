@@ -18,3 +18,4 @@ try {
 } catch (PDOException $e) {
     exit('データの取得に失敗しました: ' . $e->getMessage());
 }
+?>
