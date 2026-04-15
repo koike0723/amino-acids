@@ -3,7 +3,7 @@
 require_once __DIR__ . '/functions/functions.php';
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 
 <head>
     <meta charset="UTF-8">
@@ -20,12 +20,12 @@ require_once __DIR__ . '/functions/functions.php';
         <h1>コース一覧</h1>
         <div class="course-search">
             <form action="search">
-                <input type="text" name="教室名">
-                <input type="text" name="訓練名">
-                <input type="text" name="訓練期間">
-                <input type="text" name="訓練タイプ">
+                <input type="text" placeholder="教室名">
+                <input type="text" placeholder="訓練名">
+                <input type="text" placeholder="訓練期間">
+                <input type="text" placeholder="訓練タイプ">
                 <a href="./admin_course_detail.php" class="">詳細設定</a>
-                <input type="submit" value="検索">
+                <input type="image" value="検索" src="">
                 <a href="./admin_course_add.php" class="">追加</a>
             </form>
         </div>
