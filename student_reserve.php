@@ -1,6 +1,9 @@
 <!-- 生徒側任意キャリコン予約画面 -->
 <?php
 require_once __DIR__ . '/functions/functions.php';
+
+// 選択された日付データの取得
+$selected_date = $_GET['selected_date'] ?? '';
 ?>
 
 <!doctype html>
@@ -23,7 +26,7 @@ require_once __DIR__ . '/functions/functions.php';
                 <div class="col-12 col-md-8 col-lg-6 text-center">
 
                     <h1 class="s-career-frame-title mb-4">キャリコンプラス一覧</h1>
-                    <p class="s-career-frame-date mb-4">10月16日</p>
+                    <p class="s-career-frame-date mb-4"><?php echo h(format_japanese_date($selected_date)); ?></p>
 
                     <!-- 項目内容が〇なら背景ホワイト、×なら背景グレーのｐｈｐ ※いったんＨＴＭＬだけにした方が変更しやすいかと思ったのでメモとして以下に残します-->
                     <!-- <td class="<?php echo $is_available ? 's-frame-available' : 's-frame-unavailable'; ?>">

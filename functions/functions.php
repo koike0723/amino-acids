@@ -31,6 +31,28 @@ function check($str)
     echo "</pre>";
 }
 
+// XSS対策
+function h($str)
+{
+    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+}
+
+// 「2026-01-01」形式日付を「〇年〇月〇日」表記に変換
+function format_japanese_date($date)
+{
+    if (empty($date)) {
+        return '';
+    }
+
+    $timestamp = strtotime($date);
+
+    if ($timestamp === false) {
+        return '';
+    }
+
+    return date('Y年n月j日', $timestamp);
+}
+
 /**
  * 生徒ログイン処理
  * 
@@ -182,9 +204,9 @@ function get_student($student_id)
             LEFT JOIN m_consultants con ON sl.consultant_id = con.id
             LEFT JOIN m_rooms br ON sl.room_id = br.id
             LEFT JOIN m_meating_styles ms ON b.style_id = ms.id
-            WHERE s.id = :id';
+            WHERE s.id = :student_id';
     $stmt = $db->prepare($sql);
-    $stmt->bindParam(':login_id', $login_id, PDO::PARAM_STR);
+    $stmt->bindParam(':student_id', $student_id, PDO::PARAM_STR);
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
