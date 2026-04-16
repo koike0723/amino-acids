@@ -54,9 +54,9 @@ require_once __DIR__ . '/functions/functions.php';
             </div>
         </div>
         <div class="table-area">
-            <table>
+            <table class="ad-stu-list-table">
                 <thead>
-                    <tr class="ad-stu-thead-tr">
+                    <tr class="ad-stu-headTr">
                         <th class="ad-stu-list-th">名前</th>
                         <th class="ad-stu-list-th">訓練名</th>
                         <th class="ad-stu-list-th">状態</th>
@@ -64,7 +64,7 @@ require_once __DIR__ . '/functions/functions.php';
                         <th class="ad-stu-list-th">操作</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="ad-stu-list-tbody">
                     <tr class="ad-stu-list-tr">
                         <td class="ad-stu-list-td">梅崎さん</td>
                         <td class="ad-stu-list-td">6C/Webプログラミング科</td>

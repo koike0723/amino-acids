@@ -67,9 +67,9 @@ require_once __DIR__ . '/functions/functions.php';
             </div>
         </div>
         <div class="wrapper">
-            <table>
-                <thead>
-                    <tr>
+            <table class="ad-index-table">
+                <thead class="ad-index-thead">
+                    <tr class="ad-index-headTr">
                         <th class="ad-index-th">年</th>
                         <th class="ad-index-th">月</th>
                         <th class="ad-index-th">日</th>
@@ -79,8 +79,8 @@ require_once __DIR__ . '/functions/functions.php';
                         <th class="ad-index-th">操作</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
+                <tbody class="ad-index-tbody">
+                    <tr class="ad-index-tr">
                         <td rowspan="4" class="ad-index-td line-bold td-year">2025</td>
                         <td rowspan="4" class="ad-index-td line-bold td-month">12</td>
                         <td class="ad-index-td line-bold va-middle">6</td>
@@ -94,8 +94,8 @@ require_once __DIR__ . '/functions/functions.php';
                                 </select>
                             </label>
                         </td>
-                        <td class="cc-plus-fz line-bold va-middle">8</td>
-                        <td class="line-bold">
+                        <td class="ad-index-td cc-plus-fz line-bold va-middle">8</td>
+                        <td class="ad-index-td line-bold">
                             <a href="#" class="cc-plus-btn">
                                 <button type="btn" class="btn">
                                     詳細
@@ -105,10 +105,10 @@ require_once __DIR__ . '/functions/functions.php';
                     </tr>
                     <!-- ここからダミーテーブル -->
                     <!-- 1個目のテーブル -->
-                    <tr>
-                        <td class="va-middle">6</td>
-                        <td class="va-middle">6A</td>
-                        <td class="cc-plus-fz">
+                    <tr class="ad-index-tr">
+                        <td class="ad-index-td va-middle">6</td>
+                        <td class="ad-index-td va-middle">6A</td>
+                        <td class="ad-index-td cc-plus-fz">
                             <label for="cc-plus-select">
                                 <select name="cc-plus-select" id="cc-plus-select">
                                     <option value="1">1</option>
@@ -117,8 +117,8 @@ require_once __DIR__ . '/functions/functions.php';
                                 </select>
                             </label>
                         </td>
-                        <td class="cc-plus-fz va-middle">8</td>
-                        <td>
+                        <td class="ad-index-td cc-plus-fz va-middle">8</td>
+                        <td class="ad-index-td">
                             <a href="#" class="cc-plus-btnva-middle">
                                 <button type="btn" class="btn">
                                     詳細
@@ -126,10 +126,10 @@ require_once __DIR__ . '/functions/functions.php';
                             </a>
                         </td>
                     </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>6A</td>
-                        <td class="cc-plus-fz">
+                    <tr class="ad-index-tr">
+                        <td class="ad-index-td">6</td>
+                        <td class="ad-index-td">6A</td>
+                        <td class="ad-index-td cc-plus-fz">
                             <label for="cc-plus-select">
                                 <select name="cc-plus-select" id="cc-plus-select">
                                     <option value="1">1</option>
@@ -138,8 +138,8 @@ require_once __DIR__ . '/functions/functions.php';
                                 </select>
                             </label>
                         </td>
-                        <td class="cc-plus-fz">8</td>
-                        <td>
+                        <td class="ad-index-td cc-plus-fz">8</td>
+                        <td class="ad-index-td">
                             <a href="#" class="cc-plus-btn">
                                 <button type="btn" class="btn">
                                     詳細
@@ -147,10 +147,10 @@ require_once __DIR__ . '/functions/functions.php';
                             </a>
                         </td>
                     </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>6A</td>
-                        <td class="cc-plus-fz">
+                   <tr class="ad-index-tr">
+                        <td class="ad-index-td">6</td>
+                        <td class="ad-index-td">6A</td>
+                        <td class="ad-index-td cc-plus-fz">
                             <label for="cc-plus-select">
                                 <select name="cc-plus-select" id="cc-plus-select">
                                     <option value="1">1</option>
@@ -159,8 +159,8 @@ require_once __DIR__ . '/functions/functions.php';
                                 </select>
                             </label>
                         </td>
-                        <td class="cc-plus-fz">8</td>
-                        <td>
+                        <td class="ad-index-td cc-plus-fz">8</td>
+                        <td class="ad-index-td">
                             <a href="#" class="cc-plus-btn">
                                 <button type="btn" class="btn">
                                     詳細
@@ -172,13 +172,13 @@ require_once __DIR__ . '/functions/functions.php';
                     <!-- ダミーテーブルここまで -->
 
                     <!-- 2個目のテーブル -->
-                <tbody>
-                    <tr>
-                        <td rowspan="4" class="line-bold td-year">2026</td>
-                        <td rowspan="4" class="line-bold td-month">1</td>
-                        <td>6</td>
-                        <td>6A</td>
-                        <td class="cc-plus-fz">
+                <tbody class="ad-index-table">
+                    <tr class="ad-index-tr">
+                        <td rowspan="4" class="ad-index-td line-bold td-year">2026</td>
+                        <td rowspan="4" class="ad-index-td line-bold td-month">1</td>
+                        <td class="ad-index-td">6</td>
+                        <td class="ad-index-td">6A</td>
+                        <td class="ad-index-td cc-plus-fz">
                             <label for="cc-plus-select">
                                 <select name="cc-plus-select" id="cc-plus-select">
                                     <option value="1">1</option>
@@ -187,8 +187,8 @@ require_once __DIR__ . '/functions/functions.php';
                                 </select>
                             </label>
                         </td>
-                        <td class="cc-plus-fz">8</td>
-                        <td>
+                        <td class="ad-index-td cc-plus-fz">8</td>
+                        <td class="ad-index-td">
                             <a href="#" class="cc-plus-btn">
                                 <button type="btn" class="btn">
                                     詳細
@@ -197,10 +197,10 @@ require_once __DIR__ . '/functions/functions.php';
                         </td>
                     </tr>
                     <!-- ここからダミーテーブル -->
-                    <tr>
-                        <td>6</td>
-                        <td>6A</td>
-                        <td class="cc-plus-fz">
+                    <tr class="ad-index-tr">
+                        <td class="ad-index-td">6</td>
+                        <td class="ad-index-td">6A</td>
+                        <td class="ad-index-td cc-plus-fz">
                             <label for="cc-plus-select">
                                 <select name="cc-plus-select" id="cc-plus-select">
                                     <option value="1">1</option>
@@ -209,8 +209,8 @@ require_once __DIR__ . '/functions/functions.php';
                                 </select>
                             </label>
                         </td>
-                        <td class="cc-plus-fz">8</td>
-                        <td>
+                        <td class="ad-index-td cc-plus-fz">8</td>
+                        <td class="ad-index-td">
                             <a href="#" class="cc-plus-btn">
                                 <button type="btn" class="btn">
                                     詳細
@@ -218,10 +218,10 @@ require_once __DIR__ . '/functions/functions.php';
                             </a>
                         </td>
                     </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>6A</td>
-                        <td class="cc-plus-fz">
+                    <tr class="ad-index-tr">
+                        <td class="ad-index-td">6</td>
+                        <td class="ad-index-td">6A</td>
+                        <td class="ad-index-td cc-plus-fz">
                             <label for="cc-plus-select">
                                 <select name="cc-plus-select" id="cc-plus-select">
                                     <option value="1">1</option>
@@ -230,8 +230,8 @@ require_once __DIR__ . '/functions/functions.php';
                                 </select>
                             </label>
                         </td>
-                        <td class="cc-plus-fz">8</td>
-                        <td>
+                        <td class="ad-index-td cc-plus-fz">8</td>
+                        <td class="ad-index-td">
                             <a href="#" class="cc-plus-btn">
                                 <button type="btn" class="btn">
                                     詳細
@@ -239,10 +239,10 @@ require_once __DIR__ . '/functions/functions.php';
                             </a>
                         </td>
                     </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>6A</td>
-                        <td class="cc-plus-fz">
+                    <tr class="ad-index-tr">
+                        <td class="ad-index-td">6</td>
+                        <td class="ad-index-td">6A</td>
+                        <td class="ad-index-td cc-plus-fz">
                             <label for="cc-plus-select">
                                 <select name="cc-plus-select" id="cc-plus-select">
                                     <option value="1">1</option>
@@ -251,8 +251,8 @@ require_once __DIR__ . '/functions/functions.php';
                                 </select>
                             </label>
                         </td>
-                        <td class="cc-plus-fz">8</td>
-                        <td>
+                        <td class="ad-index-td cc-plus-fz">8</td>
+                        <td class="ad-index-td">
                             <a href="#" class="cc-plus-btn">
                                 <button type="btn" class="btn">
                                     詳細
