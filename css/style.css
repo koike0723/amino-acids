@@ -96,7 +96,7 @@
 /* クラス絞り込み欄ここまで */
 
 /* テーブルスタート */
-table {
+table.ad-index-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 20px;
@@ -142,6 +142,7 @@ th.ad-index-th {
 }
 
 /* admin_index.php終了 */
+
 
 /* admin_student_list.phpスタート */
 .admin-student-list {
@@ -198,58 +199,64 @@ th.ad-index-th {
   height: 50px;
 }
 
-.admin-student-select{
+.admin-student-select {
   display: flex;
   justify-content: center;
   gap: 100px;
   padding-block-end: 50px;
 }
 
-.admin-ad-flex{
+.admin-ad-flex {}
 
+table.ad-stu-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 20px;
 }
 
-th.ad-stu-list-th{
+th.ad-stu-list-th {
   background-color: #9C9C9C;
   border: 1px solid #000;
   text-align: center;
   padding-block: 10px;
 }
 
-td.ad-stu-list-td{
+td.ad-stu-list-td {
   border: 1px solid #000;
   text-align: center;
   padding-block: 10px;
 }
 
-tr.ad-stu-list-tr:nth-child(even){
+tr.ad-stu-list-tr:nth-child(even) {
   background-color: #DEDEDE;
 }
 
-.controle-btn{
+.controle-btn {
   color: #000;
   border-radius: 5px;
   width: inherit;
 }
 
-.controle-edit{
+.controle-edit {
   background-color: #20FF28;
 }
-.controle-detail{
+
+.controle-detail {
   background-color: #3BDEFF;
 }
-.controle-delete{
+
+.controle-delete {
   background-color: #FF2424;
 }
 
-.previous-btn{
+.previous-btn {
   margin: 0 auto;
   text-align: center;
   padding-block-start: 20px;
 }
 
-.prev-btn{
-  background-color: rgba(6,6,7,0.47);
+.prev-btn {
+  background-color: rgba(6, 6, 7, 0.47);
   color: #000;
   font-size: 24px;
   width: 80px;
@@ -257,6 +264,158 @@ tr.ad-stu-list-tr:nth-child(even){
 }
 
 /* admin_student_list.php終了 */
+
+/* admin_cc_course_listスタート */
+.cc-title-flex {
+  display: flex;
+  justify-content: center;
+  font-size: 24px;
+  padding-block: 210px 50px;
+  gap: 50px;
+}
+
+.add-bulk-page {
+  background-color: #6CDFFF;
+  color: #000;
+  border: 2px solid #000;
+  border-radius: 5px;
+  width: inherit;
+  height: inherit;
+}
+
+.cc-req-day-text {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  padding-block-end: 30px;
+}
+
+.cc-req-table-sec {
+  padding-block: 50px;
+}
+
+.cc-req-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #000;
+}
+
+th.cc-req-list-th,
+td.cc-req-list-td {
+  border: 1px solid #000;
+  text-align: center;
+  padding-block: 5px;
+}
+
+tr.cc-req-list-headTr {
+  background-color: #88B3EC;
+}
+
+.cc-req-controle {
+  display: flex;
+  justify-content: center;
+  font-size: 24px;
+  padding-block: 30px 50px;
+  gap: 30px;
+}
+
+.cc-req-controle-btn {
+  border: 2px solid #000;
+  color: #000;
+  width: 200px;
+  height: 70px;
+  text-align: center;
+}
+
+/* admin_cc_course_list.phpここまで */
+
+/* admin_cc_detail.php開始 */
+.cc-mgmt {
+  padding-block: 50px;
+}
+
+.cc-head-text,
+.cc-head-date {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.cc-head-date {
+  text-decoration: underline;
+}
+
+.cc-detail-btn-area {
+  text-align: left;
+}
+
+.cc-detail-btn {
+  text-align: center;
+}
+
+.cc-detail-table {
+  width: 95%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  border: 1px solid #000;
+}
+
+thead.cc-detail-thead,
+th.cc-detail-th {
+  border: 1px solid #000;
+  text-align: center;
+}
+
+tr.cc-detail-tr,
+td.cc-detail-td {
+  text-align: center;
+  border: 1px solid #000;
+}
+
+.cc-detail_selectStyle {
+  border: 2px solid #000;
+  appearance: auto;
+}
+
+.cc-detail-student {
+  margin: 0;
+  font-weight: bold;
+
+}
+
+.cc-detail-student-card {
+  margin: 5% auto;
+  background-color: #CEFFF6;
+  width: 90%;
+  border-radius: 5px;
+}
+
+/*  */
+/*  */
+th.cc-detail-th-size{
+  width: 16%;
+}
+
+.va-hidden{
+  opacity: 0;
+}
+
+.cc-detail-optional-open{
+  padding-block: 30px;
+}
+.cc-detail-optional-openBtn{
+  font-size: 24px;
+  font-weight: bold;
+  background-color: #CDEFFF;
+  border-radius: 5px;
+}
+
+.cc-detail-optional-openBtn:hover{
+  border: 1px solid #000;
+}
+
+/* admin_cc_detail.phpここまで */
+
 
 /* index.php ここから*/
 /* calender section ここから*/
@@ -301,6 +460,8 @@ tr.ad-stu-list-tr:nth-child(even){
   font-size: 2rem;
   line-height: 1;
 }
+
+
 
 /* calender section ここまで*/
 
