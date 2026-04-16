@@ -14,7 +14,9 @@
 
 『student_number』
 => 出席番号（01）
- ------------------------------------------------->
+
+※『last_name, first_name, student_number』は複数送るので配列で送る予定（試してないから動かないかも・・・）
+------------------------------------------------->
 
 <?php require_once __DIR__ . '/functions/functions.php'; ?>
 <?php
