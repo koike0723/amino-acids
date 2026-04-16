@@ -31,6 +31,28 @@ function check($str)
     echo "</pre>";
 }
 
+// XSS対策
+function h($str)
+{
+    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+}
+
+// 「2026-01-01」形式日付を「〇年〇月〇日」表記に変換
+function format_japanese_date($date)
+{
+    if (empty($date)) {
+        return '';
+    }
+
+    $timestamp = strtotime($date);
+
+    if ($timestamp === false) {
+        return '';
+    }
+
+    return date('Y年n月j日', $timestamp);
+}
+
 /**
  * 生徒ログイン処理
  * 
@@ -77,9 +99,10 @@ function student_login($login_id, $password)
  * ]
  * 
  * @param 連想配列 $filters 連想配列で絞り込みたい項目を設定可能。
+ * @param bool $is_display_end 訓練期間が終了している生徒を表示するか。デフォルトは表示しない(false)
  * @return 二次元配列 生徒一覧
  */
-function get_students($filters = [])
+function get_students($filters = [], $is_display_end = false)
 {
     $db = db_connect();
 
@@ -96,7 +119,7 @@ function get_students($filters = [])
             JOIN m_student_status ss ON s.status_id = ss.id
             JOIN m_courses c ON s.course_id = c.id
             JOIN m_rooms r ON c.room_id = r.id
-            JOIN m_course_categories cc ON c.category_id = cc.id';
+            JOIN m_courses_categories cc ON c.category_id = cc.id';
 
     // 1. 検索対象のカラム定義（フィルタのキー => SQL上のカラム名）
     $filter_definition = [
@@ -115,6 +138,13 @@ function get_students($filters = [])
             $where_clauses[] = "{$column} = :{$key}";
             $params[":{$key}"] = $filters[$key];
         }
+    }
+
+    // 訓練修了済みの生徒を取得しない
+    $now_date = date('Y-m-d');
+    if (!$is_display_end) {
+        $where_clauses[] = 'c.end_date >= :now_date';
+        $params[':now_date'] = $now_date;
     }
 
     // 3. WHERE句の組み立て
@@ -228,10 +258,6 @@ function get_student($student_id)
  *  'first_name',
  *  'last_name',
  *  'number',
- *  'login_id',
- *  'password',
- *  'status_id',
- *  'course_id',
  * ]
  */
 function add_students($course_id, $students)
@@ -305,26 +331,253 @@ function add_students($course_id, $students)
     }
 }
 
-
-// XSS対策
-function h($str)
+/**
+ * コース一覧を取得
+ * @param string $target_date 実施状況を確認したい基準日
+ * @param int $room_id 表示したい教室のID
+ * @param int $category_id 表示したいカテゴリーのID
+ * @param bool $is_display_not_start 基準日より後に開始するコースを表示するか。デフォルトは表示しない(false)
+ * @return 連想配列 開催中のコース一覧
+ */
+function get_courses($target_date = null, $is_display_not_start = false, $room_id = null, $category_id = null)
 {
-    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+    $db = db_connect();
+
+    // 1. デフォルト値の設定（target_dateが空なら今日の日付を入れる）
+    if ($target_date === null) {
+        $target_date = date('Y-m-d');
+    }
+
+    // 2. 基本となるSQL
+    $sql = 'SELECT
+            c.id AS course_id,
+            c.name AS course_name,
+            c.start_date,
+            c.end_date,
+            r.name AS room_name,
+            cc.name AS category_name
+            FROM m_courses c
+            JOIN m_rooms r ON c.room_id = r.id
+            JOIN m_courses_categories cc ON c.category_id = cc.id';
+
+    // 3. WHERE句の動的組み立て
+    $where_clauses = [];
+    $params = [];
+
+    // 日付条件：指定日が開始日と終了日の間にあるか
+
+    $where_clauses[] = $is_display_not_start ?
+        ':target_date <= c.end_date' :
+        ':target_date BETWEEN c.start_date AND c.end_date';
+    $params[':target_date'] = $target_date;
+
+    // 教室ID条件：指定がある場合のみ追加
+    if ($room_id !== null) {
+        $where_clauses[] = 'c.room_id = :room_id';
+        $params[':room_id'] = $room_id;
+    }
+
+    if ($category_id !== null) {
+        $where_clauses[] = 'c.category_id = :category_id';
+        $params[':category_id'] = $category_id;
+    }
+
+    if (!empty($where_clauses)) {
+        $sql .= ' WHERE ' . implode(' AND ', $where_clauses);
+    }
+
+    $sql .= ' ORDER BY c.start_date ASC';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute($params);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-
-// 「2026-01-01」形式日付を「〇年〇月〇日」表記に変換
-function format_japanese_date($date)
+/**
+ * コース詳細の取得
+ * @param int $course_id 取得したいコースのID
+ * @return 連想配列 コースの情報配列。
+ * 必須キャリコンがある場合は array['cc'][1(第何回目)]['2026-01-01','2026-01-08'(開催する日付)]
+ */
+function get_course($course_id)
 {
-    if (empty($date)) {
-        return '';
+    $db = db_connect();
+    $sql = 'SELECT 
+            c.id AS course_id, 
+            c.name AS course_name, 
+            c.start_date, 
+            c.end_date, 
+            c.room_id, 
+            r.name AS room_name, 
+            c.category_id, 
+            cc.name AS category_name, 
+            s.cc_count, 
+            s.date AS cc_date 
+            FROM m_courses c 
+            JOIN m_rooms r ON c.room_id = r.id 
+            JOIN m_courses_categories cc ON c.category_id = cc.id 
+            LEFT JOIN t_course_cc_schedules s ON c.id = s.course_id 
+            WHERE c.id = :course_id 
+            ORDER BY s.cc_count ASC';
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $course_detail = [];
+
+    foreach ($result as $row) {
+        // 1. コースの基本情報をセット（最初の1回だけ実行）
+        if (empty($course_detail)) {
+            $course_detail = [
+                'course_id'     => $row['course_id'],
+                'course_name'   => $row['course_name'],
+                'start_date'    => $row['start_date'],
+                'end_date'      => $row['end_date'],
+                'room_id'       => $row['room_id'],
+                'room_name'     => $row['room_name'],
+                'category_id'   => $row['category_id'],
+                'category_name' => $row['category_name'],
+                'cc'            => [] // ここに cc_count をキーとした配列を格納
+            ];
+        }
+
+        // 2. スケジュール（cc_date）を cc_count をキーにして格納
+        if ($row['cc_date'] !== null) {
+            $count_val = $row['cc_count']; // 「1」や「2」など第何回目かの値
+
+            // 指定された構造に合わせて、cc_count をキーとした多次元配列を作成
+            $course_detail['cc'][$count_val][] = $row['cc_date'];
+        }
+    }
+    return $course_detail;
+}
+
+/**
+ * コースに情報を追加
+ * 
+ * パラメーターに渡す配列例
+ * [
+ *   'name',
+ *   'start_date',
+ *   'end_date',
+ *   'room_id',
+ *   'category_id',
+ *   'cc' => [
+ *      1 => [
+ *          '2026-04-15',
+ *          '2026-04-22',
+ *      ],
+ *      2 => [
+ *          '2026-05-14',
+ *          '2026-05-21',
+ *      ],
+ *   ]
+ * ]
+ */
+function add_course($course)
+{
+    $db = db_connect();
+
+    // カラム定義
+    $course_definition = [
+        'name',
+        'start_date',
+        'end_date',
+        'room_id',
+        'category_id',
+    ];
+
+    $sql = 'INSERT INTO m_courses (' . implode(', ', $course_definition) . ') VALUES ';
+
+    $params = [];
+
+    // 各カラムの値をセット
+    $row_values = [
+        'name' => $course['name'],
+        'start_date'  => $course['start_date'],
+        'end_date'     => $course['end_date'],
+        'room_id'   => $course['room_id'],
+        'category_id'   => $course['category_id'],
+    ];
+
+    foreach ($course_definition as $column) {
+        $placeholder = ":" . $column;
+        $row_placeholders[] = $placeholder;
+        $params[$placeholder] = $row_values[$column];
     }
 
-    $timestamp = strtotime($date);
+    $sql .= '(' . implode(', ', $row_placeholders) . ')';
 
-    if ($timestamp === false) {
-        return '';
+    // 3. 結合して実行
+    if (!empty($row_values)) {
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+        $last_id = $db->lastInsertId();
     }
 
-    return date('Y年n月j日', $timestamp);
+    //必須キャリコンのスケジュール登録
+    if (isset($course['cc']) && $course['cc'] != '') {
+        $return_sql = add_course_cc_schadules($last_id, $course['cc']);
+    }
+}
+
+/**
+ * 必須キャリコンスケジュールの登録
+ *
+ * $cc_schadules の構造例:
+ * [
+ *   1 => ['2026-04-15', '2026-04-22'],
+ *   2 => ['2026-05-14', '2026-05-21'],
+ * ]
+ * キーが cc_count（第何回目か）、値が実施日付の配列
+ */
+function add_course_cc_schadules($course_id, $cc_schadules)
+{
+    $db = db_connect();
+
+    // カラム定義
+    $definition = [
+        'course_id',
+        'cc_count',
+        'date',
+    ];
+
+    $sql = 'INSERT INTO t_course_cc_schedules (' . implode(', ', $definition) . ') VALUES ';
+
+    $values_queries = [];
+    $params = [];
+    $i = 0;
+
+    // cc_count（回数）ごとにループ
+    foreach ($cc_schadules as $cc_count => $dates) {
+        // 同じ回数に複数の日付がある場合もループ
+        foreach ($dates as $date) {
+            $row_placeholders = [];
+
+            $row_values = [
+                'course_id' => $course_id,
+                'cc_count'  => $cc_count,
+                'date'      => $date,
+            ];
+
+            foreach ($definition as $column) {
+                $placeholder = ':' . $column . '_' . $i; // 例: :course_id_0
+                $row_placeholders[] = $placeholder;
+                $params[$placeholder] = $row_values[$column];
+            }
+            $i++;
+
+            $values_queries[] = '(' . implode(', ', $row_placeholders) . ')';
+        }
+    }
+
+    // 登録対象がある場合のみ実行
+    if (!empty($values_queries)) {
+        $sql .= implode(', ', $values_queries);
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+    }
+    
 }
