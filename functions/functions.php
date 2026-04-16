@@ -151,7 +151,7 @@ function get_students($filters = [], $is_display_end = false)
     if (!empty($where_clauses)) {
         $sql .= ' WHERE ' . implode(' AND ', $where_clauses);
     }
-    $sql .= ' ORDER BY s.number ASC';
+    $sql .= ' ORDER BY s.number ASC, r.id ASC';
     $stmt = $db->prepare($sql);
 
     // 4. まとめてバインドして実行
@@ -457,13 +457,13 @@ function get_course($course_id)
 /**
  * コースに情報を追加
  * 
- * パラメーターに渡す配列例
+ * @param パラメーターに渡す配列
  * [
- *   'name',
- *   'start_date',
- *   'end_date',
- *   'room_id',
- *   'category_id',
+ *   'name' => 'webプログラミング',
+ *   'start_date' => '2026-01-01',
+ *   'end_date' => '2026-01-30',
+ *   'room_id' => 1,
+ *   'category_id' = 1,
  *   'cc' => [
  *      1 => [
  *          '2026-04-15',
@@ -519,8 +519,39 @@ function add_course($course)
 
     //必須キャリコンのスケジュール登録
     if (isset($course['cc']) && $course['cc'] != '') {
-        $return_sql = add_course_cc_schadules($last_id, $course['cc']);
+        add_course_cc_schadules($last_id, $course['cc']);
     }
+}
+
+/**
+ * 訓練コース毎の必須キャリコンスケジュールの取得
+ * @param int $course_id 訓練コースのID
+ * @return 連想配列 array["第何回目(int)"]["実際の日付(string)"]
+ */
+function get_course_cc_schadules($course_id)
+{
+    $db = db_connect();
+    $sql = 'SELECT 
+            cc_count, 
+            date AS cc_date 
+            FROM t_course_cc_schedules s
+            WHERE s.course_id = :course_id 
+            ORDER BY s.cc_count ASC';
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($result as $row) {
+        // スケジュール（cc_date）を cc_count をキーにして格納
+        if ($row['cc_date'] !== null) {
+            $count_val = $row['cc_count']; // 「1」や「2」など第何回目かの値
+
+            // 指定された構造に合わせて、cc_count をキーとした多次元配列を作成
+            $course_detail[$count_val][] = $row['cc_date'];
+        }
+    }
+    return $course_detail;
 }
 
 /**
@@ -579,5 +610,78 @@ function add_course_cc_schadules($course_id, $cc_schadules)
         $stmt = $db->prepare($sql);
         $stmt->execute($params);
     }
-    
+}
+
+/**
+ * キャリコンの種類
+ * 
+ * 実際の予約枠かキャリコンプラス用の枠かの種類
+ */
+enum CC_SLOT_TYPE: string
+{
+    /** 全て */
+    case All = 'all';
+    /** 予約枠 */
+    case Line = 'line';
+    /** キャリコンプラス枠 */
+    case CcPlus = 'cc_plus';
+}
+
+/**
+ * キャリコン枠を取得
+ * @param CC_SLOT_TYPE $cc_type 取得するキャリコンの種類。デフォルトは予約枠のみ取得
+ * @param string $target_date 取得したい開催日デフォルトはすべて
+ */
+function get_cc_slots($cc_type = CC_SLOT_TYPE::Line->name, $target_date = null)
+{
+    $db = db_connect();
+
+    $sql = 'SELECT 
+            s.date AS cc_date, 
+            s.is_cc_plus, 
+            CONCAT(c.last_name, c.first_name) AS consultant_name,
+            r.name AS room_name
+            FROM t_cc_slots s
+            LEFT JOIN m_consultants c ON s.consultant_id = c.id
+            LEFT JOIN m_rooms r ON s.room_id = r.id';
+
+    $where_clauses = [];
+    $params = [];
+
+    // 取得したい枠の条件
+    if ($cc_type != CC_SLOT_TYPE::All->name) {
+        $where_slot_type = [
+            CC_SLOT_TYPE::Line->name => 's.is_cc_plus = false',
+            CC_SLOT_TYPE::CcPlus->name => 's.is_cc_plus = true',
+        ];
+        $where_clauses[] = $where_slot_type[$cc_type];
+    }
+
+    // 対象の日付のキャリコン枠を取得
+    if ($target_date !== null) { 
+        $where_clauses[] = 's.date = :target_date';
+        $params[':taget_date'] = $target_date;
+    }
+
+    // Where句の組み立て
+    if (!empty($where_clauses)) {
+        $sql .= ' WHERE ' . implode(' AND ', $where_clauses);
+    }
+
+    $sql .= ' ORDER BY s.date ASC';
+    $stmt = $db->prepare($sql);
+
+    // まとめてバインドして実行
+    $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * キャリコン枠を登録
+ */
+function add_cc_slot($date, $is_cc_plus = false){
+    $db = db_connect();
+    $sql = 'INSERT INTO t_cc_slots (date, is_cc_plus) VALUES (:date, :is_cc_plus)';
+    $stmt = $db->prepare($sql);
+    $stmt->execute([':date' => $date, 'is_cc_plus' => $is_cc_plus]);
 }
