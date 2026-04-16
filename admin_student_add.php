@@ -104,21 +104,21 @@ try {
                     <div class="input_name d-flex">
                         <div class="input_last_name mr-1">
                             <label for="last_name" class="form-label">苗字</label>
-                            <input type="text" name="last_name[]" id="last_name" placeholder="リカレント" required class="form-control form-control-sm">
+                            <input type="text" name="last_name[]" id="last_name" placeholder="リカレント" required class="last_name form-control form-control-sm">
                         </div>
                         <div class="input_first_name mr-5">
                             <label for="first_name" class="form-label">名前</label>
-                            <input type="text" name="first_name[]" id="first_name" placeholder="太郎" required class="form-control form-control-sm">
+                            <input type="text" name="first_name[]" id="first_name" placeholder="太郎" required class="first_name form-control form-control-sm">
                         </div>
                     </div>
                     <div class="input_num">
                         <label for="student_number" class="form-label">出席番号</label>
-                        <input type="text" name="student_number[]" id="student_number" placeholder="01" required class="form-control form-control-sm w-25">
+                        <input type="text" name="student_number[]" id="student_number" placeholder="01" required class="student_number form-control form-control-sm w-25">
                     </div>
                 </div>
 
-                <div class="student_input_class_add_btn mt-3 text-center" id="add_btn">
-                    <a href=" #"><img src="img/add_btn.png" alt=""></a>
+                <div class="mt-3 text-center" id="display_parent">
+                    <a href="#" id="add_btn"><img src="img/add_btn.png" alt=""></a>
                 </div>
 
             </div>
