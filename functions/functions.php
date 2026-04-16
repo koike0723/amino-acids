@@ -304,3 +304,116 @@ function add_students($course_id, $students)
         $stmt->execute($params);
     }
 }
+
+/**
+ * コース一覧を取得
+ * @param Date $target_date 実施状況を確認したい基準日
+ * @param int $room_id 検索したい教室のID
+ * @return 連想配列 開催中のコース一覧
+ */
+function get_courses($target_date = null, $room_id = null, $category_id = null)
+{
+    $db = db_connect();
+
+    // 1. デフォルト値の設定（target_dateが空なら今日の日付を入れる）
+    if ($target_date === null) {
+        $target_date = date('Y-m-d');
+    }
+
+    // 2. 基本となるSQL
+    $sql = 'SELECT
+            c.id AS course_id,
+            c.name AS course_name,
+            c.start_date,
+            c.end_date,
+            r.name AS room_name,
+            cc.name AS category_name
+            FROM m_courses c
+            JOIN m_rooms r ON c.room_id = r.id
+            JOIN m_course_categories cc ON c.category_id = cc.id';
+
+    // 3. WHERE句の動的組み立て
+    $where_clauses = [];
+    $params = [];
+
+    // 日付条件：指定日が開始日と終了日の間にあるか
+    $where_clauses[] = ':target_date BETWEEN c.start_date AND c.end_date';
+    $params[':target_date'] = $target_date;
+
+    // 教室ID条件：指定がある場合のみ追加
+    if ($room_id !== null) {
+        $where_clauses[] = 'c.room_id = :room_id';
+        $params[':room_id'] = $room_id;
+    }
+
+    if (!empty($where_clauses)) {
+        $sql .= ' WHERE ' . implode(' AND ', $where_clauses);
+    }
+
+    $sql .= ' ORDER BY c.start_date ASC';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute($params);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * コース詳細の取得
+ * @param int $course_id 取得したいコースのID
+ * @return 連想配列 コースの情報配列。
+ * 必須キャリコンがある場合は array['cc'][1(第何回目)]['2026-01-01','2026-01-08'(開催する日付)]
+ */
+function get_course($course_id)
+{
+    $db = db_connect();
+    $sql = 'SELECT 
+            c.id AS course_id, 
+            c.name AS course_name, 
+            c.start_date, 
+            c.end_date, 
+            c.room_id, 
+            r.name AS room_name, 
+            c.category_id, 
+            cc.name AS category_name, 
+            s.cc_count, 
+            s.date AS cc_date 
+            FROM m_courses c 
+            JOIN m_rooms r ON c.room_id = r.id 
+            JOIN m_courses_categories cc ON c.category_id = cc.id 
+            LEFT JOIN t_course_cc_schedules s ON c.id = s.course_id 
+            WHERE c.id = :course_id 
+            ORDER BY s.cc_count ASC';
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':course_id', $couse_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $course_detail = [];
+
+    foreach ($result as $row) {
+        // 1. コースの基本情報をセット（最初の1回だけ実行）
+        if (empty($course_detail)) {
+            $course_detail = [
+                'course_id'     => $row['course_id'],
+                'course_name'   => $row['course_name'],
+                'start_date'    => $row['start_date'],
+                'end_date'      => $row['end_date'],
+                'room_id'       => $row['room_id'],
+                'room_name'     => $row['room_name'],
+                'category_id'   => $row['category_id'],
+                'category_name' => $row['category_name'],
+                'cc'            => [] // ここに cc_count をキーとした配列を格納
+            ];
+        }
+
+        // 2. スケジュール（cc_date）を cc_count をキーにして格納
+        if ($row['cc_date'] !== null) {
+            $count_val = $row['cc_count']; // 「1」や「2」など第何回目かの値
+
+            // 指定された構造に合わせて、cc_count をキーとした多次元配列を作成
+            $course_detail['cc'][$count_val][] = $row['cc_date'];
+        }
+    }
+    return $course_detail;
+}
