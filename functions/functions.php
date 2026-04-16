@@ -407,7 +407,7 @@ function get_course($course_id)
             WHERE c.id = :course_id 
             ORDER BY s.cc_count ASC';
     $stmt = $db->prepare($sql);
-    $stmt->bindParam(':course_id', $couse_id, PDO::PARAM_INT);
+    $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
