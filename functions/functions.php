@@ -142,7 +142,7 @@ function get_students($filters = [], $is_display_end = false)
 
     // 訓練修了済みの生徒を取得しない
     $now_date = date('Y-m-d');
-    if(!$is_display_end){
+    if (!$is_display_end) {
         $where_clauses[] = 'c.end_date >= :now_date';
         $params[':now_date'] = $now_date;
     }
@@ -258,10 +258,6 @@ function get_student($student_id)
  *  'first_name',
  *  'last_name',
  *  'number',
- *  'login_id',
- *  'password',
- *  'status_id',
- *  'course_id',
  * ]
  */
 function add_students($course_id, $students)
@@ -456,4 +452,132 @@ function get_course($course_id)
         }
     }
     return $course_detail;
+}
+
+/**
+ * コースに情報を追加
+ * 
+ * パラメーターに渡す配列例
+ * [
+ *   'name',
+ *   'start_date',
+ *   'end_date',
+ *   'room_id',
+ *   'category_id',
+ *   'cc' => [
+ *      1 => [
+ *          '2026-04-15',
+ *          '2026-04-22',
+ *      ],
+ *      2 => [
+ *          '2026-05-14',
+ *          '2026-05-21',
+ *      ],
+ *   ]
+ * ]
+ */
+function add_course($course)
+{
+    $db = db_connect();
+
+    // カラム定義
+    $course_definition = [
+        'name',
+        'start_date',
+        'end_date',
+        'room_id',
+        'category_id',
+    ];
+
+    $sql = 'INSERT INTO m_courses (' . implode(', ', $course_definition) . ') VALUES ';
+
+    $params = [];
+
+    // 各カラムの値をセット
+    $row_values = [
+        'name' => $course['name'],
+        'start_date'  => $course['start_date'],
+        'end_date'     => $course['end_date'],
+        'room_id'   => $course['room_id'],
+        'category_id'   => $course['category_id'],
+    ];
+
+    foreach ($course_definition as $column) {
+        $placeholder = ":" . $column;
+        $row_placeholders[] = $placeholder;
+        $params[$placeholder] = $row_values[$column];
+    }
+
+    $sql .= '(' . implode(', ', $row_placeholders) . ')';
+
+    // 3. 結合して実行
+    if (!empty($row_values)) {
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+        $last_id = $db->lastInsertId();
+    }
+
+    //必須キャリコンのスケジュール登録
+    if (isset($course['cc']) && $course['cc'] != '') {
+        $return_sql = add_course_cc_schadules($last_id, $course['cc']);
+    }
+}
+
+/**
+ * 必須キャリコンスケジュールの登録
+ *
+ * $cc_schadules の構造例:
+ * [
+ *   1 => ['2026-04-15', '2026-04-22'],
+ *   2 => ['2026-05-14', '2026-05-21'],
+ * ]
+ * キーが cc_count（第何回目か）、値が実施日付の配列
+ */
+function add_course_cc_schadules($course_id, $cc_schadules)
+{
+    $db = db_connect();
+
+    // カラム定義
+    $definition = [
+        'course_id',
+        'cc_count',
+        'date',
+    ];
+
+    $sql = 'INSERT INTO t_course_cc_schedules (' . implode(', ', $definition) . ') VALUES ';
+
+    $values_queries = [];
+    $params = [];
+    $i = 0;
+
+    // cc_count（回数）ごとにループ
+    foreach ($cc_schadules as $cc_count => $dates) {
+        // 同じ回数に複数の日付がある場合もループ
+        foreach ($dates as $date) {
+            $row_placeholders = [];
+
+            $row_values = [
+                'course_id' => $course_id,
+                'cc_count'  => $cc_count,
+                'date'      => $date,
+            ];
+
+            foreach ($definition as $column) {
+                $placeholder = ':' . $column . '_' . $i; // 例: :course_id_0
+                $row_placeholders[] = $placeholder;
+                $params[$placeholder] = $row_values[$column];
+            }
+            $i++;
+
+            $values_queries[] = '(' . implode(', ', $row_placeholders) . ')';
+        }
+    }
+
+    // 登録対象がある場合のみ実行
+    if (!empty($values_queries)) {
+        $sql .= implode(', ', $values_queries);
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+    }
+    
 }
