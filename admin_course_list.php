@@ -21,13 +21,24 @@ require_once __DIR__ . '/functions/functions.php';
         <h1>コース一覧</h1>
         <div class="course-search">
             <form action="search">
-                <input type="text" placeholder="教室名">
-                <input type="text" placeholder="訓練名">
-                <input type="text" placeholder="訓練期間">
-                <input type="text" placeholder="訓練タイプ">
-                <a href="./admin_course_detail.php" class="">詳細設定</a>
-                <input type="image" value="検索" src="">
-                <a href="./admin_course_add.php" class="">追加</a>
+                <input type="date" id="course-date">
+                </input>
+                <select type="text" id="course-room" placeholder="教室名">
+                    <option value="教室名" hidden>教室を選択</option>
+                    <option value="1">6a</option>
+                    <option value="2">6b</option>
+                    <option value="3">6c</option>
+                </select>
+                <input type="text" id="course-traning" placeholder="訓練タイプ">
+                <select name="course-status" id="course-status">
+                    <option value="訓練タイプ" hidden>訓練タイプを選択</option>
+                    <option value="1">求職者支援訓練</option>
+                    <option value="2">公共職業訓練</option>
+                </select>
+                <div class="course_detail_btn">
+                    <input type="image" value="検索" src="">
+                    <a href="./admin_course_add.php">追加</a>
+                </div>
             </form>
         </div>
         <div class="course-list">
@@ -78,6 +89,7 @@ require_once __DIR__ . '/functions/functions.php';
             <a class="top-btn" href="./admin_index.php">トップに戻る</a>
         </div>
     </main>
+    <script src="./js/admin_course_search.js"></script>
 </body>
 
 </html>
