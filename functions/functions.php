@@ -118,7 +118,7 @@ function get_students($filters = [])
             JOIN m_student_status ss ON s.status_id = ss.id
             JOIN m_courses c ON s.course_id = c.id
             JOIN m_rooms r ON c.room_id = r.id
-            JOIN m_course_categories cc ON c.category_id = cc.id';
+            JOIN m_courses_categories cc ON c.category_id = cc.id';
 
     // 1. 検索対象のカラム定義（フィルタのキー => SQL上のカラム名）
     $filter_definition = [
