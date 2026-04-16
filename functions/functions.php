@@ -330,10 +330,12 @@ function add_students($course_id, $students)
 /**
  * コース一覧を取得
  * @param Date $target_date 実施状況を確認したい基準日
- * @param int $room_id 検索したい教室のID
+ * @param int $room_id 表示したい教室のID
+ * @param int $category_id 表示したいカテゴリーのID
+ * @param bool $is_display_not_start 基準日より後に開始するコースを表示するか。デフォルトは表示しない(false)
  * @return 連想配列 開催中のコース一覧
  */
-function get_courses($target_date = null, $room_id = null, $category_id = null)
+function get_courses($target_date = null, $is_display_not_start = false, $room_id = null, $category_id = null)
 {
     $db = db_connect();
 
@@ -352,20 +354,28 @@ function get_courses($target_date = null, $room_id = null, $category_id = null)
             cc.name AS category_name
             FROM m_courses c
             JOIN m_rooms r ON c.room_id = r.id
-            JOIN m_course_categories cc ON c.category_id = cc.id';
+            JOIN m_courses_categories cc ON c.category_id = cc.id';
 
     // 3. WHERE句の動的組み立て
     $where_clauses = [];
     $params = [];
 
     // 日付条件：指定日が開始日と終了日の間にあるか
-    $where_clauses[] = ':target_date BETWEEN c.start_date AND c.end_date';
+
+    $where_clauses[] = $is_display_not_start ?
+        ':target_date <= c.end_date' :
+        ':target_date BETWEEN c.start_date AND c.end_date';
     $params[':target_date'] = $target_date;
 
     // 教室ID条件：指定がある場合のみ追加
     if ($room_id !== null) {
         $where_clauses[] = 'c.room_id = :room_id';
         $params[':room_id'] = $room_id;
+    }
+
+    if ($category_id !== null) {
+        $where_clauses[] = 'c.category_id = :category_id';
+        $params[':category_id'] = $category_id;
     }
 
     if (!empty($where_clauses)) {
