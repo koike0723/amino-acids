@@ -99,9 +99,10 @@ function student_login($login_id, $password)
  * ]
  * 
  * @param 連想配列 $filters 連想配列で絞り込みたい項目を設定可能。
+ * @param bool $is_display_end 訓練期間が終了している生徒を表示するか。デフォルトは表示しない(false)
  * @return 二次元配列 生徒一覧
  */
-function get_students($filters = [])
+function get_students($filters = [], $is_display_end = false)
 {
     $db = db_connect();
 
@@ -137,6 +138,13 @@ function get_students($filters = [])
             $where_clauses[] = "{$column} = :{$key}";
             $params[":{$key}"] = $filters[$key];
         }
+    }
+
+    // 訓練修了済みの生徒を取得しない
+    $now_date = date('Y-m-d');
+    if(!$is_display_end){
+        $where_clauses[] = 'c.end_date >= :now_date';
+        $params[':now_date'] = $now_date;
     }
 
     // 3. WHERE句の組み立て
@@ -329,7 +337,7 @@ function add_students($course_id, $students)
 
 /**
  * コース一覧を取得
- * @param Date $target_date 実施状況を確認したい基準日
+ * @param string $target_date 実施状況を確認したい基準日
  * @param int $room_id 表示したい教室のID
  * @param int $category_id 表示したいカテゴリーのID
  * @param bool $is_display_not_start 基準日より後に開始するコースを表示するか。デフォルトは表示しない(false)
