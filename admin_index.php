@@ -97,7 +97,7 @@ require_once __DIR__ . '/functions/functions.php';
                         <td class="ad-index-td cc-plus-fz line-bold va-middle">8</td>
                         <td class="ad-index-td line-bold">
                             <a href="#" class="cc-plus-btn">
-                                <button type="btn" class="btn">
+                                <button type="btn" class="ad-index-detailBtn">
                                     詳細
                                 </button>
                             </a>
@@ -120,7 +120,7 @@ require_once __DIR__ . '/functions/functions.php';
                         <td class="ad-index-td cc-plus-fz va-middle">8</td>
                         <td class="ad-index-td">
                             <a href="#" class="cc-plus-btnva-middle">
-                                <button type="btn" class="btn">
+                                <button type="btn" class="ad-index-detailBtn">
                                     詳細
                                 </button>
                             </a>
@@ -141,7 +141,7 @@ require_once __DIR__ . '/functions/functions.php';
                         <td class="ad-index-td cc-plus-fz">8</td>
                         <td class="ad-index-td">
                             <a href="#" class="cc-plus-btn">
-                                <button type="btn" class="btn">
+                                <button type="btn" class="ad-index-detailBtn">
                                     詳細
                                 </button>
                             </a>
@@ -162,7 +162,7 @@ require_once __DIR__ . '/functions/functions.php';
                         <td class="ad-index-td cc-plus-fz">8</td>
                         <td class="ad-index-td">
                             <a href="#" class="cc-plus-btn">
-                                <button type="btn" class="btn">
+                                <button type="btn" class="ad-index-detailBtn">
                                     詳細
                                 </button>
                             </a>
@@ -190,7 +190,7 @@ require_once __DIR__ . '/functions/functions.php';
                         <td class="ad-index-td cc-plus-fz">8</td>
                         <td class="ad-index-td">
                             <a href="#" class="cc-plus-btn">
-                                <button type="btn" class="btn">
+                                <button type="btn" class="ad-index-detailBtn">
                                     詳細
                                 </button>
                             </a>
@@ -212,7 +212,7 @@ require_once __DIR__ . '/functions/functions.php';
                         <td class="ad-index-td cc-plus-fz">8</td>
                         <td class="ad-index-td">
                             <a href="#" class="cc-plus-btn">
-                                <button type="btn" class="btn">
+                                <button type="btn" class="ad-index-detailBtn">
                                     詳細
                                 </button>
                             </a>
@@ -233,7 +233,7 @@ require_once __DIR__ . '/functions/functions.php';
                         <td class="ad-index-td cc-plus-fz">8</td>
                         <td class="ad-index-td">
                             <a href="#" class="cc-plus-btn">
-                                <button type="btn" class="btn">
+                                <button type="btn" class="ad-index-detailBtn">
                                     詳細
                                 </button>
                             </a>
@@ -254,7 +254,7 @@ require_once __DIR__ . '/functions/functions.php';
                         <td class="ad-index-td cc-plus-fz">8</td>
                         <td class="ad-index-td">
                             <a href="#" class="cc-plus-btn">
-                                <button type="btn" class="btn">
+                                <button type="btn" class="ad-index-detailBtn">
                                     詳細
                                 </button>
                             </a>
