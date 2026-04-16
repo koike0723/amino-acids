@@ -675,3 +675,13 @@ function get_cc_slots($cc_type = CC_SLOT_TYPE::Line->name, $target_date = null)
     $stmt->execute($params);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+/**
+ * キャリコン枠を登録
+ */
+function add_cc_slot($date, $is_cc_plus = false){
+    $db = db_connect();
+    $sql = 'INSERT INTO t_cc_slots (date, is_cc_plus) VALUES (:date, :is_cc_plus)';
+    $stmt = $db->prepare($sql);
+    $stmt->execute([':date' => $date, 'is_cc_plus' => $is_cc_plus]);
+}
