@@ -1,9 +1,10 @@
- <?php 
- require_once __DIR__ . '/functions/functions.php';
- ?>
-
-
 <?php
+require_once __DIR__ . '/functions/functions.php';
+
+// DBからデータ取得
+$student = get_student(1);
+
+// 以下カレンダーのためのphp
 // 表示したい年月を取得
 $year = isset($_GET['year']) ? (int)$_GET['year'] : date('Y');
 $month = isset($_GET['month']) ? (int)$_GET['month'] : date('n');
@@ -51,16 +52,30 @@ $events = [
     ],
 ];
 ?>
-
 <!doctype html>
 <html lang="ja">
 
 <head>
+    <meta charset="UTF-8">
     <title>予約一覧</title>
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 
+    <style>
+        .calendar-date-link {
+            display: inline-block;
+            text-decoration: none;
+        }
 
+        .calendar-date-link:hover {
+            opacity: 0.7;
+            text-decoration: none;
+        }
+
+        .other-month .date-number {
+            color: #ccc;
+        }
+    </style>
 </head>
 
 <body>
@@ -73,46 +88,32 @@ $events = [
                     <h2 class="text-center mb-4 fs-6">予約一覧</h2>
 
                     <div class="d-flex flex-column gap-3">
-
-                        <!-- 1件分 -->
-                        <div class="row align-items-center gx-2">
-                            <div class="col-1 text-danger text-center">•</div>
-                            <div class="col-4 text-danger">2027/10/9</div>
-                            <div class="col-3 text-danger">16:00~</div>
-                            <div class="col-2">
-                                <button type="button" class="btn btn-primary btn-sm w-100">変更</button>
-                            </div>
-                            <div class="col-2">
-                                <button type="button" class="btn btn-warning btn-sm w-200">キャンセル</button>
-                            </div>
-                        </div>
-
-                        <!-- 2件分 -->
-                        <div class="row align-items-center gx-2">
-                            <div class="col-1 text-primary text-center">•</div>
-                            <div class="col-4 text-primary">2027/10/16</div>
-                            <div class="col-3 text-primary">10:00~</div>
-                            <div class="col-2">
-                                <button type="button" class="btn btn-primary btn-sm w-100">変更</button>
-                            </div>
-                            <div class="col-2">
-                                <button type="button" class="btn btn-warning btn-sm w-200">キャンセル</button>
-                            </div>
-                        </div>
-
-                        <!-- 3件分 -->
-                        <div class="row align-items-center gx-2">
-                            <div class="col-1 text-danger text-center">•</div>
-                            <div class="col-4 text-danger">2027/11/13</div>
-                            <div class="col-3 text-danger">10:00~</div>
-                            <div class="col-2">
-                                <button type="button" class="btn btn-primary btn-sm w-100">変更</button>
-                            </div>
-                            <div class="col-2">
-                                <button type="button" class="btn btn-warning btn-sm w-200">キャンセル</button>
-                            </div>
-                        </div>
-
+                        <?php if (!empty($student['bookings'])): ?>
+                            <?php foreach ($student['bookings'] as $booking): ?>
+                                <div class="row align-items-center gx-2">
+                                    <div class="col-1 text-danger text-center">•</div>
+                                    <div class="col-4 text-danger">
+                                        <?php echo h($booking['cc_date']); ?>
+                                    </div>
+                                    <div class="col-3 text-danger">
+                                        <?php echo h(substr($booking['cc_time'], 0, 5)); ?>
+                                    </div>
+                                    <div class="col-2">
+                                        <button
+                                            type="button"
+                                            class="btn btn-primary btn-sm w-100"
+                                            onclick="location.href='./student_reserve.php?selected_date=<?php echo urlencode($booking['cc_date']); ?>'">
+                                            変更
+                                        </button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button type="button" class="btn btn-warning btn-sm w-100">キャンセル</button>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p class="text-center text-muted">予約はありません</p>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -124,10 +125,10 @@ $events = [
 
                     <!-- 前月・次月移動 -->
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <a href="?year=<?php echo $prevYear; ?>&month=<?php echo $prevMonth; ?>" class="btn btn-outline-secondary btn-sm">
+                        <a href="?year=<?php echo h($prevYear); ?>&month=<?php echo h($prevMonth); ?>" class="btn btn-outline-secondary btn-sm">
                             前の月
                         </a>
-                        <a href="?year=<?php echo $nextYear; ?>&month=<?php echo $nextMonth; ?>" class="btn btn-outline-secondary btn-sm">
+                        <a href="?year=<?php echo h($nextYear); ?>&month=<?php echo h($nextMonth); ?>" class="btn btn-outline-secondary btn-sm">
                             次の月
                         </a>
                     </div>
@@ -135,10 +136,10 @@ $events = [
                     <!-- カレンダータイトル -->
                     <div class="d-flex justify-content-between align-items-end mb-2">
                         <div class="d-flex align-items-end gap-2">
-                            <span class="calendar-heading-number"><?php echo $month; ?></span>
-                            <span class="calendar-heading-month"><?php echo htmlspecialchars($monthName, ENT_QUOTES, 'UTF-8'); ?></span>
+                            <span class="calendar-heading-number"><?php echo h($month); ?></span>
+                            <span class="calendar-heading-month"><?php echo h($monthName); ?></span>
                         </div>
-                        <div class="calendar-heading-year"><?php echo $year; ?></div>
+                        <div class="calendar-heading-year"><?php echo h($year); ?></div>
                     </div>
 
                     <!-- カレンダー -->
@@ -180,7 +181,7 @@ $events = [
                                             $prevMonthDay = $daysInPrevMonth - $startWeekday + $cellIndex + 1;
 
                                             echo '<td class="other-month">';
-                                            echo '<span class="date-number">' . $prevMonthDay . '</span>';
+                                            echo '<span class="date-number">' . h($prevMonthDay) . '</span>';
                                             echo '</td>';
                                         }
                                         // 当月の日付
@@ -188,12 +189,14 @@ $events = [
                                             $dateKey = sprintf('%04d-%02d-%02d', $year, $month, $day);
 
                                             echo '<td>';
-                                            echo '<span class="date-number ' . $dateClass . '">' . $day . '</span>';
+                                            echo '<a href="./student_reserve.php?selected_date=' . urlencode($dateKey) . '" class="calendar-date-link">';
+                                            echo '<span class="date-number ' . h($dateClass) . '">' . h($day) . '</span>';
+                                            echo '</a>';
 
                                             if (isset($events[$dateKey])) {
                                                 foreach ($events[$dateKey] as $event) {
-                                                    echo '<div class="event-item ' . htmlspecialchars($event['class'], ENT_QUOTES, 'UTF-8') . '">';
-                                                    echo '・' . htmlspecialchars($event['text'], ENT_QUOTES, 'UTF-8');
+                                                    echo '<div class="event-item ' . h($event['class']) . '">';
+                                                    echo '・' . h($event['text']);
                                                     echo '</div>';
                                                 }
                                             }
@@ -204,7 +207,7 @@ $events = [
                                         // 月末後の次月日付
                                         else {
                                             echo '<td class="other-month">';
-                                            echo '<span class="date-number">' . $nextMonthDay . '</span>';
+                                            echo '<span class="date-number">' . h($nextMonthDay) . '</span>';
                                             echo '</td>';
                                             $nextMonthDay++;
                                         }
