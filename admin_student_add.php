@@ -98,7 +98,7 @@ try {
             </div>
 
             <div class="input_field card col-12 px-3 py-3">
-                <div class="input_student d-flex px-3 py-3 mb-2 mx-auto" style="background-color: #baeef7;" id="input_student">
+                <div class="input_student d-flex px-3 py-3 mb-2 mx-auto" style="background-color: #baeef7;" id="input_field">
                     <div class="input_name d-flex">
                         <div class="input_last_name mr-1">
                             <label for="last_name" class="form-label">苗字</label>
@@ -115,8 +115,8 @@ try {
                     </div>
                 </div>
 
-                <div class="student_input_class_add_btn mt-3 text-center">
-                    <a href="#"><img src="img/add_btn.png" alt=""></a>
+                <div class="student_input_class_add_btn mt-3 text-center" id="add_btn">
+                    <a href=" #"><img src="img/add_btn.png" alt=""></a>
                 </div>
 
             </div>
