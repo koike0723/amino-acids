@@ -132,13 +132,15 @@ th.ad-index-th {
   font-size: 24px;
 }
 
-.btn {
+.ad-index-detailBtn {
   background-color: #51FF6B;
+  color: #000;
   font-weight: bold;
   font-size: 20px;
   text-align: center;
   border: 2px solid #000;
   border-radius: 5px;
+  width: fit-content;
 }
 
 /* admin_index.php終了 */
@@ -392,30 +394,89 @@ td.cc-detail-td {
 
 /*  */
 /*  */
-th.cc-detail-th-size{
+th.cc-detail-th-size {
   width: 16%;
 }
 
-.va-hidden{
+.va-hidden {
   opacity: 0;
 }
 
-.cc-detail-optional-open{
+.cc-detail-optional-open {
   padding-block: 30px;
 }
-.cc-detail-optional-openBtn{
+
+.cc-detail-optional-openBtn {
   font-size: 24px;
   font-weight: bold;
   background-color: #CDEFFF;
   border-radius: 5px;
 }
 
-.cc-detail-optional-openBtn:hover{
+.cc-detail-optional-openBtn:hover {
   border: 1px solid #000;
 }
 
 /* admin_cc_detail.phpここまで */
 
+/* admin_student_detail.phpここから */
+.student-detail-h1 {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  padding-block: 50px 100px;
+}
+
+.student-detail-dl{
+  width: fit-content;
+ margin: 0 auto;
+}
+
+.student-detail-dl-flex {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  gap: 30px;
+  padding-block-start: 50px;
+}
+
+.student-detail-dt {
+  width: 200px;
+  text-align: right;
+}
+
+.student-detail-dd {
+  width: fit-content;
+  margin: 0;
+}
+
+.student-detail-controle-area{
+  display: flex;
+  padding-block: 60px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto;
+  gap: 30px;
+}
+
+.student-detail-editBtn{
+  background-color: #2B27FF;
+  width: fit-content;
+  height: fit-content;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 24px;
+}
+
+ .student-detail-controle a:hover {
+  text-decoration: none;
+}
+/* admin_student_detailここまで */
+
+/* admin_course_detail.phpここから */
+
+/* admin_course_detail.phpここまで */
 
 /* index.php ここから*/
 /* calender section ここから*/
@@ -530,6 +591,7 @@ th.cc-detail-th-size{
 .s-frame-unavailable {
   background-color: #bfbfbf;
 }
+
 /* student_reserve.phpここまで */
 
 /* studet_reserve_edit.phpここから */
@@ -564,9 +626,11 @@ th.cc-detail-th-size{
 .student-reservation-apply-submit {
   font-weight: 700;
 }
-.student-reservation-apply-buttons .btn{
+
+.student-reservation-apply-buttons .btn {
   margin: 0 30px;
 }
+
 /* studet_reserve_edit.phpここまで */
 
 /* studet_cc_detail_require.phpここから */
@@ -611,6 +675,7 @@ th.cc-detail-th-size{
   outline: 2px solid #7aa7ff;
   outline-offset: -2px;
 }
+
 /* studet_cc_detail_require.phpここまで */
 
 
@@ -635,5 +700,5 @@ th.cc-detail-th-size{
 .student-reservation-detail-cancel-btn {
   font-weight: 700;
 }
-/* studet_reserve_del_confirm.phpここまで */
 
+/* studet_reserve_del_confirm.phpここまで */
