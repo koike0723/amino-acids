@@ -531,6 +531,7 @@ th.cc-detail-th-size {
 .student-detail-dt {
   width: 200px;
   text-align: right;
+  align-items: start;
 }
 
 .student-detail-dd {
@@ -550,8 +551,7 @@ th.cc-detail-th-size {
 
 .student-detail-editBtn {
   background-color: #2B27FF;
-  width: fit-content;
-  height: fit-content;
+  width: 160px;
   border-radius: 5px;
   color: #fff;
   font-size: 24px;
@@ -562,10 +562,6 @@ th.cc-detail-th-size {
 }
 
 /* admin_student_detailここまで */
-
-/* admin_course_detail.phpここから */
-
-/* admin_course_detail.phpここまで */
 
 /* index.php ここから*/
 /* calender section ここから*/
