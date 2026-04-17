@@ -457,6 +457,32 @@ function get_course($course_id)
 }
 
 /**
+ * キャリコンプラスの開催日一覧を取得
+ * 
+ * キャリコンプラス枠の開催日を重複なしで取得する
+ * 
+ * @param string|null $base_date 基準日（この日より後の開催日を取得）。デフォルトは今日の日付
+ * @return array 開催日の配列 例: [['cc_date' => '2026-05-01'], ...]
+ */
+function get_cc_plus_dates(?string $base_date = null): array
+{
+    $base_date ??= date('Y-m-d');
+
+    $db = db_connect();
+
+    $sql = 'SELECT DISTINCT s.date AS cc_date
+            FROM t_cc_slots s
+            WHERE s.is_cc_plus = true
+              AND s.date > :base_date
+            ORDER BY s.date ASC';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([':base_date' => $base_date]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
  * コースに情報を追加
  * 
  * @param パラメーターに渡す配列
