@@ -463,7 +463,7 @@ function get_course($course_id)
  *   'start_date' => '2026-01-01',
  *   'end_date' => '2026-01-30',
  *   'room_id' => 1,
- *   'category_id' = 1,
+ *   'category_id' => 1,
  *   'cc' => [
  *      1 => [
  *          '2026-04-15',

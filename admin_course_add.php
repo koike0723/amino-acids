@@ -89,6 +89,37 @@ try {
 
     <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
 
+    <?php if (isset($_GET["status"]) && $_GET["status"] === "success"): ?>
+        <div class="alert alert-success">
+            コースを追加しました！
+        </div>
+    <?php endif; ?>
+    <?php if (isset($_GET["status"]) && $_GET["status"] === "error"): ?>
+        <?php if (isset($_GET["message"])): ?>
+            <?php if ($_GET["message"] === "no_data"): ?>
+                <div class="alert alert-danger">
+                    データがうまく送られませんでした。
+                </div>
+            <?php elseif ($_GET["message"] === "cant_db"): ?>
+                <div class="alert alert-danger">
+                    データベース時のエラー。
+                </div>
+            <?php elseif ($_GET["message"] === "same_course"): ?>
+                <div class="alert alert-danger">
+                    同じコースが登録されています！！
+                </div>
+            <?php elseif ($_GET["message"] === "error_date"): ?>
+                <div class="alert alert-danger">
+                    コース終了日はコース開始日よりあとに設定してください！！
+                </div>
+            <?php elseif ($_GET["message"] === "error_cc_date"): ?>
+                <div class="alert alert-danger">
+                    キャリコンの日付が同じ日があります！！
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+    <?php endif; ?>
+
     <!-- kan-to-do:コンテンツ幅の統一 -->
     <div class="content-wrap" style="width: 89.33333%; max-width: 1000px; margin-inline: auto;">
 
