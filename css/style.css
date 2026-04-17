@@ -208,10 +208,9 @@ th.ad-index-th {
   padding-block-end: 50px;
 }
 
-.admin-ad-flex {}
-
 table.ad-stu-list-table {
-  width: 100%;
+  width: 90%;
+  margin: 0 auto;
   border-collapse: collapse;
   font-size: 20px;
 }
@@ -266,6 +265,95 @@ tr.ad-stu-list-tr:nth-child(even) {
 }
 
 /* admin_student_list.php終了 */
+
+/* admin_student_edit.phpここから */
+.student-edit-h1 {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  padding-block: 100px 50px;
+}
+
+.student-edit-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.student-edit-flex {
+  margin-bottom: 20px;
+}
+
+.student-edit-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 20px;
+  gap: 8px;
+}
+
+.student-edit-name {
+  border: 1px solid #000;
+  width: 70vw;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.student-edit-option-flex {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  margin-inline-start: 15%;
+  padding-block: 20px;
+}
+
+.student-edit-option-con-flex {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.student-edit-option-span {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.student-edit-option-select {
+  appearance: auto;
+  font-size: 24px;
+}
+
+.student-edit-option-label {
+  border: 1px solid #000;
+  width: inherit;
+}
+
+.student-edit-controle-flex {
+  display: flex;
+  justify-content: center;
+  gap: 100px;
+  font-size: 24px;
+  padding-block: 150px 50px;
+}
+
+.seb-prev {
+  background-color: #fff;
+  border: 1px solid #000;
+  width: 150px;
+  color: #000;
+  text-align: center;
+}
+
+.seb-next {
+  background-color: #2B27FF;
+  border-radius: 5px;
+  width: 150px;
+  color: #fff;
+  text-align: center;
+}
+
+/* admin_student_edit.phpここまで */
 
 /* admin_cc_course_listスタート */
 .cc-title-flex {
@@ -427,9 +515,9 @@ th.cc-detail-th-size {
   padding-block: 50px 100px;
 }
 
-.student-detail-dl{
+.student-detail-dl {
   width: fit-content;
- margin: 0 auto;
+  margin: 0 auto;
 }
 
 .student-detail-dl-flex {
@@ -450,7 +538,7 @@ th.cc-detail-th-size {
   margin: 0;
 }
 
-.student-detail-controle-area{
+.student-detail-controle-area {
   display: flex;
   padding-block: 60px;
   justify-content: center;
@@ -460,7 +548,7 @@ th.cc-detail-th-size {
   gap: 30px;
 }
 
-.student-detail-editBtn{
+.student-detail-editBtn {
   background-color: #2B27FF;
   width: fit-content;
   height: fit-content;
@@ -469,9 +557,10 @@ th.cc-detail-th-size {
   font-size: 24px;
 }
 
- .student-detail-controle a:hover {
+.student-detail-controle a:hover {
   text-decoration: none;
 }
+
 /* admin_student_detailここまで */
 
 /* admin_course_detail.phpここから */

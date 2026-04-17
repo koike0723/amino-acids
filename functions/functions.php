@@ -64,7 +64,7 @@ function format_japanese_date($date)
 function student_login($login_id, $password)
 {
     $db = db_connect();
-    $sql = 'SELECT CONCAT(firs_name,last_name) AS student_name, id FROM m_students WHERE login_id=:login_id ';
+    $sql = 'SELECT CONCAT(first_name,last_name) AS student_name, id FROM m_students WHERE login_id=:login_id ';
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':login_id', $login_id, PDO::PARAM_STR);
     $stmt->execute();
@@ -191,7 +191,9 @@ function get_student($student_id)
             s.id AS student_id,
             CONCAT(s.last_name, s.first_name) AS student_name,
             s.number,
+            ss.id AS status_id,
             ss.name AS status_name,
+            c.id AS course_id,
             c.name AS course_name,
             r.name AS room_name,
             b.cc_slot_id AS cc_slot_id,
@@ -225,7 +227,9 @@ function get_student($student_id)
                 'student_id'   => $row['student_id'],
                 'student_name' => $row['student_name'],
                 'number'       => $row['number'],
+                'status_id'    => $row['status_id'],
                 'status_name'  => $row['status_name'],
+                'course_id'    => $row['course_id'], 
                 'course_name'  => $row['course_name'],
                 'room_name'    => $row['room_name'],
                 'bookings'     => []
@@ -452,6 +456,32 @@ function get_course($course_id)
         }
     }
     return $course_detail;
+}
+
+/**
+ * キャリコンプラスの開催日一覧を取得
+ * 
+ * キャリコンプラス枠の開催日を重複なしで取得する
+ * 
+ * @param string|null $base_date 基準日（この日より後の開催日を取得）。デフォルトは今日の日付
+ * @return array 開催日の配列 例: [['cc_date' => '2026-05-01'], ...]
+ */
+function get_cc_plus_dates(?string $base_date = null): array
+{
+    $base_date ??= date('Y-m-d');
+
+    $db = db_connect();
+
+    $sql = 'SELECT DISTINCT s.date AS cc_date
+            FROM t_cc_slots s
+            WHERE s.is_cc_plus = true
+              AND s.date > :base_date
+            ORDER BY s.date ASC';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([':base_date' => $base_date]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 /**
