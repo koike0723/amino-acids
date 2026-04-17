@@ -1,6 +1,18 @@
 <!-- 生徒画面 -->
 <?php
 require_once __DIR__ . '/functions/functions.php';
+try {
+    $students = get_students();
+} catch (PDOException $e) {
+    check($e);
+}
+?>
+<?php
+$db = db_connect();
+$sql = 'SELECT * FROM m_rooms ORDER BY id ASC,name ASC';
+$stmt = $db->prepare($sql);
+$stmt->execute();
+$course_name = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -41,8 +53,9 @@ require_once __DIR__ . '/functions/functions.php';
             <div class="admin-add-flex">
                 <label for="ad-stu_select">
                     <select name="ad-stu_select" id="ad-stu_select" class="cc-select_style">
-                        <option value="1">クラス設定</option>
-                        <option value="2">クラス表示</option>
+                        <?php foreach ($course_name as $course): ?>
+                            <option value="<?= h($course['id']); ?>" style="background-color: white;"><?= h($course['name']); ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </label>
                 <a href="#">
@@ -65,76 +78,25 @@ require_once __DIR__ . '/functions/functions.php';
                     </tr>
                 </thead>
                 <tbody class="ad-stu-list-tbody">
-                    <tr class="ad-stu-list-tr">
-                        <td class="ad-stu-list-td">梅崎さん</td>
-                        <td class="ad-stu-list-td">6C/Webプログラミング科</td>
-                        <td class="ad-stu-list-td">在籍中</td>
-                        <td class="ad-stu-list-td">利用可</td>
-                        <td class="ad-stu-list-td td-btn-flex">
-                            <a href="#">
-                                <button type="btn" class="controle-btn controle-edit">編集</button>
-                            </a>
-                            <a href="#">
-                                <button type="btn" class="controle-btn controle-detail">詳細</button>
-                            </a>
-                            <a href="#">
-                                <button type="btn" class="controle-btn controle-delete">削除</button>
-                            </a>
-                        </td>
-                    </tr>
-                    <!-- ダミーテーブル -->
-                     <tr class="ad-stu-list-tr">
-                        <td class="ad-stu-list-td">江原さん</td>
-                        <td class="ad-stu-list-td">6C/Webプログラミング科</td>
-                        <td class="ad-stu-list-td">在籍中</td>
-                        <td class="ad-stu-list-td">利用可</td>
-                        <td class="ad-stu-list-td td-btn-flex">
-                            <a href="#">
-                                <button type="btn" class="controle-btn controle-edit">編集</button>
-                            </a>
-                            <a href="#">
-                                <button type="btn" class="controle-btn controle-detail">詳細</button>
-                            </a>
-                            <a href="#">
-                                <button type="btn" class="controle-btn controle-delete">削除</button>
-                            </a>
-                        </td>
-                     </tr>
-                     <tr class="ad-stu-list-tr">
-                        <td class="ad-stu-list-td">大古場さん</td>
-                        <td class="ad-stu-list-td">6C/Webプログラミング科</td>
-                        <td class="ad-stu-list-td">在籍中</td>
-                        <td class="ad-stu-list-td">利用可</td>
-                        <td class="ad-stu-list-td td-btn-flex">
-                            <a href="#">
-                                <button type="btn" class="controle-btn controle-edit">編集</button>
-                            </a>
-                            <a href="#">
-                                <button type="btn" class="controle-btn controle-detail">詳細</button>
-                            </a>
-                            <a href="#">
-                                <button type="btn" class="controle-btn controle-delete">削除</button>
-                            </a>
-                        </td>
-                    </tr>
-                    <tr class="ad-stu-list-tr">
-                        <td class="ad-stu-list-td">小倉さん</td>
-                        <td class="ad-stu-list-td">6C/Webプログラミング科</td>
-                        <td class="ad-stu-list-td">在籍中</td>
-                        <td class="ad-stu-list-td">利用可</td>
-                        <td class="ad-stu-list-td td-btn-flex">
-                            <a href="#">
-                                <button type="btn" class="controle-btn controle-edit">編集</button>
-                            </a>
-                            <a href="#">
-                                <button type="btn" class="controle-btn controle-detail">詳細</button>
-                            </a>
-                            <a href="#">
-                                <button type="btn" class="controle-btn controle-delete">削除</button>
-                            </a>
-                        </td>
-                    </tr>
-                    <!-- ダミーテーブルここまで -->
+                    <?php foreach ($students as $student): ?>
+                        <tr class="ad-stu-list-tr">
+                            <td class="ad-stu-list-td"><?= h($student['student_name']); ?></td>
+                            <td class="ad-stu-list-td"><?= h($student['room_name']); ?>&nbsp;/&nbsp;<?= h($student['course_name']); ?></td>
+                            <td class="ad-stu-list-td"><?= h($student['status_name']); ?></td>
+                            <td class="ad-stu-list-td">利用可</td>
+                            <td class="ad-stu-list-td td-btn-flex">
+                                <a href="#">
+                                    <button type="btn" class="controle-btn controle-edit">編集</button>
+                                </a>
+                                <a href="#">
+                                    <button type="btn" class="controle-btn controle-detail">詳細</button>
+                                </a>
+                                <a href="#">
+                                    <button type="btn" class="controle-btn controle-delete">削除</button>
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -145,5 +107,6 @@ require_once __DIR__ . '/functions/functions.php';
         </div>
     </main>
 </body>
+<script src="./js/script.js"></script>
 
 </html>
