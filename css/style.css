@@ -102,14 +102,12 @@
   /* 影を左側に落とす */
   z-index: 100;
   overflow-y: auto;
-  /* メニューが長い場合にスクロール可能に */
 }
 
 /* チェックボックスが入ったらメニューを右から表示 */
 #menu-toggle:checked~.hum-menu {
   position: absolute;
   right: 0;
-  /* rightを0にすることで右端に固定 */
 }
 
 /* --- 以下、装飾（変更なし） --- */
@@ -147,7 +145,27 @@ summary::-webkit-details-marker {
 .hamburger-details a:hover {
   color: #007bff;
 }
+/* --- ハンバーガーを✕に変えるアニメーション --- */
 
+/* 1本目：45度回転させて位置を下げる */
+#menu-toggle:checked ~ .hamburger span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+/* 2本目：透明にして消す */
+#menu-toggle:checked ~ .hamburger span:nth-child(2) {
+  opacity: 0;
+}
+
+/* 3本目：-45度回転させて位置を上げる */
+#menu-toggle:checked ~ .hamburger span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* 最後のspanだけ余白を消す（中心を合わせやすくするため） */
+.hamburger span:last-child {
+  margin-bottom: 0;
+}
 /* admin_header.php終了 */
 
 /* header.phpここまで */
