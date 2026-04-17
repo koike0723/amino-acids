@@ -1,5 +1,6 @@
 <!-- 管理者側ヘッダー -->
 <header class="site-header_admin">
+    <?php include('./inc/nav_bar.php'); ?>
     <div class="header-inner">
         <div class="inner-flex">
             <a href="./index.php" style="text-decoration: none;">

@@ -55,6 +55,123 @@
   padding: 22px 32px;
 }
 
+/* ハンバーガーメニュー */
+/* チェックボックス自体は隠す */
+.u-hidden {
+  display: none;
+}
+
+/* ヘッダー全体（親要素）の調整 */
+.c-top {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* ハンバーガーボタンの基本スタイル */
+.hamburger {
+  display: block;
+  width: 30px;
+  cursor: pointer;
+  z-index: 101;
+  /* メニュー(100)より上に配置 */
+  position: relative;
+}
+
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #333;
+  margin-bottom: 6px;
+  transition: 0.3s;
+}
+
+/* メニューの初期状態（右側に隠しておく） */
+.hum-menu {
+  position: fixed;
+  top: 0px;
+  /* ナビバーの高さに合わせて調整 */
+  right: -100%;
+  /* 左側(left)ではなく右側(right)をマイナスに */
+  width: 250px;
+  background: #ffffff;
+  transition: 0.4s;
+  padding: 20px;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  /* 影を左側に落とす */
+  z-index: 100;
+  overflow-y: auto;
+}
+
+/* チェックボックスが入ったらメニューを右から表示 */
+.menu-toggle.hum-menu{
+  position: absolute;
+  right: 0;
+}
+
+/* --- 以下、装飾（変更なし） --- */
+
+details {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+summary {
+  padding: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  list-style: none;
+}
+
+/* Chrome, Safariでデフォルトの矢印を消す */
+summary::-webkit-details-marker {
+  display: none;
+}
+
+.hamburger-details {
+  padding: 10px 20px;
+  background: #ffffff;
+}
+
+.hamburger-details a {
+  display: block;
+  text-decoration: none;
+  color: #333;
+  padding: 10px;
+  /* クリックできる面積を増やす */
+  width: 100%;
+  /* 親要素に合わせる */
+  box-sizing: border-box;
+}
+
+
+.hamburger-details a:hover {
+  color: #007bff;
+}
+
+/* --- ハンバーガーを✕に変えるアニメーション --- */
+
+/* 1本目：45度回転させて位置を下げる */
+#menu-toggle:checked~.hamburger span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+/* 2本目：透明にして消す */
+#menu-toggle:checked~.hamburger span:nth-child(2) {
+  opacity: 0;
+}
+
+/* 3本目：-45度回転させて位置を上げる */
+#menu-toggle:checked~.hamburger span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* 最後のspanだけ余白を消す（中心を合わせやすくするため） */
+.hamburger span:last-child {
+  margin-bottom: 0;
+}
+
 /* admin_header.php終了 */
 
 /* header.phpここまで */

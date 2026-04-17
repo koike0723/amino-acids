@@ -1,16 +1,14 @@
-// ハンバーガーメニュー追加
+// ヘッダー用ハンバーガーメニュー追加
 // ハンバーガーメニューの開閉処理
 // １．必要な要素を取得する（hamburgerボタン、body要素）
-let humBtn = document.getElementById('hamburger');
-let humMenu = document.getElementById('hum-menu');
+const humBtn = document.getElementById('menu-toggle');
+const humMenu = document.getElementById('hum-menu');
+const bodyElm = document.body; //背景固定などを行いたい場合に使用
 // ２．hamburgerボタンにクリックイベントを登録
-// ３．hamburgerボタンがクリックされたら、body要素に「open」クラスを付けたり外したりする
-humBtn.addEventListener('click', () => {
-    // if(bodyElm.classList.contains('open')){
-    // bodyElm.classList.remove('open');
-    // }else{
-    // bodyElm.classList.add('topPage');
-    // }
-    humMenu.classList.toggle('open');
-    humBtn.classList.toggle('active');
-})
+humBtn.addEventListener('change', () => {
+    // ３．hamburgerボタンがクリックされたら、body要素に「open」クラスを付けたり外したりする
+    humMenu.classList.toggle('is-open');
+    bodyElm.classList.toggle('active');
+    //デバッグ用
+    console.log('Menu staatus:', humBtn.checked);
+});

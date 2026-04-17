@@ -316,7 +316,7 @@
         </div>
 
         <!-- 任意キャリコン分のテーブル -->
-        <div class="cc-detail-table-area" style="padding-top: 100px; background-color: #CDEFFF;">
+        <div class="cc-detail-table-area" style="padding: 50px 0; background-color: #CDEFFF;">
             <table class="cc-detail-table cc-detail-table-optional" style="background-color: white;">
                 <thead class="cc-detail-thead">
                     <tr class="cc-detail-headTr">
@@ -389,7 +389,7 @@
                     </tr>
                     <!-- ダミーテーブル -->
                     <tr class="cc-detail-tr">
-                    <td class="cc-detail-td">
+                        <td class="cc-detail-td">
                             <p class="null-text">&nbsp;</p>
                         </td>
                         <td class="cc-detail-td">
@@ -555,9 +555,7 @@
             </table>
         </div>
         <div class="cc-detail-optional-open">
-            <button type="btn" class="cc-detail-optional-openBtn">
-                任意キャリコンを開く
-            </button>
+            <?php require_once __DIR__ . '/inc/cc_table.php'; ?>
         </div>
 
     </main>
