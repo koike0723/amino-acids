@@ -269,5 +269,6 @@ require_once __DIR__ . '/functions/functions.php';
 </body>
 
 <script src="./js/script.js"></script>
+<script src="./js/hamburger.js"></script>
 
 </html>
