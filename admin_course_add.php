@@ -7,7 +7,7 @@
 => Webプログラミング科（コース名）
 
 『room_id』
-=> 1:6A～8:6H, 9:7A～12:7C, 13:CC（idを送る想定）
+=> 1:6A～8:6H, 9:7A～12:7C（idを送る想定）
 
 『category_id』
 => 1:求職者支援訓練, 2:公共職業訓練（idを送る想定）
@@ -20,7 +20,7 @@
 
 『cc1_1』
 => YYYY-MM-DD（キャリコン第１回目の１枠目）
-
+    
 『cc1_2』
 => YYYY-MM-DD（キャリコン第１回目の２枠目）
 
@@ -89,11 +89,12 @@ try {
 
     <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
 
+    <!-- kan-to-do:コンテンツ幅の統一 -->
     <div class="content-wrap" style="width: 89.33333%; max-width: 1000px; margin-inline: auto;">
 
         <h1 class="m-5">コース追加</h1>
 
-        <form action="course_add_do.php" method="post" class="row align-items-start">
+        <form action="php_do/course_add_do.php" method="post" class="row align-items-start">
             <div class="course_name col-12 mb-2">
                 <label for="course_name" class="form-label">訓練名</label>
                 <input type="text" name="course_name" id="course_name" required class="form-control">
@@ -102,7 +103,9 @@ try {
                 <label for="room_id" class="form-label">教室名</label>
                 <select name="room_id" id="room_id" required class="form-control">
                     <?php foreach ($rooms as $room): ?>
-                        <option value="<?php echo $room["id"]; ?>"><?php echo $room["name"]; ?></option>
+                        <?php if ($room["id"] != 13): ?>
+                            <option value="<?php echo $room["id"]; ?>"><?php echo $room["name"]; ?></option>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </select>
             </div>

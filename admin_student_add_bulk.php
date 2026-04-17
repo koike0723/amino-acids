@@ -1,4 +1,120 @@
-<!-- 生徒一括追加画面 -->
- <?php 
- require_once __DIR__ . '/functions/functions.php';
- ?>
+<!-- http://localhost:8080/amino-acids/admin_student_add_bulk.php -->
+<!------------------------------------------------
+生徒一括追加画面  （「student_add_do.php」へformのpost通信でデータを送信）
+
+〈送られるデータ内容〉
+『course_id』  
+=> 1,2,3,4,5…（生徒を追加するコースのid）
+
+『last_name』
+=> 梅崎（名前の上）
+
+『first_name』
+=> 竜之介（名前の下）
+
+『student_number』
+=> 出席番号（01）
+
+※『last_name, first_name, student_number』は複数送るので配列で送る予定（試してないから動かないかも・・・）
+------------------------------------------------->
+
+<?php require_once __DIR__ . '/functions/functions.php'; ?>
+<?php
+
+/////////////////////////////////////////////////////
+/////////////////////データベース処理/////////////////
+////////////////////////////////////////////////////
+try {
+    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+    $db = new PDO($dsn, DB_USER, DB_PASS);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    // SQL
+    $sql = 'SELECT
+    c.id AS course_id,
+    c.start_date,
+    c.end_date,
+    c.name AS course_name,
+    r.name AS room_name
+    FROM m_courses c
+    INNER JOIN m_rooms r
+    ON c.room_id = r.id
+    WHERE c.end_date >= CURDATE()';
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    exit('訓練タイプの取得に失敗しました: ' . $e->getMessage());
+}
+try {
+    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+    $db = new PDO($dsn, DB_USER, DB_PASS);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    // SQL
+    $sql = 'SELECT id,name FROM m_rooms';
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    exit('教室データ（m_rooms）の取得に失敗しました: ' . $e->getMessage());
+}
+?>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生徒追加</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+
+<body>
+
+    <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
+
+    <!-- kan-to-do:コンテンツ幅の統一 -->
+    <div class="content-wrap" style="width: 89.33333%; max-width: 1000px; margin-inline: auto;">
+
+        <h1 class="m-5">生徒一括追加</h1>
+
+        <form action="php_do/student_add_do.php" method="post" class="row align-items-start">
+
+            <div class="select_course form-group col-12 mb-5">
+                <label for="course_id" class="form-label">使用教室｜訓練名｜期間</label>
+                <select name="course_id" id="course_id" required class="form-control">
+                    <?php foreach ($courses as $course): ?>
+                        <option value="<?php echo $course["course_id"]; ?>"><?php echo $course["room_name"] ?>｜<?php echo $course["course_name"] ?>｜<?php echo $course["start_date"] ?> ~ <?php echo $course["end_date"] ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="csv_drop_area card col-12 px-3 py-3 d-flex align-items-center justify-content-center" style="height: 300px;" id="csv_drop_area">
+                <span style="font-size: xx-large;">CSVファイルをここにドロップ</span>
+            </div>
+
+            <input type="hidden" name="last_name[]" id="last_name" placeholder="リカレント" value="<?php echo "csvファイルから読み取った苗字" ?>" required>
+            <input type="hidden" name="first_name[]" id="first_name" placeholder="太郎" value="<?php echo "csvファイルから読み取った名前" ?>" required>
+            <input type="hidden" name="student_number[]" id="student_number" placeholder="01" value="<?php echo "csvファイルから読み取った出席番号" ?>" required>
+
+            <div class="col-12 d-flex justify-content-center mt-4 mb-5">
+                <a href="admin_student_list.php" class="btn btn-secondary px-3 mr-5">一覧へ戻る</a>
+                <input type="submit" value="生徒一括追加" class="btn btn-primary px-3 ml-5" style="background-color: #020bff;">
+            </div>
+
+        </form>
+    </div>
+
+</body>
+
+</html>
+<?php
+require_once __DIR__ . '/functions/functions.php';
+?>
