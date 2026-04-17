@@ -731,3 +731,32 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- 
+-- パスワードリセット申請テーブル名の変更
+-- 
+RENAME TABLE `career_consultant`.`m_reset_requests` TO `career_consultant`.`t_reset_requests`;
+
+-- 
+-- キャリコン予約テーブルに制約を追加
+-- 
+ALTER TABLE `t_cc_bookings`
+    ADD UNIQUE KEY `uq_slot_time` (`cc_slot_id`, `time_id`);
+
+-- 
+-- キャリコン申請テーブルにカラムを追加
+-- 
+ALTER TABLE `t_cc_requests`
+    ADD COLUMN `booking_id_a` INT NULL,
+    ADD COLUMN `booking_id_b` INT NULL;
+
+-- 
+-- 上記で追加したカラムに外部キー制約を追加
+-- 
+ALTER TABLE `t_cc_requests`
+    ADD CONSTRAINT `t_cc_requests_booking_a_fk`
+        FOREIGN KEY (`booking_id_a`) REFERENCES `t_cc_bookings` (`id`)
+        ON DELETE SET NULL,
+    ADD CONSTRAINT `t_cc_requests_booking_b_fk`
+        FOREIGN KEY (`booking_id_b`) REFERENCES `t_cc_bookings` (`id`)
+        ON DELETE SET NULL;

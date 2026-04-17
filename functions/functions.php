@@ -651,7 +651,7 @@ enum CC_SLOT_TYPE: string
 {
     /** 全て */
     case All = 'all';
-    /** 予約枠 */
+    /** 登録枠 */
     case Line = 'line';
     /** キャリコンプラス枠 */
     case CcPlus = 'cc_plus';
@@ -659,8 +659,19 @@ enum CC_SLOT_TYPE: string
 
 /**
  * キャリコン枠を取得
- * @param CC_SLOT_TYPE $cc_type 取得するキャリコンの種類。デフォルトは予約枠のみ取得
+ * 
+ * キャリコン枠情報を配列として取得する
+ * [
+ *  'cc_date', 
+ *  'is_cc_plus',
+ *  'counsultant_name',
+ *  'room_name',
+ * ]
+ * 
+ * コンサルタント名と部屋名はnullの可能性があるので使用する際はnullチェックを行う
+ * @param CC_SLOT_TYPE $cc_type 取得するキャリコンの種類。デフォルトは登録枠のみ取得
  * @param string $target_date 取得したい開催日デフォルトはすべて
+ * @return array キャリコン枠情報配列
  */
 function get_cc_slots($cc_type = CC_SLOT_TYPE::Line->name, $target_date = null)
 {
@@ -679,7 +690,7 @@ function get_cc_slots($cc_type = CC_SLOT_TYPE::Line->name, $target_date = null)
     $params = [];
 
     // 取得したい枠の条件
-    if ($cc_type != CC_SLOT_TYPE::All->name) {
+    if ($cc_type !== CC_SLOT_TYPE::All->name) {
         $where_slot_type = [
             CC_SLOT_TYPE::Line->name => 's.is_cc_plus = false',
             CC_SLOT_TYPE::CcPlus->name => 's.is_cc_plus = true',
@@ -688,7 +699,7 @@ function get_cc_slots($cc_type = CC_SLOT_TYPE::Line->name, $target_date = null)
     }
 
     // 対象の日付のキャリコン枠を取得
-    if ($target_date !== null) { 
+    if ($target_date !== null) {
         $where_clauses[] = 's.date = :target_date';
         $params[':taget_date'] = $target_date;
     }
@@ -708,10 +719,176 @@ function get_cc_slots($cc_type = CC_SLOT_TYPE::Line->name, $target_date = null)
 
 /**
  * キャリコン枠を登録
+ * @param string $date キャリコンを開催する日付
+ * @param bool $is_cc_plus キャリコンプラスかどうか。デフォルトは登録枠(false)
  */
-function add_cc_slot($date, $is_cc_plus = false){
+function add_cc_slot($date, $is_cc_plus = false)
+{
     $db = db_connect();
     $sql = 'INSERT INTO t_cc_slots (date, is_cc_plus) VALUES (:date, :is_cc_plus)';
     $stmt = $db->prepare($sql);
     $stmt->execute([':date' => $date, 'is_cc_plus' => $is_cc_plus]);
+}
+
+/**
+ * キャリコン予約一覧の取得
+ *
+ * 返却データの構造
+ * [
+ *  'slot_id' => [
+ *    'cc_date',
+ *    'start_time' => [
+ *      'display_name' => '10時～',
+ *      'bookings' => [ 
+ *        [
+ *          'student_id'   => 1,
+ *          'student_name' => '山田太郎',
+ *          'course_data'  => '6B/Webプログラミング科',
+ *          'style_name'   => 'ZOOM',
+ *        ],
+ *        // ...
+ *      ],
+ *    ],
+ *  ],
+ * ]
+ *
+ * @param array $filters 絞り込み条件
+ *   利用可能キー: slot_date（開催日）, course_id（コースID）
+ * @return array 二次元配列 予約一覧
+ */
+function get_cc_bookings(array $filters = []): array
+{
+    $db = db_connect();
+
+    $sql = 'SELECT
+                b.id                              AS booking_id,
+                s.id                              AS student_id,
+                CONCAT(s.last_name, s.first_name) AS student_name,
+                CONCAT(r.name, "/", c.name)       AS course_data,
+                t.start_time                      AS start_time,
+                t.display_name                    AS display_name,
+                ms.name                           AS style_name,
+                slot.id                           AS slot_id,
+                slot.date                         AS cc_date
+            FROM t_cc_bookings b
+            JOIN m_students        s    ON b.student_id = s.id
+            JOIN m_courses         c    ON s.course_id  = c.id
+            JOIN m_rooms           r    ON c.room_id    = r.id
+            JOIN m_times           t    ON b.time_id    = t.id
+            JOIN m_meating_styles  ms   ON b.style_id   = ms.id
+            JOIN t_cc_slots        slot ON b.cc_slot_id = slot.id';
+
+    $filter_definition = [
+        'slot_date' => 'slot.date',
+        'course_id' => 's.course_id',
+    ];
+
+    $where_clauses = [];
+    $params        = [];
+
+    foreach ($filter_definition as $key => $column) {
+        if (isset($filters[$key]) && $filters[$key] !== '') {
+            $where_clauses[] = "{$column} = :{$key}";
+            $params[":{$key}"] = $filters[$key];
+        }
+    }
+
+    if (!empty($where_clauses)) {
+        $sql .= ' WHERE ' . implode(' AND ', $where_clauses);
+    }
+
+    $sql .= ' ORDER BY t.start_time ASC, slot.date ASC';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute($params);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // [slot_id][start_time] に整形
+    $result = [];
+    foreach ($rows as $row) {
+        $slot_id    = $row['slot_id'];
+        $start_time = $row['start_time'];
+
+        // slot_idの初回のみcc_dateをセット
+        if (!isset($result[$slot_id])) {
+            $result[$slot_id] = [
+                'cc_date' => $row['cc_date'],
+            ];
+        }
+
+        // start_timeの初回のみdisplay_nameをセット
+        if (!isset($result[$slot_id][$start_time])) {
+            $result[$slot_id][$start_time] = [
+                'display_name' => $row['display_name'],
+                'bookings'     => [],
+            ];
+        }
+
+        $result[$slot_id][$start_time]['bookings'][] = [
+            'student_id'   => $row['student_id'],
+            'student_name' => $row['student_name'],
+            'course_data'  => $row['course_data'],
+            'style_name'   => $row['style_name'],
+        ];
+    }
+
+    return $result;
+}
+
+/**
+ * 予約の入れ替え
+ * @param int $booking_id_a 入れ替え予定の予約ID1
+ * @param int $booking_id_b 入れ替え予定の予約ID2
+ * @return bool 入れ替えに成功したかどうか
+ */
+function swap_cc_bookings($booking_id_a, $booking_id_b)
+{
+    $db = db_connect();
+
+    try {
+        $db->beginTransaction();
+
+        // 2件の現在のデータを取得
+        $stmt = $db->prepare('SELECT * FROM t_cc_bookings WHERE id IN (:id_a, :id_b)');
+        $stmt->execute([':id_a' => $booking_id_a, ':id_b' => $booking_id_b]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (count($rows) !== 2) {
+            throw new Exception('対象の予約が見つかりません');
+        }
+
+        [$a, $b] = $rows;
+
+        // 一旦2件削除（制約から解放）
+        $stmt = $db->prepare('DELETE FROM t_cc_bookings WHERE id IN (:id_a, :id_b)');
+        $stmt->execute([':id_a' => $booking_id_a, ':id_b' => $booking_id_b]);
+
+        // time_idを入れ替えて再INSERT
+        $stmt = $db->prepare(
+            'INSERT INTO t_cc_bookings (id, student_id, cc_slot_id, time_id, style_id)
+             VALUES (:id, :student_id, :cc_slot_id, :time_id, :style_id)'
+        );
+
+        $stmt->execute([
+            ':id'         => $a['id'],
+            ':student_id' => $a['student_id'],
+            ':cc_slot_id' => $b['cc_slot_id'], // ← 入れ替え
+            ':time_id'    => $b['time_id'],  // ← 入れ替え
+            ':style_id'   => $a['style_id'],
+        ]);
+
+        $stmt->execute([
+            ':id'         => $b['id'],
+            ':student_id' => $b['student_id'],
+            ':cc_slot_id' => $a['cc_slot_id'], // ← 入れ替え
+            ':time_id'    => $a['time_id'],  // ← 入れ替え
+            ':style_id'   => $b['style_id'],
+        ]);
+
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
 }
