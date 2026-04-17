@@ -107,7 +107,12 @@ $events = [
                                         </button>
                                     </div>
                                     <div class="col-2">
-                                        <button type="button" class="btn btn-warning btn-sm w-100">キャンセル</button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-warning btn-sm w-100"
+                                            onclick="location.href='./student_reserve_del_confirm.php?cc_date=<?php echo urlencode($booking['cc_date']); ?>&cc_time=<?php echo urlencode($booking['cc_time']); ?>'">
+                                            キャンセル
+                                        </button>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
