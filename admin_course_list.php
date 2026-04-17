@@ -12,25 +12,12 @@ try {
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     // SQL
-    $sql = 'SELECT id,name FROM m_courses_categories';
+    $sql = 'SELECT `id`, `name`, `start_date`, `end_date`, `room_id`, `category_id`, `created_at`, `updated_at` FROM m_courses';
     $stmt = $db->prepare($sql);
     $stmt->execute();
-    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    exit('訓練タイプの取得に失敗しました: ' . $e->getMessage());
-}
-try {
-    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
-    $db = new PDO($dsn, DB_USER, DB_PASS);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    // SQL
-    $sql = 'SELECT id,name FROM m_rooms';
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-    $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    exit('教室データ（m_rooms）の取得に失敗しました: ' . $e->getMessage());
+    exit('情報の取得に失敗しました: ' . $e->getMessage());
 }
 ?>
 <!DOCTYPE html>
