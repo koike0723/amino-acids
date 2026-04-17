@@ -192,6 +192,7 @@ function get_student($student_id)
             CONCAT(s.last_name, s.first_name) AS student_name,
             s.number,
             ss.name AS status_name,
+            c.id AS course_id,
             c.name AS course_name,
             r.name AS room_name,
             b.cc_slot_id AS cc_slot_id,
@@ -226,6 +227,7 @@ function get_student($student_id)
                 'student_name' => $row['student_name'],
                 'number'       => $row['number'],
                 'status_name'  => $row['status_name'],
+                'course_id'    => $row['course_id'], 
                 'course_name'  => $row['course_name'],
                 'room_name'    => $row['room_name'],
                 'bookings'     => []
