@@ -754,5 +754,9 @@ ALTER TABLE `t_cc_requests`
 -- 上記で追加したカラムに外部キー制約を追加
 -- 
 ALTER TABLE `t_cc_requests`
-    ADD CONSTRAINT `t_cc_requests_booking_a_fk` FOREIGN KEY (`booking_id_a`) REFERENCES `t_cc_bookings` (`id`),
-    ADD CONSTRAINT `t_cc_requests_booking_b_fk` FOREIGN KEY (`booking_id_b`) REFERENCES `t_cc_bookings` (`id`);
+    ADD CONSTRAINT `t_cc_requests_booking_a_fk`
+        FOREIGN KEY (`booking_id_a`) REFERENCES `t_cc_bookings` (`id`)
+        ON DELETE SET NULL,
+    ADD CONSTRAINT `t_cc_requests_booking_b_fk`
+        FOREIGN KEY (`booking_id_b`) REFERENCES `t_cc_bookings` (`id`)
+        ON DELETE SET NULL;
