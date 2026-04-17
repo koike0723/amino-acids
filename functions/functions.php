@@ -64,7 +64,7 @@ function format_japanese_date($date)
 function student_login($login_id, $password)
 {
     $db = db_connect();
-    $sql = 'SELECT CONCAT(firs_name,last_name) AS student_name, id FROM m_students WHERE login_id=:login_id ';
+    $sql = 'SELECT CONCAT(first_name,last_name) AS student_name, id FROM m_students WHERE login_id=:login_id ';
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':login_id', $login_id, PDO::PARAM_STR);
     $stmt->execute();
@@ -191,6 +191,7 @@ function get_student($student_id)
             s.id AS student_id,
             CONCAT(s.last_name, s.first_name) AS student_name,
             s.number,
+            ss.id AS status_id,
             ss.name AS status_name,
             c.id AS course_id,
             c.name AS course_name,
@@ -226,6 +227,7 @@ function get_student($student_id)
                 'student_id'   => $row['student_id'],
                 'student_name' => $row['student_name'],
                 'number'       => $row['number'],
+                'status_id'    => $row['status_id'],
                 'status_name'  => $row['status_name'],
                 'course_id'    => $row['course_id'], 
                 'course_name'  => $row['course_name'],
