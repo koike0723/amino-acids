@@ -3,6 +3,21 @@
 require_once __DIR__ . '/functions/functions.php';
 ?>
 
+<?php
+//$id = $_GET['id'];
+//if (!empty($_GET['id'])) {
+    try {
+        $student = get_student(1);
+    } catch (PDOException $e) {
+        check($e);
+    }
+//} 
+//else {
+    //header('location:admin_student_list.php');
+    //exit();
+//}
+?>
+
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -16,6 +31,7 @@ require_once __DIR__ . '/functions/functions.php';
 </head>
 
 <body>
+    <?php check($student); ?>
     <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
     <main>
         <p class="student-detail-h1">生徒詳細</p>
@@ -23,23 +39,25 @@ require_once __DIR__ . '/functions/functions.php';
             <dl class="student-detail-dl">
                 <div class="student-detail-dl-flex">
                     <dt class="student-detail-dt">名前：</dt>
-                    <dd class="student-detail-dd">梅崎龍之介</dd>
+                    <dd class="student-detail-dd"><?= h($student['student_name']); ?></dd>
                 </div>
                 <div class="student-detail-dl-flex">
                     <dt class="student-detail-dt">出席番号:</dt>
-                    <dd class="student-detail-dd">C01</dd>
+                    <dd class="student-detail-dd"><?= h($student['number']); ?></dd>
                 </div>
                 <div class="student-detail-dl-flex">
                     <dt class="student-detail-dt">訓練名:</dt>
-                    <dd class="student-detail-dd">6C / Webプログラミング科</dd>
+                    <dd class="student-detail-dd"><?= h($student['room_name']); ?> / <?= h($student['course_name']) ?></dd>
                 </div>
                 <div class="student-detail-dl-flex">
                     <dt class="student-detail-dt">状態：</dt>
-                    <dd class="student-detail-dd">就職済</dd>
+                    <dd class="student-detail-dd"><?= h($student['status_name']); ?></dd>
                 </div>
                 <div class="student-detail-dl-flex">
                     <dt class="student-detail-dt">キャリコン履歴：</dt>
-                    <dd class="student-detail-dd">日数</dd>
+                    <?php foreach($student['bookings'] as $booking): ?>
+                    <dd class="student-detail-dd"><?= h($booking['cc_date']); ?>&nbsp;<?= $booking['cc_time']; ?></dd>
+                    <?php endforeach; ?>
                 </div>
             </dl>
             <div class="student-detail-controle-area">
