@@ -113,7 +113,7 @@ try {
                     </div>
                     <div class="input_num">
                         <label for="student_number" class="form-label">出席番号</label>
-                        <input type="text" name="student_number[]" id="student_number" placeholder="01" required class="student_number form-control form-control-sm w-25">
+                        <input type="text" name="student_number[]" id="student_number" value="1" required class="student_number form-control form-control-sm w-25">
                     </div>
                 </div>
 
