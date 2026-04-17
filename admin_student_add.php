@@ -25,39 +25,27 @@
 /////////////////////データベース処理/////////////////
 ////////////////////////////////////////////////////
 try {
-    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
-    $db = new PDO($dsn, DB_USER, DB_PASS);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    // SQL
-    $sql = 'SELECT
-    c.id AS course_id,
-    c.start_date,
-    c.end_date,
-    c.name AS course_name,
-    r.name AS room_name
-    FROM m_courses c
-    INNER JOIN m_rooms r
-    ON c.room_id = r.id
-    WHERE c.end_date >= CURDATE()';
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-    $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+    // $db = new PDO($dsn, DB_USER, DB_PASS);
+    // $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    // // SQL
+    // $sql = 'SELECT
+    // c.id AS course_id,
+    // c.start_date,
+    // c.end_date,
+    // c.name AS course_name,
+    // r.name AS room_name
+    // FROM m_courses c
+    // INNER JOIN m_rooms r
+    // ON c.room_id = r.id
+    // WHERE c.end_date >= CURDATE()';
+    // $stmt = $db->prepare($sql);
+    // $stmt->execute();
+    // $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $courses = get_courses(date("Y-m-d"), true, null, null);
 } catch (PDOException $e) {
-    exit('訓練タイプの取得に失敗しました: ' . $e->getMessage());
-}
-try {
-    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
-    $db = new PDO($dsn, DB_USER, DB_PASS);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    // SQL
-    $sql = 'SELECT id,name FROM m_rooms';
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-    $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    exit('教室データ（m_rooms）の取得に失敗しました: ' . $e->getMessage());
+    exit('訓練コース一覧の取得に失敗しました: ' . $e->getMessage());
 }
 ?>
 
@@ -80,12 +68,37 @@ try {
 
     <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
 
+    <?php if (isset($_GET["status"]) && $_GET["status"] === "success"): ?>
+        <div class="alert alert-success">
+            生徒を追加しました！
+        </div>
+    <?php endif; ?>
+    <?php if (isset($_GET["status"]) && $_GET["status"] === "error"): ?>
+        <?php if (isset($_GET["message"])): ?>
+            <?php if ($_GET["message"] === "no_data"): ?>
+                <div class="alert alert-danger">
+                    データがうまく送られませんでした。
+                </div>
+            <?php elseif ($_GET["message"] === "cant_db"): ?>
+                <div class="alert alert-danger">
+                    データベース時のエラー。
+                </div>
+            <?php elseif ($_GET["message"] === "same_student"): ?>
+                <div class="alert alert-danger">
+                    同じ生徒が登録されています！！
+                </div>
+            <?php elseif ($_GET["message"] === "not_int"): ?>
+                <div class="alert alert-danger">
+                    出席番号が整数ではありませんでした！！
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+    <?php endif; ?>
+
     <!-- kan-to-do:コンテンツ幅の統一 -->
     <div class="content-wrap" style="width: 89.33333%; max-width: 1000px; margin-inline: auto;">
 
-
         <h1 class="m-5">生徒追加</h1>
-
 
         <form action="php_do/student_add_do.php" method="post" class="row align-items-start">
 
@@ -113,7 +126,7 @@ try {
                     </div>
                     <div class="input_num">
                         <label for="student_number" class="form-label">出席番号</label>
-                        <input type="text" name="student_number[]" id="student_number" placeholder="01" required class="student_number form-control form-control-sm w-25">
+                        <input type="text" name="student_number[]" id="student_number" value="1" required class="student_number form-control form-control-sm w-25">
                     </div>
                 </div>
 
