@@ -1203,3 +1203,116 @@ function request_cc_change(int $student_id, int $booking_id_a, int $booking_id_b
         return false;
     }
 }
+
+/**
+ * CC+変更申請の承認処理
+ * 
+ * ※ 変更先CC+仮予約（booking_id_b）はそのまま残り、新しい仮予約として有効になる
+ * @param  int  $request_id 承認する t_cc_requests の ID
+ * @return bool 成功時 true、失敗時 false
+ */
+function approve_cc_plus_change(int $request_id): bool
+{
+    $db = db_connect();
+
+    try {
+        $db->beginTransaction();
+
+        // 申請情報を取得（type_id=2:CC+変更 であることも確認）
+        $req_stmt = $db->prepare(
+            'SELECT booking_id_a, booking_id_b
+             FROM t_cc_requests
+             WHERE id = :request_id
+               AND type_id = 2
+               AND status_id = 1'  // 未処理のみ承認可能
+        );
+        $req_stmt->execute([':request_id' => $request_id]);
+        $request = $req_stmt->fetch();
+
+        if (!$request) {
+            throw new Exception('対象の申請が見つかりません');
+        }
+
+        $booking_id_a = $request['booking_id_a']; // 変更元CC+仮予約ID
+        $booking_id_b = $request['booking_id_b']; // 変更先CC+仮予約ID
+
+        if (!$booking_id_a || !$booking_id_b) {
+            throw new Exception('予約IDが不正です');
+        }
+
+        // 1. 変更元CC+に紐づく確定済み通常予約を削除（存在しない場合は何もしない）
+        $db->prepare(
+            'DELETE FROM t_cc_bookings
+             WHERE cc_plus_booking_id = :booking_id_a'
+        )->execute([':booking_id_a' => $booking_id_a]);
+
+        // 2. 変更元CC+仮予約を削除
+        $db->prepare(
+            'DELETE FROM t_cc_bookings
+             WHERE id = :booking_id_a
+               AND cc_plus_booking_id IS NULL'  // 念のため仮予約であることを確認
+        )->execute([':booking_id_a' => $booking_id_a]);
+
+        // 3. 申請ステータスを承認済みに更新
+        $db->prepare(
+            'UPDATE t_cc_requests
+             SET status_id = 2
+             WHERE id = :request_id'
+        )->execute([':request_id' => $request_id]);
+
+        $db->commit();
+        return true;
+
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
+
+/**
+ * CC+変更申請の却下処理
+ *
+ * 変更先CC+仮予約（booking_id_b）を削除し、変更元は現状維持
+ *
+ * @param  int  $request_id 却下する t_cc_requests の ID
+ * @return bool 成功時 true、失敗時 false
+ */
+function reject_cc_plus_change(int $request_id): bool
+{
+    $db = db_connect();
+
+    try {
+        $db->beginTransaction();
+
+        $req_stmt = $db->prepare(
+            'SELECT booking_id_b
+             FROM t_cc_requests
+             WHERE id = :request_id
+               AND type_id = 2
+               AND status_id = 1'
+        );
+        $req_stmt->execute([':request_id' => $request_id]);
+        $request = $req_stmt->fetch();
+
+        if (!$request || !$request['booking_id_b']) {
+            throw new Exception('対象の申請が見つかりません');
+        }
+
+        // 変更先CC+仮予約を削除
+        $db->prepare(
+            'DELETE FROM t_cc_bookings WHERE id = :booking_id_b'
+        )->execute([':booking_id_b' => $request['booking_id_b']]);
+
+        // 申請ステータスを却下に更新
+        $db->prepare(
+            'UPDATE t_cc_requests SET status_id = 3 WHERE id = :request_id'
+        )->execute([':request_id' => $request_id]);
+
+        $db->commit();
+        return true;
+
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
