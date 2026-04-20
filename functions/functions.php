@@ -978,29 +978,32 @@ function get_cc_plus_time_table(string $date): array
 }
 
 /**
- * キャリコンプラスの予約を登録
+ * キャリコン予約を登録
  *
  * t_cc_bookings に1件INSERT し、採番されたIDを返す
  *
- * @param  PDO    $db         DB接続（トランザクション管理用に外部から受け取る）
- * @param  int    $student_id 予約する生徒のID
- * @param  int    $cc_slot_id 予約するスロットのID
- * @param  int    $time_id    予約する時間のID
- * @param  int    $style_id   面談スタイルのID
- * @return int    採番された予約ID
+ * @param  PDO      $db                 DB接続（トランザクション管理用に外部から受け取る）
+ * @param  int      $student_id         予約する生徒のID
+ * @param  int      $cc_slot_id         予約するスロットのID
+ * @param  int      $time_id            予約する時間のID
+ * @param  int      $style_id           面談スタイルのID
+ * @param  int|null $cc_plus_booking_id CC+仮予約から確定する場合、元CC+予約のID。通常予約の場合はnull
+ * @return int      採番された予約ID
  */
-function add_cc_booking(PDO $db, int $student_id, int $cc_slot_id, int $time_id, int $style_id): int
+function add_cc_booking(PDO $db, $student_id, $cc_slot_id, $time_id, $style_id, ?int $cc_plus_booking_id = null): int
 {
-    $sql  = 'INSERT INTO t_cc_bookings (student_id, cc_slot_id, time_id, style_id)
-             VALUES (:student_id, :cc_slot_id, :time_id, :style_id)';
+    $sql = 'INSERT INTO t_cc_bookings
+                (student_id, cc_slot_id, time_id, style_id, cc_plus_booking_id)
+            VALUES
+                (:student_id, :cc_slot_id, :time_id, :style_id, :cc_plus_booking_id)';
     $stmt = $db->prepare($sql);
     $stmt->execute([
-        ':student_id' => $student_id,
-        ':cc_slot_id' => $cc_slot_id,
-        ':time_id'    => $time_id,
-        ':style_id'   => $style_id,
+        ':student_id'         => $student_id,
+        ':cc_slot_id'         => $cc_slot_id,
+        ':time_id'            => $time_id,
+        ':style_id'           => $style_id,
+        ':cc_plus_booking_id' => $cc_plus_booking_id,  // ← 追加
     ]);
-
     return (int) $db->lastInsertId();
 }
 
@@ -1189,7 +1192,6 @@ function request_cc_change(int $student_id, int $booking_id_a, int $booking_id_b
         add_cc_request($db, 4, $student_id, $booking_id_a, $booking_id_b, $message);
         //                  ↑ type_id=4（cc変更）
         return true;
-
     } catch (Exception $e) {
         return false;
     }
