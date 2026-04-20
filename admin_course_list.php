@@ -1,3 +1,4 @@
+<!-- http://localhost:8080/amino-acids/admin_course_list.php -->
 <!-- コース一覧画面 -->
 <?php
 require_once __DIR__ . '/functions/functions.php';
@@ -7,19 +8,14 @@ require_once __DIR__ . '/functions/functions.php';
 /////////////////////データベース処理/////////////////
 ////////////////////////////////////////////////////
 try {
-    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
-    $db = new PDO($dsn, DB_USER, DB_PASS);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    // SQL
-    $sql = 'SELECT `id`, `name`, `start_date`, `end_date`, `room_id`, `category_id`, `created_at`, `updated_at` FROM m_courses';
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-    $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $courses = get_courses(null, false, null, null);
 } catch (PDOException $e) {
     exit('情報の取得に失敗しました: ' . $e->getMessage());
 }
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -38,7 +34,7 @@ try {
         <main class="course-wrapper">
             <h1 class="m-5">コース一覧</h1>
             <div class="course-search">
-                <form action="search">
+                <form action="search" class="mx-auto">
                     <input type="date" id="course-date">
                     </input>
                     <select type="text" id="course-room" placeholder="教室名">
@@ -59,52 +55,39 @@ try {
                     </div>
                 </form>
             </div>
-            <div class="course-list">
-                <table>
-                    <tr>
+
+
+
+            <table class="table table-striped">
+                <thead>
+                    <tr style="background-color: #a0a0a0;">
                         <th>教室名</th>
                         <th>訓練名</th>
                         <th>訓練日時</th>
                         <th>訓練タイプ</th>
                         <th>操作</th>
                     </tr>
-                    <tr>
-                        <td>6c</td>
-                        <td>Webプログラミング科</td>
-                        <td>１０月～４月</td>
-                        <td>求職者支援訓練</td>
-                        <td>
-                            <a class="list-btn-a" href="./admin_course_edit.php">編集</a>
-                            <a class="list-btn-b" href="./admin_course_detail.php">詳細</a>
-                            <a class="list-btn-c" href="./admin_course_del_confirm.php">削除</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>6b</td>
-                        <td>Webデザイナー科</td>
-                        <td>１０月～４月</td>
-                        <td>公共職業訓練</td>
-                        <td>
-                            <a class="list-btn-a" href="./admin_course_edit.php">編集</a>
-                            <a class="list-btn-b" href="./admin_course_detail.php">詳細</a>
-                            <a class="list-btn-c" href="./admin_course_del_confirm.php">削除</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>6a</td>
-                        <td>Webプログラミング科</td>
-                        <td>１１月～６月</td>
-                        <td>求職者支援訓練</td>
-                        <td>
-                            <a class="list-btn-a" href="./admin_course_edit.php">編集</a>
-                            <a class="list-btn-b" href="./admin_course_detail.php">詳細</a>
-                            <a class="list-btn-c" href="./admin_course_del_confirm.php">削除</a>
-                        </td>
-                    </tr>
-                </table>
-            </div>
+                </thead>
+                <tbody>
+                    <?php foreach ($courses as $course): ?>
+                        <tr>
+                            <td><?php echo $course["room_name"] ?></td>
+                            <td><?php echo $course["course_name"] ?></td>
+                            <td><?php echo format_japanese_date($course["start_date"]) ?>～<?php echo format_japanese_date($course["end_date"]) ?></td>
+                            <td><?php echo $course["category_name"] ?></td>
+                            <td>
+                                <a class="btn btn-success mx-1 my-1" href="./admin_course_edit.php">編集</a>
+                                <a class="btn btn-info mx-1 my-1" href="./admin_course_detail.php">詳細</a>
+                                <a class="btn btn-danger mx-1 my-1" href="./admin_course_del_confirm.php">削除</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+
+
             <div class="l-btn-area">
-                <a class="top-btn" href="./admin_index.php">トップに戻る</a>
+                <a class="btn btn-secondary" href="./admin_index.php">トップに戻る</a>
             </div>
         </main>
         <script src="./js/admin_course_search.js"></script>
