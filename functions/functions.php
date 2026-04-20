@@ -1163,12 +1163,9 @@ function book_cc_plus_cancel(int $student_id, int $booking_id, ?string $message 
 }
 
 /**
- * 必須キャリコンの変更申請（ラッパー）
+ * 必須キャリコンの変更申請
  *
  * t_cc_requests に変更申請を登録する
- * 管理者が承認した場合、booking_id_a と booking_id_b を対象に
- * swap_cc_bookings() による予約の入れ替えが行われる
- *
  * @param  int         $student_id   申請する生徒のID
  * @param  int         $booking_id_a 入れ替え対象の予約ID①（booking_id_a に設定）
  * @param  int         $booking_id_b 入れ替え対象の予約ID②（booking_id_b に設定）
