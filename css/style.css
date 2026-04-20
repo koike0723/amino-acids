@@ -89,23 +89,29 @@
 
 /* メニューの初期状態（右側に隠しておく） */
 .hum-menu {
+  display: block;
+  /* fixedなので常にblockでOK。位置で制御します */
   position: fixed;
-  top: 0px;
-  /* ナビバーの高さに合わせて調整 */
-  right: -100%;
-  /* 左側(left)ではなく右側(right)をマイナスに */
+  top: 0;
+  right: -250px;
+  /* widthと同じ分だけ外に出す */
   width: 250px;
   background: #ffffff;
   transition: 0.4s;
   padding: 20px;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-  /* 影を左側に落とす */
   z-index: 100;
   overflow-y: auto;
 }
 
+/* JSのクラス(is-open)がついた時、またはチェックが入った時 */
+.hum-menu.is-open {
+  right: 0;
+  /* 画面内に戻す */
+}
+
 /* チェックボックスが入ったらメニューを右から表示 */
-.menu-toggle.hum-menu{
+#menu-toggle.hum-menu {
   position: absolute;
   right: 0;
 }

@@ -7,7 +7,7 @@
         <span></span>
     </label>
     <nav class="hum-menu" id="hum-menu">
-        <de href="./admin_index.php">トップページへ戻る</de>
+        <a href="./admin_index.php">トップページへ戻る</a>
         <details>
             <summary>訓練生</summary>
             <div class="hamburger-details">
