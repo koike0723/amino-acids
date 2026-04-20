@@ -967,3 +967,112 @@ function get_cc_plus_time_table(string $date): array
 
     return $result;
 }
+
+/**
+ * キャリコンプラスの予約を登録
+ *
+ * t_cc_bookings に1件INSERT し、採番されたIDを返す
+ *
+ * @param  PDO    $db         DB接続（トランザクション管理用に外部から受け取る）
+ * @param  int    $student_id 予約する生徒のID
+ * @param  int    $cc_slot_id 予約するスロットのID
+ * @param  int    $time_id    予約する時間のID
+ * @param  int    $style_id   面談スタイルのID
+ * @return int    採番された予約ID
+ */
+function add_cc_booking(PDO $db, int $student_id, int $cc_slot_id, int $time_id, int $style_id): int
+{
+    $sql  = 'INSERT INTO t_cc_bookings (student_id, cc_slot_id, time_id, style_id)
+             VALUES (:student_id, :cc_slot_id, :time_id, :style_id)';
+    $stmt = $db->prepare($sql);
+    $stmt->execute([
+        ':student_id' => $student_id,
+        ':cc_slot_id' => $cc_slot_id,
+        ':time_id'    => $time_id,
+        ':style_id'   => $style_id,
+    ]);
+
+    return (int) $db->lastInsertId();
+}
+
+/**
+ * キャリコンプラスの申請情報を登録
+ *
+ * t_cc_requests に1件INSERTする
+ * type_id = 1（cc+予約）、status_id = 1（新規）で固定
+ *
+ * @param  PDO         $db         DB接続（トランザクション管理用に外部から受け取る）
+ * @param  int         $student_id 申請する生徒のID
+ * @param  int         $booking_id 紐付ける予約ID（booking_id_a に設定）
+ * @param  string|null $message    申請メッセージ（任意）
+ * @return void
+ */
+function add_cc_request(PDO $db, int $student_id, int $booking_id, ?string $message = null): void
+{
+    $sql  = 'INSERT INTO t_cc_requests (type_id, student_id, status_id, booking_id_a, message)
+             VALUES (:type_id, :student_id, :status_id, :booking_id_a, :message)';
+    $stmt = $db->prepare($sql);
+    $stmt->execute([
+        ':type_id'      => 1, // cc+予約
+        ':student_id'   => $student_id,
+        ':status_id'    => 1, // 新規
+        ':booking_id_a' => $booking_id,
+        ':message'      => $message,
+    ]);
+}
+
+/**
+ * キャリコンプラスの予約登録
+ *
+ * 空きスロットの特定・t_cc_bookings登録・t_cc_requests登録をトランザクション内で一括実行する
+ * @param  int         $student_id 予約する生徒のID
+ * @param  string      $date       予約日（Y-m-d形式）
+ * @param  int         $time_id    予約する時間のID
+ * @param  int         $style_id   面談スタイルのID
+ * @param  string|null $message    申請メッセージ（任意）
+ * @return bool        登録成功時はtrue、失敗時はfalse
+ */
+function book_cc_plus(int $student_id, string $date, int $time_id, int $style_id, ?string $message = null): bool
+{
+    $db = db_connect();
+
+    try {
+        $db->beginTransaction();
+
+        // 1. 指定日・時間で空きのあるスロットIDを取得
+        $slot_sql  = 'SELECT s.id
+                      FROM t_cc_slots s
+                      WHERE s.date        = :date
+                        AND s.is_cc_plus  = 1
+                        AND NOT EXISTS (
+                            SELECT 1 FROM t_cc_bookings b
+                            WHERE b.cc_slot_id = s.id
+                              AND b.time_id    = :time_id
+                        )
+                      LIMIT 1';
+        $slot_stmt = $db->prepare($slot_sql);
+        $slot_stmt->execute([
+            ':date'    => $date,
+            ':time_id' => $time_id,
+        ]);
+        $cc_slot_id = $slot_stmt->fetchColumn();
+
+        // 空きスロットが見つからない場合は登録せず終了
+        if ($cc_slot_id === false) {
+            throw new Exception('空きスロットが見つかりません');
+        }
+
+        // 2. t_cc_bookings に登録
+        $booking_id = add_cc_booking($db, $student_id, (int) $cc_slot_id, $time_id, $style_id);
+
+        // 3. t_cc_requests に登録
+        add_cc_request($db, $student_id, $booking_id, $message);
+
+        $db->commit();
+        return true;
+
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
