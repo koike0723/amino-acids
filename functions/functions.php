@@ -836,7 +836,7 @@ function get_cc_bookings(array $filters = []): array
 }
 
 /**
- * 予約の入れ替え
+ * 予約の入れ替え処理
  * @param int $booking_id_a 入れ替え予定の予約ID1
  * @param int $booking_id_b 入れ替え予定の予約ID2
  * @return bool 入れ替えに成功したかどうか
@@ -1072,7 +1072,6 @@ function book_cc_plus(int $student_id, string $date, int $time_id, int $style_id
 
         $db->commit();
         return true;
-
     } catch (Exception $e) {
         $db->rollBack();
         return false;
@@ -1086,7 +1085,7 @@ function book_cc_plus(int $student_id, string $date, int $time_id, int $style_id
  * トランザクション内で一括実行する
  * ※ 変更元の予約削除は管理者の承認後に行うため、この関数では実施しない
  * @param  int         $student_id          申請する生徒のID
- * @param  int         $from_booking_id     変更元の予約ID（booking_id_b に設定）
+ * @param  int         $from_booking_id     変更元の予約ID（booking_id_a に設定）
  * @param  string      $date                変更先の予約日（Y-m-d形式）
  * @param  int         $time_id             変更先の時間ID
  * @param  int         $style_id            面談スタイルID
@@ -1133,9 +1132,32 @@ function book_cc_plus_change(int $student_id, int $from_booking_id, string $date
 
         $db->commit();
         return true;
-
     } catch (Exception $e) {
         $db->rollBack();
+        return false;
+    }
+}
+
+/**
+ * キャリコンプラスのキャンセル申請（ラッパー）
+ *
+ * t_cc_requests にキャンセル申請を登録する
+ * キャンセル対象の予約削除は管理者の承認後に行うため、この関数では実施しない
+ *
+ * @param  int         $student_id 申請する生徒のID
+ * @param  int         $booking_id キャンセル対象の予約ID（booking_id_a に設定）
+ * @param  string|null $message    申請メッセージ（任意）
+ * @return bool        登録成功時はtrue、失敗時はfalse
+ */
+function book_cc_plus_cancel(int $student_id, int $booking_id, ?string $message = null): bool
+{
+    $db = db_connect();
+
+    try {
+        add_cc_request($db, 3, $student_id, $booking_id, null, $message);
+        //                  ↑ type_id=3（cc+キャンセル）
+        return true;
+    } catch (Exception $e) {
         return false;
     }
 }
