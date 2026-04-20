@@ -5,17 +5,6 @@
 〈送られるデータ内容〉
 『course_id』  
 => 1,2,3,4,5…（生徒を追加するコースのid）
-
-『last_name』
-=> 梅崎（名前の上）
-
-『first_name』
-=> 竜之介（名前の下）
-
-『student_number』
-=> 出席番号（01）
-
-※『last_name, first_name, student_number』は複数送るので配列で送る予定（試してないから動かないかも・・・）
 ------------------------------------------------->
 
 <?php require_once __DIR__ . '/functions/functions.php'; ?>
@@ -25,24 +14,25 @@
 /////////////////////データベース処理/////////////////
 ////////////////////////////////////////////////////
 try {
-    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
-    $db = new PDO($dsn, DB_USER, DB_PASS);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    // SQL
-    $sql = 'SELECT
-    c.id AS course_id,
-    c.start_date,
-    c.end_date,
-    c.name AS course_name,
-    r.name AS room_name
-    FROM m_courses c
-    INNER JOIN m_rooms r
-    ON c.room_id = r.id
-    WHERE c.end_date >= CURDATE()';
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-    $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+    // $db = new PDO($dsn, DB_USER, DB_PASS);
+    // $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    // // SQL
+    // $sql = 'SELECT
+    // c.id AS course_id,
+    // c.start_date,
+    // c.end_date,
+    // c.name AS course_name,
+    // r.name AS room_name
+    // FROM m_courses c
+    // INNER JOIN m_rooms r
+    // ON c.room_id = r.id
+    // WHERE c.end_date >= CURDATE()';
+    // $stmt = $db->prepare($sql);
+    // $stmt->execute();
+    // $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $courses = get_courses(date("Y-m-d"), true, null, null);
 } catch (PDOException $e) {
     exit('訓練タイプの取得に失敗しました: ' . $e->getMessage());
 }
@@ -80,12 +70,27 @@ try {
 
     <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
 
+    <?php if (isset($_GET["status"]) && $_GET["status"] === "success"): ?>
+        <div class="alert alert-success">
+            生徒を追加しました！
+        </div>
+    <?php endif; ?>
+    <?php if (isset($_GET["status"]) && $_GET["status"] === "error"): ?>
+        <?php if (isset($_GET["message"])): ?>
+        <?php elseif ($_GET["message"] === "file_error"): ?>
+            <div class="alert alert-danger">
+                ファイル通信がうまくいきませんできませんでした！
+            </div>
+        <?php endif; ?>
+    <?php endif; ?>
+
+
     <!-- kan-to-do:コンテンツ幅の統一 -->
     <div class="content-wrap" style="width: 89.33333%; max-width: 1000px; margin-inline: auto;">
 
         <h1 class="m-5">生徒一括追加</h1>
 
-        <form action="php_do/student_add_do.php" method="post" class="row align-items-start">
+        <form action="php_do/student_add_do.php" method="post" enctype="multipart/form-data" class="row align-items-start">
 
             <div class="select_course form-group col-12 mb-5">
                 <label for="course_id" class="form-label">使用教室｜訓練名｜期間</label>
@@ -96,13 +101,14 @@ try {
                 </select>
             </div>
 
-            <div class="csv_drop_area card col-12 px-3 py-3 d-flex align-items-center justify-content-center" style="height: 300px;" id="csv_drop_area">
+
+            <div class="custom-file mb-2">
+                <input type="file" name="csv_file" id="csv_file" class="custom-file-input">
+                <label for="csv_file" class="custom-file-label" id="output_filename">CSVファイルを選択</label>
+            </div>
+            <div class="csv_drop_area col-12 px-3 py-3 d-flex align-items-center justify-content-center" style="height: 300px; border: 2px dashed #b8b8b8cd" id="csv_drop_area">
                 <span style="font-size: xx-large;">CSVファイルをここにドロップ</span>
             </div>
-
-            <input type="hidden" name="last_name[]" id="last_name" placeholder="リカレント" value="<?php echo "csvファイルから読み取った苗字" ?>" required>
-            <input type="hidden" name="first_name[]" id="first_name" placeholder="太郎" value="<?php echo "csvファイルから読み取った名前" ?>" required>
-            <input type="hidden" name="student_number[]" id="student_number" placeholder="01" value="<?php echo "csvファイルから読み取った出席番号" ?>" required>
 
             <div class="col-12 d-flex justify-content-center mt-4 mb-5">
                 <a href="admin_student_list.php" class="btn btn-secondary px-3 mr-5">一覧へ戻る</a>
@@ -113,6 +119,7 @@ try {
     </div>
 
 </body>
+<script src="./js/drop_csv.js"></script>
 
 </html>
 <?php
