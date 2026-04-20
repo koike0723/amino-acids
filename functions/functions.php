@@ -1161,3 +1161,30 @@ function book_cc_plus_cancel(int $student_id, int $booking_id, ?string $message 
         return false;
     }
 }
+
+/**
+ * 必須キャリコンの変更申請（ラッパー）
+ *
+ * t_cc_requests に変更申請を登録する
+ * 管理者が承認した場合、booking_id_a と booking_id_b を対象に
+ * swap_cc_bookings() による予約の入れ替えが行われる
+ *
+ * @param  int         $student_id   申請する生徒のID
+ * @param  int         $booking_id_a 入れ替え対象の予約ID①（booking_id_a に設定）
+ * @param  int         $booking_id_b 入れ替え対象の予約ID②（booking_id_b に設定）
+ * @param  string|null $message      申請メッセージ（任意）
+ * @return bool        登録成功時はtrue、失敗時はfalse
+ */
+function request_cc_change(int $student_id, int $booking_id_a, int $booking_id_b, ?string $message = null): bool
+{
+    $db = db_connect();
+
+    try {
+        add_cc_request($db, 4, $student_id, $booking_id_a, $booking_id_b, $message);
+        //                  ↑ type_id=4（cc変更）
+        return true;
+
+    } catch (Exception $e) {
+        return false;
+    }
+}
