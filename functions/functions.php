@@ -173,6 +173,7 @@ function get_students($filters = [], $is_display_end = false)
  * 'course_name',
  * 'room_name',
  * 'bookings' => [
+ *  'booking_id'
  *  'cc_slot_id',
  *  'is_cc_plus',
  *  'cc_consultant',
@@ -196,6 +197,7 @@ function get_student($student_id)
             c.id AS course_id,
             c.name AS course_name,
             r.name AS room_name,
+            b.id AS booking_id,
             b.cc_slot_id AS cc_slot_id,
             sl.is_cc_plus AS is_cc_plus,
             CONCAT(con.last_name,con.first_name) AS cc_consultant,
@@ -215,9 +217,13 @@ function get_student($student_id)
             LEFT JOIN m_consultants con ON sl.consultant_id = con.id
             LEFT JOIN m_rooms br ON sl.room_id = br.id
             LEFT JOIN m_meating_styles ms ON b.style_id = ms.id
-            WHERE s.id = :student_id';
+            WHERE s.id = :student_id
+            AND (
+                sl.is_cc_plus = 1
+                OR b.cc_plus_booking_id IS NULL  -- 予約なし(b全体がNULL)の場合もここでtrueになる
+            )';
     $stmt = $db->prepare($sql);
-    $stmt->bindParam(':student_id', $student_id, PDO::PARAM_STR);
+    $stmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -233,20 +239,21 @@ function get_student($student_id)
                 'course_id'    => $row['course_id'],
                 'course_name'  => $row['course_name'],
                 'room_name'    => $row['room_name'],
-                'bookings'     => []
+                'bookings'     => [],
             ];
         }
-        // 予約レコードがある場合のみ追加
-        if ($row['cc_slot_id']) {
+        if ($row['booking_id']) {
             $student['bookings'][] = [
+                'booking_id'    => $row['booking_id'],
                 'cc_slot_id'    => $row['cc_slot_id'],
-                'is_cc_plus'    => $row['is_cc_plus'],
+                'is_cc_plus'    => (bool) $row['is_cc_plus'],
                 'cc_consultant' => $row['cc_consultant'],
                 'cc_room'       => $row['cc_room'],
                 'cc_date'       => $row['cc_date'],
                 'cc_time'       => $row['cc_time'],
-                'cc_style_id'      => $row['cc_style_id'],
-                'cc_style_name'      => $row['cc_style_name'],
+                'cc_display_time' => $row['cc_display_time'],
+                'cc_style_id'   => $row['cc_style_id'],
+                'cc_style_name' => $row['cc_style_name'],
             ];
         }
     }
