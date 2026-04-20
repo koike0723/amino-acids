@@ -203,7 +203,8 @@ function get_student($student_id)
             sl.date AS cc_date,
             t.start_time AS cc_time,
             t.display_name AS cc_display_time,
-            ms.name AS cc_style
+            ms.id AS cc_style_id,
+            ms.name AS cc_style_name
             FROM m_students s
             JOIN m_student_status ss ON s.status_id = ss.id
             JOIN m_courses c ON s.course_id = c.id
@@ -244,7 +245,8 @@ function get_student($student_id)
                 'cc_room'       => $row['cc_room'],
                 'cc_date'       => $row['cc_date'],
                 'cc_time'       => $row['cc_time'],
-                'cc_style'      => $row['cc_style'],
+                'cc_style_id'      => $row['cc_style_id'],
+                'cc_style_name'      => $row['cc_style_name'],
             ];
         }
     }
@@ -764,9 +766,11 @@ function get_cc_bookings(array $filters = []): array
                 b.id                              AS booking_id,
                 s.id                              AS student_id,
                 CONCAT(s.last_name, s.first_name) AS student_name,
+                c.id AS course_id,
                 CONCAT(r.name, "/", c.name)       AS course_data,
                 t.start_time                      AS start_time,
                 t.display_name                    AS display_name,
+                ms.id                             AS style_id,
                 ms.name                           AS style_name,
                 slot.id                           AS slot_id,
                 slot.date                         AS cc_date
@@ -779,6 +783,8 @@ function get_cc_bookings(array $filters = []): array
             JOIN t_cc_slots        slot ON b.cc_slot_id = slot.id';
 
     $filter_definition = [
+        'booking_id' => 'b.id',
+        'student_id' => 's.id',
         'slot_date' => 'slot.date',
         'course_id' => 's.course_id',
     ];
@@ -825,9 +831,12 @@ function get_cc_bookings(array $filters = []): array
         }
 
         $result[$slot_id][$start_time]['bookings'][] = [
+            'booking_id' => $row['booking_id'],
             'student_id'   => $row['student_id'],
             'student_name' => $row['student_name'],
+            'course_id' => $row['course_id'],
             'course_data'  => $row['course_data'],
+            'style_id'   => $row['style_id'],
             'style_name'   => $row['style_name'],
         ];
     }
