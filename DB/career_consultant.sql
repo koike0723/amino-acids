@@ -760,3 +760,14 @@ ALTER TABLE `t_cc_requests`
     ADD CONSTRAINT `t_cc_requests_booking_b_fk`
         FOREIGN KEY (`booking_id_b`) REFERENCES `t_cc_bookings` (`id`)
         ON DELETE SET NULL;
+
+-- 
+-- t_cc_bookingsにcc+への参照用カラムを追加
+-- 
+ALTER TABLE `t_cc_bookings`
+    ADD COLUMN `cc_plus_booking_id` INT NULL
+        COMMENT 'CC+仮予約から確定した通常予約の場合、元CC+予約のID。通常予約起源の場合はNULL',
+    ADD CONSTRAINT `fk_cc_bookings_cc_plus`
+        FOREIGN KEY (`cc_plus_booking_id`)
+        REFERENCES `t_cc_bookings` (`id`)
+        ON DELETE SET NULL;
