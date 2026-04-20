@@ -229,7 +229,7 @@ function get_student($student_id)
                 'number'       => $row['number'],
                 'status_id'    => $row['status_id'],
                 'status_name'  => $row['status_name'],
-                'course_id'    => $row['course_id'], 
+                'course_id'    => $row['course_id'],
                 'course_name'  => $row['course_name'],
                 'room_name'    => $row['room_name'],
                 'bookings'     => []
@@ -891,4 +891,79 @@ function swap_cc_bookings($booking_id_a, $booking_id_b)
         $db->rollBack();
         return false;
     }
+}
+
+/**
+ * キャリコンプラスの空き時間の取得
+ *
+ * 返却データの構造
+ * [
+ *   time_id => true,   // 空きあり
+ *   time_id => false,  // 空きなし（全スロットが予約済み）
+ *   // ...
+ * ]
+ *
+ * スロットが複数ある場合、1つでも空きがあれば true とする。
+ * 例）スロット2枠・予約1件 → true、スロット2枠・予約2件 → false
+ *
+ * @param  string $date 対象日付 (Y-m-d形式)
+ * @return array<int, bool> [time_id => 空きあり(true) / 空きなし(false), ...]
+ */
+function get_cc_plus_time_table(string $date): array
+{
+    $db = db_connect();
+
+    // ----------------------------------------------------------------
+    // 1. 引数の日付から、t_cc_slots で is_cc_plus が true のID一覧を作成
+    // ----------------------------------------------------------------
+    $slot_sql  = 'SELECT id FROM t_cc_slots WHERE date = :date AND is_cc_plus = 1';
+    $slot_stmt = $db->prepare($slot_sql);
+    $slot_stmt->execute([':date' => $date]);
+    $slot_ids  = $slot_stmt->fetchAll(PDO::FETCH_COLUMN); // [1, 2, ...]
+
+    // m_times の全レコードを取得（returnする構造のベースになる）
+    $times_stmt = $db->query('SELECT id FROM m_times ORDER BY id ASC');
+    $all_time_ids = $times_stmt->fetchAll(PDO::FETCH_COLUMN); // [1, 2, 3, ...]
+
+    // キャリコンプラス枠が存在しない日付の場合は全時間 false を返す
+    if (empty($slot_ids)) {
+        return array_fill_keys($all_time_ids, false);
+    }
+
+    // ----------------------------------------------------------------
+    // 2. 1.のスロットID一覧から、t_cc_bookings の予約を time_id ごとに集計
+    // ----------------------------------------------------------------
+    // IN句のプレースホルダーを動的に生成 (:id0, :id1, ...)
+    $placeholders = implode(', ', array_map(fn($i) => ":id{$i}", array_keys($slot_ids)));
+
+    $booking_sql = "SELECT time_id, COUNT(*) AS booked_count
+                    FROM t_cc_bookings
+                    WHERE cc_slot_id IN ({$placeholders})
+                    GROUP BY time_id";
+
+    $booking_stmt = $db->prepare($booking_sql);
+    foreach ($slot_ids as $i => $slot_id) {
+        $booking_stmt->bindValue(":id{$i}", $slot_id, PDO::PARAM_INT);
+    }
+    $booking_stmt->execute();
+    $booking_rows = $booking_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // [time_id => booked_count] に整形
+    $booked_count_by_time_id = [];
+    foreach ($booking_rows as $row) {
+        $booked_count_by_time_id[$row['time_id']] = (int) $row['booked_count'];
+    }
+
+    // ----------------------------------------------------------------
+    // 3 & 4. 全時間について「予約数 < スロット数」であれば空きあり(true) として配列を構築
+    // ----------------------------------------------------------------
+    $slot_count = count($slot_ids);
+
+    $result = [];
+    foreach ($all_time_ids as $time_id) {
+        $booked_count    = $booked_count_by_time_id[$time_id] ?? 0;
+        $result[$time_id] = $booked_count < $slot_count;
+    }
+
+    return $result;
 }
