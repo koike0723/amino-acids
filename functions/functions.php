@@ -999,24 +999,26 @@ function add_cc_booking(PDO $db, int $student_id, int $cc_slot_id, int $time_id,
  * キャリコンプラスの申請情報を登録
  *
  * t_cc_requests に1件INSERTする
- * type_id = 1（cc+予約）、status_id = 1（新規）で固定
- *
- * @param  PDO         $db         DB接続（トランザクション管理用に外部から受け取る）
- * @param  int         $student_id 申請する生徒のID
- * @param  int         $booking_id 紐付ける予約ID（booking_id_a に設定）
- * @param  string|null $message    申請メッセージ（任意）
+ * status_id = 1（新規）で固定
+ * @param  PDO        $db           DB接続（トランザクション管理用に外部から受け取る）
+ * @param  int        $type_id      申請種別ID（1:cc+予約 / 2:cc+変更 / 3:cc+キャンセル / 4:cc変更）
+ * @param  int        $student_id   申請する生徒のID
+ * @param  int        $booking_id_a 変更元の予約ID（予約申請時は新規予約ID）
+ * @param  int|null   $booking_id_b 変更先の予約ID（変更申請時のみ指定。デフォルトnull）
+ * @param  string|null $message     申請メッセージ（任意）
  * @return void
  */
-function add_cc_request(PDO $db, int $student_id, int $booking_id, ?string $message = null): void
+function add_cc_request(PDO $db, int $type_id, int $student_id, int $booking_id_a, ?int $booking_id_b = null, ?string $message = null): void
 {
-    $sql  = 'INSERT INTO t_cc_requests (type_id, student_id, status_id, booking_id_a, message)
-             VALUES (:type_id, :student_id, :status_id, :booking_id_a, :message)';
+    $sql  = 'INSERT INTO t_cc_requests (type_id, student_id, status_id, booking_id_a, booking_id_b, message)
+             VALUES (:type_id, :student_id, :status_id, :booking_id_a, :booking_id_b, :message)';
     $stmt = $db->prepare($sql);
     $stmt->execute([
-        ':type_id'      => 1, // cc+予約
+        ':type_id'      => $type_id,
         ':student_id'   => $student_id,
         ':status_id'    => 1, // 新規
-        ':booking_id_a' => $booking_id,
+        ':booking_id_a' => $booking_id_a,
+        ':booking_id_b' => $booking_id_b,
         ':message'      => $message,
     ]);
 }
@@ -1066,7 +1068,68 @@ function book_cc_plus(int $student_id, string $date, int $time_id, int $style_id
         $booking_id = add_cc_booking($db, $student_id, (int) $cc_slot_id, $time_id, $style_id);
 
         // 3. t_cc_requests に登録
-        add_cc_request($db, $student_id, $booking_id, $message);
+        add_cc_request($db, 1, $student_id, $booking_id, null, $message);
+
+        $db->commit();
+        return true;
+
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
+
+/**
+ * キャリコンプラスの予約変更申請（ラッパー）
+ *
+ * 変更先の空きスロット特定・t_cc_bookings登録・t_cc_requests登録を
+ * トランザクション内で一括実行する
+ * ※ 変更元の予約削除は管理者の承認後に行うため、この関数では実施しない
+ * @param  int         $student_id          申請する生徒のID
+ * @param  int         $from_booking_id     変更元の予約ID（booking_id_b に設定）
+ * @param  string      $date                変更先の予約日（Y-m-d形式）
+ * @param  int         $time_id             変更先の時間ID
+ * @param  int         $style_id            面談スタイルID
+ * @param  string|null $message             申請メッセージ（任意）
+ * @return bool        登録成功時はtrue、失敗時はfalse
+ */
+function book_cc_plus_change(int $student_id, int $from_booking_id, string $date, int $time_id, int $style_id, ?string $message = null): bool
+{
+    $db = db_connect();
+
+    try {
+        $db->beginTransaction();
+
+        // 1. 変更先の空きスロットIDを取得
+        $slot_sql  = 'SELECT s.id
+                      FROM t_cc_slots s
+                      WHERE s.date       = :date
+                        AND s.is_cc_plus = 1
+                        AND NOT EXISTS (
+                            SELECT 1 FROM t_cc_bookings b
+                            WHERE b.cc_slot_id = s.id
+                              AND b.time_id    = :time_id
+                        )
+                      LIMIT 1';
+        $slot_stmt = $db->prepare($slot_sql);
+        $slot_stmt->execute([
+            ':date'    => $date,
+            ':time_id' => $time_id,
+        ]);
+        $cc_slot_id = $slot_stmt->fetchColumn();
+
+        // 空きスロットが見つからない場合は登録せず終了
+        if ($cc_slot_id === false) {
+            throw new Exception('空きスロットが見つかりません');
+        }
+
+        // 2. 変更先を t_cc_bookings に登録
+        $to_booking_id = add_cc_booking($db, $student_id, (int) $cc_slot_id, $time_id, $style_id);
+
+        // 3. t_cc_requests に変更申請を登録
+        //    booking_id_a = 変更元、booking_id_b = 変更先
+        add_cc_request($db, 2, $student_id, $from_booking_id, $to_booking_id, $message);
+        //                  ↑ type_id=2（cc+変更）
 
         $db->commit();
         return true;
