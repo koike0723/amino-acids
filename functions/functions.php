@@ -852,6 +852,55 @@ function get_cc_bookings(array $filters = []): array
 }
 
 /**
+ * 予約IDから予約を1件取得
+ *
+ * 返却構造:
+ * [
+ *   'booking_id'   => 1,
+ *   'student_id'   => 1,
+ *   'student_name' => '山田太郎',
+ *   'course_id'    => 1,
+ *   'course_data'  => '6B/Webプログラミング科',
+ *   'cc_date'      => '2026-01-01',
+ *   'start_time'   => '10:00',
+ *   'style_id'     => 1,
+ *   'style_name'   => 'ZOOM',
+ * ]
+ *
+ * @param int $booking_id 取得する予約のID
+ * @return array 予約情報。該当なしの場合は空配列
+ */
+function get_cc_booking(int $booking_id): array
+{
+    $db = db_connect();
+
+    $sql = 'SELECT
+                b.id                                    AS booking_id,
+                s.id                                    AS student_id,
+                CONCAT(s.last_name, s.first_name)       AS student_name,
+                c.id                                    AS course_id,
+                CONCAT(r.name, "/", c.name)             AS course_data,
+                slot.date                               AS cc_date,
+                DATE_FORMAT(t.start_time, \'%H:%i\')   AS start_time,
+                ms.id                                   AS style_id,
+                ms.name                                 AS style_name
+            FROM t_cc_bookings b
+            JOIN m_students       s    ON b.student_id  = s.id
+            JOIN m_courses        c    ON s.course_id   = c.id
+            JOIN m_rooms          r    ON c.room_id     = r.id
+            JOIN t_cc_slots       slot ON b.cc_slot_id  = slot.id
+            JOIN m_times          t    ON b.time_id     = t.id
+            JOIN m_meating_styles ms   ON b.style_id    = ms.id
+            WHERE b.id = :booking_id';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([':booking_id' => $booking_id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $row ?: [];
+}
+
+/**
  * 予約の入れ替え処理
  * @param int $booking_id_a 入れ替え予定の予約ID1
  * @param int $booking_id_b 入れ替え予定の予約ID2
@@ -1517,3 +1566,4 @@ function get_cc_change_confirm(int $booking_id_a, int $booking_id_b): array
         ],
     ];
 }
+
