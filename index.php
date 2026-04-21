@@ -109,7 +109,7 @@ $events = [
                                     <div class="col-2">
                                         <button
                                             type="button"
-                                            class="btn btn-warning btn-sm w-100"
+                                            class="btn btn-warning btn-sm"
                                             onclick="location.href='./student_reserve_del_confirm.php?cc_date=<?php echo urlencode($booking['cc_date']); ?>&cc_time=<?php echo urlencode($booking['cc_time']); ?>'">
                                             キャンセル
                                         </button>

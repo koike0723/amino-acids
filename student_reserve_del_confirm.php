@@ -24,6 +24,7 @@ if (!empty($student['bookings'])) {
 <html lang="ja">
 
 <head>
+    <?php check($student) ?>
     <title>予約追加・変更</title>
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
@@ -44,7 +45,7 @@ if (!empty($student['bookings'])) {
                             <div class="row mb-4">
                                 <div class="col-12 col-sm-4 text-sm-end fw-bold">クラス：</div>
                                 <div class="col-12 col-sm-8">
-                                    <?php echo htmlspecialchars($student['class_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php echo htmlspecialchars($student['course_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
                                 </div>
                             </div>
 

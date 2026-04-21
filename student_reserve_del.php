@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    <?php include('./common/header.php'); ?>
+    <?php include('./inc/student_header.php'); ?>
 
     <main class="container py-5">
         <section class="reservation-detail-section">
@@ -47,7 +47,7 @@
 
                     <div class="text-center d-flex justify-content-center gap-3">
                         <a href="reservation_cancel.php?id=1" class="btn btn-warning fw-bold">キャンセル申請</a>
-                        <a href="reservation_list.php" class="btn btn-secondary">戻る</a>
+                        <a href="index.php" class="btn btn-secondary">戻る</a>
                     </div>
 
                 </div>
