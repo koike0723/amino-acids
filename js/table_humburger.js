@@ -11,7 +11,7 @@ humSwitch.addEventListener('change', () => {
         humTable.classList.add('open-Table');
         bodytable.classList.add('active-Table');
     } else {
-        humTable.classList.remove('open-Table');
+        humTable.classList.remove('close-Table');
         bodytable.classList.remove('active-Table');
     }
 });
