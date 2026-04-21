@@ -345,6 +345,55 @@ function add_students($course_id, $students)
 }
 
 /**
+ * 生徒情報の更新
+ *
+ * 渡されたキーのみ動的にUPDATEする。
+ * 更新可能なカラム: first_name, last_name, number, status_id, course_id
+ *
+ * 使用例:
+ * update_student(1, ['status_id' => 2]);
+ * update_student(1, ['first_name' => '太郎', 'last_name' => '山田', 'course_id' => 3]);
+ *
+ * ※ステータス変更時に予約の自動削除は行わない。
+ *   予約表示側で status_id を参照してアラート等を表示すること。
+ *
+ * @param  int   $student_id 更新対象の生徒ID
+ * @param  array $data       更新するカラムと値の連想配列
+ * @return bool  成功時 true、失敗時（対象なし・不正カラム含む）false
+ */
+function update_student(int $student_id, array $data): bool
+{
+    // 更新を許可するカラムのホワイトリスト
+    $allowed_columns = ['first_name', 'last_name', 'number', 'status_id', 'course_id'];
+
+    $set_clauses = [];
+    $params      = [':student_id' => $student_id];
+
+    foreach ($data as $column => $value) {
+        // ホワイトリスト外のキーは無視
+        if (!in_array($column, $allowed_columns, true)) {
+            continue;
+        }
+        $set_clauses[]          = "{$column} = :{$column}";
+        $params[":{$column}"]   = $value;
+    }
+
+    // 更新対象カラムが1つもなければ何もしない
+    if (empty($set_clauses)) {
+        return false;
+    }
+
+    $db  = db_connect();
+    $sql = 'UPDATE m_students SET ' . implode(', ', $set_clauses) . ' WHERE id = :student_id';
+
+    $stmt         = $db->prepare($sql);
+    $stmt->execute($params);
+
+    // 実際に1件以上更新されたかで成否を返す
+    return $stmt->rowCount() > 0;
+}
+
+/**
  * コース一覧を取得
  * @param string $target_date 実施状況を確認したい基準日
  * @param int $room_id 表示したい教室のID
@@ -558,7 +607,122 @@ function add_course($course)
 
     //必須キャリコンのスケジュール登録
     if (isset($course['cc']) && $course['cc'] != '') {
-        add_course_cc_schadules($last_id, $course['cc']);
+        add_course_cc_schedules($last_id, $course['cc']);
+    }
+}
+
+/**
+ * コース情報の更新
+ *
+ * 渡されたキーのみ動的にUPDATEする。
+ * 更新可能なカラム: name, start_date, end_date, room_id, category_id
+ *
+ * 'cc' キーが含まれる場合は、削除された日付に対応するこのコースの生徒の予約を削除したうえで、
+ * 既存の t_course_cc_schedules を全削除してから新しいスケジュールを再登録する。
+ * 'cc' キーがない場合は t_course_cc_schedules・t_cc_bookings には触れない。
+ *
+ * 使用例:
+ * // コース名だけ変更
+ * update_course(1, ['name' => '新コース名']);
+ *
+ * // スケジュールも再設定（削除された日付の予約は自動削除）
+ * update_course(1, [
+ *     'name' => '新コース名',
+ *     'cc'   => [
+ *         1 => ['2026-05-10', '2026-05-17'],
+ *         2 => ['2026-06-14'],
+ *     ],
+ * ]);
+ *
+ * @param  int   $course_id 更新対象のコースID
+ * @param  array $data      更新するカラムと値の連想配列
+ * @return bool  成功時 true、失敗時 false
+ */
+function update_course(int $course_id, array $data): bool
+{
+    $allowed_columns = ['name', 'start_date', 'end_date', 'room_id', 'category_id'];
+
+    $set_clauses = [];
+    $params      = [':course_id' => $course_id];
+
+    foreach ($data as $column => $value) {
+        if (!in_array($column, $allowed_columns, true)) {
+            continue;
+        }
+        $set_clauses[]        = "{$column} = :{$column}";
+        $params[":{$column}"] = $value;
+    }
+
+    $has_cc_update     = isset($data['cc']) && is_array($data['cc']);
+    $has_column_update = !empty($set_clauses);
+
+    if (!$has_column_update && !$has_cc_update) {
+        return false;
+    }
+
+    $db = db_connect();
+
+    try {
+        $db->beginTransaction();
+
+        // m_courses のカラム更新（対象がある場合のみ）
+        if ($has_column_update) {
+            $sql  = 'UPDATE m_courses SET ' . implode(', ', $set_clauses) . ' WHERE id = :course_id';
+            $stmt = $db->prepare($sql);
+            $stmt->execute($params);
+        }
+
+        // t_course_cc_schedules の再登録（'cc' キーがある場合のみ）
+        if ($has_cc_update) {
+            // 旧スケジュールの日付を取得
+            $old_stmt = $db->prepare(
+                'SELECT DISTINCT date FROM t_course_cc_schedules WHERE course_id = :course_id'
+            );
+            $old_stmt->execute([':course_id' => $course_id]);
+            $old_dates = $old_stmt->fetchAll(PDO::FETCH_COLUMN);
+
+            // 新スケジュールの日付をフラットな配列に
+            $new_dates = [];
+            foreach ($data['cc'] as $dates) {
+                foreach ($dates as $date) {
+                    $new_dates[] = $date;
+                }
+            }
+
+            // 削除された日付（旧日付 - 新日付）
+            $removed_dates = array_values(array_diff($old_dates, $new_dates));
+
+            // 削除された日付に対応するこのコースの生徒の予約を削除
+            if (!empty($removed_dates)) {
+                $placeholders = implode(', ', array_fill(0, count($removed_dates), '?'));
+                $del_stmt = $db->prepare(
+                    "DELETE b FROM t_cc_bookings b
+                     JOIN t_cc_slots sl ON b.cc_slot_id = sl.id
+                     WHERE b.student_id IN (
+                         SELECT id FROM m_students WHERE course_id = ?
+                     )
+                     AND sl.date IN ({$placeholders})
+                     AND sl.is_cc_plus = 0
+                     AND b.cc_plus_booking_id IS NULL"
+                );
+                $del_stmt->execute(array_merge([$course_id], $removed_dates));
+            }
+
+            // 既存スケジュールを全削除して再登録
+            $db->prepare('DELETE FROM t_course_cc_schedules WHERE course_id = :course_id')
+               ->execute([':course_id' => $course_id]);
+
+            if (!empty($data['cc'])) {
+                add_course_cc_schedules($course_id, $data['cc']);
+            }
+        }
+
+        $db->commit();
+        return true;
+
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
     }
 }
 
@@ -567,7 +731,7 @@ function add_course($course)
  * @param int $course_id 訓練コースのID
  * @return 連想配列 array["第何回目(int)"]["実際の日付(string)"]
  */
-function get_course_cc_schadules($course_id)
+function get_course_cc_schedules($course_id)
 {
     $db = db_connect();
     $sql = 'SELECT 
@@ -596,14 +760,14 @@ function get_course_cc_schadules($course_id)
 /**
  * 必須キャリコンスケジュールの登録
  *
- * $cc_schadules の構造例:
+ * $cc_schedules の構造例:
  * [
  *   1 => ['2026-04-15', '2026-04-22'],
  *   2 => ['2026-05-14', '2026-05-21'],
  * ]
  * キーが cc_count（第何回目か）、値が実施日付の配列
  */
-function add_course_cc_schadules($course_id, $cc_schadules)
+function add_course_cc_schedules($course_id, $cc_schedules)
 {
     $db = db_connect();
 
@@ -621,7 +785,7 @@ function add_course_cc_schadules($course_id, $cc_schadules)
     $i = 0;
 
     // cc_count（回数）ごとにループ
-    foreach ($cc_schadules as $cc_count => $dates) {
+    foreach ($cc_schedules as $cc_count => $dates) {
         // 同じ回数に複数の日付がある場合もループ
         foreach ($dates as $date) {
             $row_placeholders = [];
@@ -730,13 +894,15 @@ function get_cc_slots($cc_type = CC_SLOT_TYPE::Line->name, $target_date = null)
  * キャリコン枠を登録
  * @param string $date キャリコンを開催する日付
  * @param bool $is_cc_plus キャリコンプラスかどうか。デフォルトは登録枠(false)
+ * @return int 採番されたスロットID
  */
-function add_cc_slot($date, $is_cc_plus = false)
+function add_cc_slot($date, $is_cc_plus = false): int
 {
     $db = db_connect();
     $sql = 'INSERT INTO t_cc_slots (date, is_cc_plus) VALUES (:date, :is_cc_plus)';
     $stmt = $db->prepare($sql);
-    $stmt->execute([':date' => $date, 'is_cc_plus' => $is_cc_plus]);
+    $stmt->execute([':date' => $date, ':is_cc_plus' => $is_cc_plus]);
+    return (int) $db->lastInsertId();
 }
 
 /**
@@ -1367,8 +1533,139 @@ function reject_cc_plus_change(int $request_id): bool
 }
 
 /**
- * 必須キャリコン予約一覧の取得
+ * 必須キャリコン一括予約登録
  *
+ * 指定コースの全生徒に対して、全回数分の必須キャリコン予約をまとめて登録する。
+ *
+ * 処理方針:
+ * - cc_count ごとに、生徒を日付数で均等分割（端数は前の日付グループに寄せる）
+ * - 各日付グループ内の生徒を m_times の件数ずつチャンクに分割し、チャンクごとにスロットを1件生成
+ * - time_id はチャンク内の出席番号順に m_times.id を先頭から割り当てる
+ * - 既に同 cc_count の予約が存在する生徒はスキップ（その他の生徒の登録は続行）
+ * - style_id はデフォルト値(1)で登録する
+ *
+ * @param  int  $course_id 対象コースのID
+ * @return bool 成功時 true、DBエラー時 false
+ */
+function bulk_book_cc(int $course_id): bool
+{
+    $db = db_connect();
+
+    try {
+        $db->beginTransaction();
+
+        // 1. コースの全生徒を出席番号昇順で取得
+        $students_stmt = $db->prepare(
+            'SELECT id, number FROM m_students WHERE course_id = :course_id ORDER BY number ASC'
+        );
+        $students_stmt->execute([':course_id' => $course_id]);
+        $students = $students_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // 生徒が0人の場合は正常終了
+        if (empty($students)) {
+            $db->commit();
+            return true;
+        }
+
+        // 2. cc_count ごとの日付一覧を取得
+        $sched_stmt = $db->prepare(
+            'SELECT cc_count, date
+             FROM t_course_cc_schedules
+             WHERE course_id = :course_id
+             ORDER BY cc_count ASC, date ASC'
+        );
+        $sched_stmt->execute([':course_id' => $course_id]);
+
+        // [cc_count => [date, ...]] に整形
+        $schedules = [];
+        foreach ($sched_stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $schedules[$row['cc_count']][] = $row['date'];
+        }
+
+        // 3. m_times の全IDを昇順で取得
+        $time_ids   = $db->query('SELECT id FROM m_times ORDER BY id ASC')->fetchAll(PDO::FETCH_COLUMN);
+        $time_count = count($time_ids);
+
+        $student_ids = array_column($students, 'id');
+
+        // 4. cc_count ごとにループ
+        foreach ($schedules as $cc_count => $dates) {
+            $date_count = count($dates);
+
+            // 既存予約がある student_id を取得してスキップリストを作成
+            $id_placeholders = implode(', ', array_fill(0, count($student_ids), '?'));
+            $skip_stmt       = $db->prepare(
+                "SELECT DISTINCT b.student_id
+                 FROM t_cc_bookings b
+                 JOIN t_cc_slots sl             ON b.cc_slot_id  = sl.id
+                 JOIN t_course_cc_schedules sch ON sl.date       = sch.date
+                 WHERE b.student_id           IN ({$id_placeholders})
+                   AND sch.course_id           = ?
+                   AND sch.cc_count            = ?
+                   AND sl.is_cc_plus           = 0
+                   AND b.cc_plus_booking_id    IS NULL"
+            );
+            $skip_stmt->execute(array_merge($student_ids, [$course_id, $cc_count]));
+            // isset() で高速検索できるよう id をキーに反転
+            $skip_ids = array_flip($skip_stmt->fetchAll(PDO::FETCH_COLUMN));
+
+            // 生徒を日付数で均等分割（端数は前の日付グループに寄せる）
+            $chunk_size     = (int) ceil(count($students) / $date_count);
+            $student_groups = array_chunk($students, $chunk_size);
+
+            foreach ($dates as $date_index => $date) {
+                $group = $student_groups[$date_index] ?? [];
+                if (empty($group)) {
+                    continue;
+                }
+
+                // スキップ対象を除外
+                $targets = array_values(
+                    array_filter($group, fn($s) => !isset($skip_ids[$s['id']]))
+                );
+
+                if (empty($targets)) {
+                    continue;
+                }
+
+                // m_times の件数ずつチャンクに分割し、チャンクごとにスロットを生成
+                foreach (array_chunk($targets, $time_count) as $chunk) {
+                    // スロットを1件INSERT し、採番されたIDを取得
+                    $slot_stmt = $db->prepare(
+                        'INSERT INTO t_cc_slots (date, is_cc_plus) VALUES (:date, 0)'
+                    );
+                    $slot_stmt->execute([':date' => $date]);
+                    $slot_id = (int) $db->lastInsertId();
+
+                    // チャンク内の生徒を出席番号順に time_id を割り当てて一括INSERT
+                    $values_sql = [];
+                    $params     = [];
+                    foreach ($chunk as $i => $student) {
+                        $values_sql[]                    = "(:student_id_{$i}, :slot_id_{$i}, :time_id_{$i}, :style_id_{$i})";
+                        $params[":student_id_{$i}"]      = $student['id'];
+                        $params[":slot_id_{$i}"]         = $slot_id;
+                        $params[":time_id_{$i}"]         = $time_ids[$i];
+                        $params[":style_id_{$i}"]        = 1; // デフォルトスタイル
+                    }
+
+                    $booking_sql = 'INSERT INTO t_cc_bookings (student_id, cc_slot_id, time_id, style_id) VALUES '
+                        . implode(', ', $values_sql);
+                    $db->prepare($booking_sql)->execute($params);
+                }
+            }
+        }
+
+        $db->commit();
+        return true;
+
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
+
+
+/*
  * 指定コース・回数の必須キャリコン予約を日付・時間でグループ化して返す
  * CC+から確定した通常予約（cc_plus_booking_id IS NOT NULL）は除外する
  *
