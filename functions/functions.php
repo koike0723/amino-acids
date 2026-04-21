@@ -345,6 +345,55 @@ function add_students($course_id, $students)
 }
 
 /**
+ * 生徒情報の更新
+ *
+ * 渡されたキーのみ動的にUPDATEする。
+ * 更新可能なカラム: first_name, last_name, number, status_id, course_id
+ *
+ * 使用例:
+ * update_student(1, ['status_id' => 2]);
+ * update_student(1, ['first_name' => '太郎', 'last_name' => '山田', 'course_id' => 3]);
+ *
+ * ※ステータス変更時に予約の自動削除は行わない。
+ *   予約表示側で status_id を参照してアラート等を表示すること。
+ *
+ * @param  int   $student_id 更新対象の生徒ID
+ * @param  array $data       更新するカラムと値の連想配列
+ * @return bool  成功時 true、失敗時（対象なし・不正カラム含む）false
+ */
+function update_student(int $student_id, array $data): bool
+{
+    // 更新を許可するカラムのホワイトリスト
+    $allowed_columns = ['first_name', 'last_name', 'number', 'status_id', 'course_id'];
+
+    $set_clauses = [];
+    $params      = [':student_id' => $student_id];
+
+    foreach ($data as $column => $value) {
+        // ホワイトリスト外のキーは無視
+        if (!in_array($column, $allowed_columns, true)) {
+            continue;
+        }
+        $set_clauses[]          = "{$column} = :{$column}";
+        $params[":{$column}"]   = $value;
+    }
+
+    // 更新対象カラムが1つもなければ何もしない
+    if (empty($set_clauses)) {
+        return false;
+    }
+
+    $db  = db_connect();
+    $sql = 'UPDATE m_students SET ' . implode(', ', $set_clauses) . ' WHERE id = :student_id';
+
+    $stmt         = $db->prepare($sql);
+    $stmt->execute($params);
+
+    // 実際に1件以上更新されたかで成否を返す
+    return $stmt->rowCount() > 0;
+}
+
+/**
  * コース一覧を取得
  * @param string $target_date 実施状況を確認したい基準日
  * @param int $room_id 表示したい教室のID
