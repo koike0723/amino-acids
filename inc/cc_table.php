@@ -1,13 +1,15 @@
 <!-- 必須キャリコンテーブル -->
 <input type="checkbox" id="table-toggle" class="u-hidden">
-<label for="table-toggle" class="Cheeseburger" id="Cheeseburger">
-    <span></span>
-    <span></span>
-    <span></span>
+<label for="table-toggle" class="table-burger" id="table-burger">
     <p>任意キャリコンを開く</p>
+    <div class="Table-Btn">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
 </label>
-<div class="cc-hum" id="cc-hum">
-    <div class="cc-detail-table-area" style="padding: 50px 0; background-color: #CDEFFF;">
+<div class="cc-menu" id="cc-menu">
+    <div class="cc-detail-table-area-hum">
         <table class="cc-detail-table cc-detail-table-optional" style="background-color: white;">
             <thead class="cc-detail-thead">
                 <tr class="cc-detail-headTr">

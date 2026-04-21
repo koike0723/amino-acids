@@ -107,6 +107,7 @@
 /* JSのクラス(is-open)がついた時、またはチェックが入った時 */
 .hum-menu.is-open {
   right: 0;
+  position: absolute;
   /* 画面内に戻す */
 }
 
@@ -614,7 +615,8 @@ th.cc-detail-th-size {
 }
 
 .cc-detail-optional-open {
-  padding-block: 30px;
+  z-index: 101;
+  position: relative;
 }
 
 .cc-detail-optional-openBtn {
@@ -628,6 +630,93 @@ th.cc-detail-th-size {
   border: 1px solid #000;
 }
 
+.cc-detail-table-area-hum {
+  padding: 20px 0;
+  background-color: #CDEFFF;
+  width: 155%;
+}
+
+/* テーブル用ハンバーガーメニューここから */
+.u-hidden {
+  display: none;
+}
+
+/* ハンバーガーボタンの基本スタイル */
+.table-burger {
+  display: flex;
+  width: 100%;
+  cursor: pointer;
+  position: relative;
+  align-items: center;
+}
+
+.table-burger p {
+  text-align: center;
+  z-index: 101;
+  background-color: #CDEFFF;
+}
+
+.Table-Btn {
+  display: block;
+  width: 30px;
+  z-index: 101;
+  background-color: #CDEFFF;
+ 
+}
+
+.table-burger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #333;
+  margin-bottom: 6px;
+  transition: 0.3s;
+}
+
+/* メニューの初期状態 */
+.cc-menu {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: -100%;
+  /* 画面の外（右側）へ完全に隠す */
+  background: #ffffff;
+  transition: 0.4s;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 100;
+  /* 他の要素より手前に */
+}
+
+.table-burger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #333;
+  margin-bottom: 6px;
+  transition: 0.3s;
+}
+
+/* JSでクラス（open-Table）がついた時の処理 */
+.cc-menu.open-Table {
+  left: 0;
+  /* 画面内にスライド */
+}
+
+/* チェックボックスが入った時（CSSだけでも動くようにしておく） */
+#table-toggle:checked~.cc-menu {
+  left: 0;
+}
+
+/* 任意キャリコンのテキストが見えにくい場合の調整 */
+.table-burger p {
+  display: flex;
+  margin: 0;
+}
+
+/* --- 以下、装飾（変更なし） --- */
+
+/* テーブル用ハンバーガーメニューここまで */
 /* admin_cc_detail.phpここまで */
 
 /* admin_student_detail.phpここから */

@@ -1,16 +1,17 @@
 // テーブル用のハンバーガーメニュー追加
 // ハンバーガーメニューの開閉処理
 // １．必要な要素を取得する（hamburgerボタン、body要素）
-let humSwitch = document.getElementById('cc-burger');
-let humTable = document.getElementById('cc-hum');
+const humSwitch = document.getElementById('table-toggle');
+const humTable = document.getElementById('cc-menu');
+const bodytable = document.body;
 // ２．hamburgerボタンにクリックイベントを登録
-// ３．hamburgerボタンがクリックされたら、body要素に「open」クラスを付けたり外したりする
-humSwitch.addEventListener('click', () => {
-    // if(bodyElm.classList.contains('open')){
-    // bodyElm.classList.remove('open');
-    // }else{
-    // bodyElm.classList.add('topPage');
-    // }
-    humSwitch.classList.toggle('open-Table');
-    humTable.classList.toggle('active-Table');
-})
+humSwitch.addEventListener('change', () => {
+    // ３．hamburgerボタンがクリックされたら、body要素に「open」クラスを付けたり外したりする
+    if (humSwitch.checked) {
+        humTable.classList.add('open-Table');
+        bodytable.classList.add('active-Table');
+    } else {
+        humTable.classList.remove('open-Table');
+        bodytable.classList.remove('active-Table');
+    }
+});
