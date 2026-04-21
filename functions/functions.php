@@ -607,7 +607,7 @@ function add_course($course)
 
     //必須キャリコンのスケジュール登録
     if (isset($course['cc']) && $course['cc'] != '') {
-        add_course_cc_schadules($last_id, $course['cc']);
+        add_course_cc_schedules($last_id, $course['cc']);
     }
 }
 
@@ -713,7 +713,7 @@ function update_course(int $course_id, array $data): bool
                ->execute([':course_id' => $course_id]);
 
             if (!empty($data['cc'])) {
-                add_course_cc_schadules($course_id, $data['cc']);
+                add_course_cc_schedules($course_id, $data['cc']);
             }
         }
 
@@ -731,7 +731,7 @@ function update_course(int $course_id, array $data): bool
  * @param int $course_id 訓練コースのID
  * @return 連想配列 array["第何回目(int)"]["実際の日付(string)"]
  */
-function get_course_cc_schadules($course_id)
+function get_course_cc_schedules($course_id)
 {
     $db = db_connect();
     $sql = 'SELECT 
@@ -760,14 +760,14 @@ function get_course_cc_schadules($course_id)
 /**
  * 必須キャリコンスケジュールの登録
  *
- * $cc_schadules の構造例:
+ * $cc_schedules の構造例:
  * [
  *   1 => ['2026-04-15', '2026-04-22'],
  *   2 => ['2026-05-14', '2026-05-21'],
  * ]
  * キーが cc_count（第何回目か）、値が実施日付の配列
  */
-function add_course_cc_schadules($course_id, $cc_schadules)
+function add_course_cc_schedules($course_id, $cc_schedules)
 {
     $db = db_connect();
 
@@ -785,7 +785,7 @@ function add_course_cc_schadules($course_id, $cc_schadules)
     $i = 0;
 
     // cc_count（回数）ごとにループ
-    foreach ($cc_schadules as $cc_count => $dates) {
+    foreach ($cc_schedules as $cc_count => $dates) {
         // 同じ回数に複数の日付がある場合もループ
         foreach ($dates as $date) {
             $row_placeholders = [];
