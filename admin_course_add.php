@@ -106,7 +106,7 @@ try {
                 </div>
             <?php elseif ($_GET["message"] === "same_course"): ?>
                 <div class="alert alert-danger">
-                    同じコースが登録されています！！
+                    すでにその日付はほかのコースがその教室を使っています！
                 </div>
             <?php elseif ($_GET["message"] === "error_date"): ?>
                 <div class="alert alert-danger">
@@ -154,7 +154,7 @@ try {
                 <label for="course_finish" class="form-label mt-1">訓練終了日</label>
                 <input type="date" name="course_finish" id="course_finish" required class="form-control form-control-sm">
             </div>
-            <dl class="course_cc col-8">
+            <dl class="course_cc col-8" id="cc_box">
                 <div class="card mb-2 px-1 py-1">
                     <dt class="mb-1">キャリコン１</dt>
                     <dd class="cc1 mb-1 d-flex justify-content-around">
@@ -203,5 +203,6 @@ try {
     </div>
 
 </body>
+<script src="js/cc_box_toggle.js"></script>
 
 </html>
