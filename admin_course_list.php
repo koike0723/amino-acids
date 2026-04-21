@@ -13,6 +13,9 @@ if (isset($_GET['filter'])) {
     $date = $_GET['date'] !== '' ? $_GET['date'] : null;
     $room_id = $_GET['room_id'] !== '' ? $_GET['room_id'] : null;
     $category_id = $_GET['category_id'] !== '' ? $_GET['category_id'] : null;
+} else {
+    $room_id = null;
+    $category_id = null;
 }
 ?>
 <?php
@@ -69,7 +72,10 @@ try {
 
     <div class="content-wrap" style="width: 89.33333%; max-width: 1000px; margin-inline: auto;">
         <main class="course-wrapper">
-            <h1 class="m-5">コース一覧</h1>
+            <div class="d-flex align-items-center">
+                <h1 class="m-5">コース一覧</h1>
+                <div class="ml-5"><a href="admin_course_add.php" style="background-color: #1828ff;" class="btn btn-primary btn-lg">コース追加</a></div>
+            </div>
             <div class="course-search">
                 <form action="admin_course_list.php" method="get" class="row">
                     <div class="date col-3">
@@ -121,22 +127,22 @@ try {
                             <td><?php echo format_japanese_date($course["start_date"]) ?>～<?php echo format_japanese_date($course["end_date"]) ?></td>
                             <td><?php echo $course["category_name"] ?></td>
                             <td>
-                                <a class="btn btn-success mx-1 my-1" href="./admin_course_edit.php">編集</a>
-                                <a class="btn btn-info mx-1 my-1" href="./admin_course_detail.php">詳細</a>
-                                <a class="btn btn-danger mx-1 my-1" href="./admin_course_del_confirm.php">削除</a>
+                                <a class="btn btn-info mx-1 my-1" href='admin_course_detail.php?course_id=<?= $course["course_id"] ?>'>詳細</a>
+                                <a class="btn btn-success mx-1 my-1" href='admin_course_edit.php?course_id=<?= $course["course_id"] ?>'>編集</a>
+                                <a class="btn btn-danger mx-1 my-1" href='php_do/course_del_do.php?course_id=<?= $course["course_id"] ?>'>削除</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
 
-
             <div class="l-btn-area mb-5">
                 <a class="btn btn-secondary" href="./admin_index.php">トップに戻る</a>
             </div>
         </main>
-        <script src="./js/admin_course_search.js"></script>
     </div>
 </body>
+<!-- kan-to-do:余力があればリアルタイムで変わるようにする -->
+<script src="./js/admin_course_search.js"></script>
 
 </html>
