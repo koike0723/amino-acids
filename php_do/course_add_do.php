@@ -77,7 +77,10 @@ try {
         COUNT(*)
         FROM m_courses
         WHERE room_id = :room_id
-        AND (end_date > :start_day OR start_date < :end_day)';
+        AND NOT (
+        end_date < :start_day
+        OR start_date > :end_day
+        )';
     $stmt = $db->prepare($sql);
     $stmt->bindParam(":room_id", $room_id, PDO::PARAM_INT);
     $stmt->bindParam(":start_day", $start_date, PDO::PARAM_STR);
