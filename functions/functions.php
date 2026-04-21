@@ -612,6 +612,121 @@ function add_course($course)
 }
 
 /**
+ * コース情報の更新
+ *
+ * 渡されたキーのみ動的にUPDATEする。
+ * 更新可能なカラム: name, start_date, end_date, room_id, category_id
+ *
+ * 'cc' キーが含まれる場合は、削除された日付に対応するこのコースの生徒の予約を削除したうえで、
+ * 既存の t_course_cc_schedules を全削除してから新しいスケジュールを再登録する。
+ * 'cc' キーがない場合は t_course_cc_schedules・t_cc_bookings には触れない。
+ *
+ * 使用例:
+ * // コース名だけ変更
+ * update_course(1, ['name' => '新コース名']);
+ *
+ * // スケジュールも再設定（削除された日付の予約は自動削除）
+ * update_course(1, [
+ *     'name' => '新コース名',
+ *     'cc'   => [
+ *         1 => ['2026-05-10', '2026-05-17'],
+ *         2 => ['2026-06-14'],
+ *     ],
+ * ]);
+ *
+ * @param  int   $course_id 更新対象のコースID
+ * @param  array $data      更新するカラムと値の連想配列
+ * @return bool  成功時 true、失敗時 false
+ */
+function update_course(int $course_id, array $data): bool
+{
+    $allowed_columns = ['name', 'start_date', 'end_date', 'room_id', 'category_id'];
+
+    $set_clauses = [];
+    $params      = [':course_id' => $course_id];
+
+    foreach ($data as $column => $value) {
+        if (!in_array($column, $allowed_columns, true)) {
+            continue;
+        }
+        $set_clauses[]        = "{$column} = :{$column}";
+        $params[":{$column}"] = $value;
+    }
+
+    $has_cc_update     = isset($data['cc']) && is_array($data['cc']);
+    $has_column_update = !empty($set_clauses);
+
+    if (!$has_column_update && !$has_cc_update) {
+        return false;
+    }
+
+    $db = db_connect();
+
+    try {
+        $db->beginTransaction();
+
+        // m_courses のカラム更新（対象がある場合のみ）
+        if ($has_column_update) {
+            $sql  = 'UPDATE m_courses SET ' . implode(', ', $set_clauses) . ' WHERE id = :course_id';
+            $stmt = $db->prepare($sql);
+            $stmt->execute($params);
+        }
+
+        // t_course_cc_schedules の再登録（'cc' キーがある場合のみ）
+        if ($has_cc_update) {
+            // 旧スケジュールの日付を取得
+            $old_stmt = $db->prepare(
+                'SELECT DISTINCT date FROM t_course_cc_schedules WHERE course_id = :course_id'
+            );
+            $old_stmt->execute([':course_id' => $course_id]);
+            $old_dates = $old_stmt->fetchAll(PDO::FETCH_COLUMN);
+
+            // 新スケジュールの日付をフラットな配列に
+            $new_dates = [];
+            foreach ($data['cc'] as $dates) {
+                foreach ($dates as $date) {
+                    $new_dates[] = $date;
+                }
+            }
+
+            // 削除された日付（旧日付 - 新日付）
+            $removed_dates = array_values(array_diff($old_dates, $new_dates));
+
+            // 削除された日付に対応するこのコースの生徒の予約を削除
+            if (!empty($removed_dates)) {
+                $placeholders = implode(', ', array_fill(0, count($removed_dates), '?'));
+                $del_stmt = $db->prepare(
+                    "DELETE b FROM t_cc_bookings b
+                     JOIN t_cc_slots sl ON b.cc_slot_id = sl.id
+                     WHERE b.student_id IN (
+                         SELECT id FROM m_students WHERE course_id = ?
+                     )
+                     AND sl.date IN ({$placeholders})
+                     AND sl.is_cc_plus = 0
+                     AND b.cc_plus_booking_id IS NULL"
+                );
+                $del_stmt->execute(array_merge([$course_id], $removed_dates));
+            }
+
+            // 既存スケジュールを全削除して再登録
+            $db->prepare('DELETE FROM t_course_cc_schedules WHERE course_id = :course_id')
+               ->execute([':course_id' => $course_id]);
+
+            if (!empty($data['cc'])) {
+                add_course_cc_schadules($course_id, $data['cc']);
+            }
+        }
+
+        $db->commit();
+        return true;
+
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
+
+/**
  * 訓練コース毎の必須キャリコンスケジュールの取得
  * @param int $course_id 訓練コースのID
  * @return 連想配列 array["第何回目(int)"]["実際の日付(string)"]
