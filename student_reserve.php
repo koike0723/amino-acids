@@ -1,9 +1,25 @@
 <!-- 生徒側任意キャリコン予約画面 -->
 <?php
+session_start();
 require_once __DIR__ . '/functions/functions.php';
 
 // 選択された日付データの取得
 $selected_date = $_GET['selected_date'] ?? '';
+$_SESSION['selected_date'] = $_GET['selected_date'];
+?>
+
+<?php
+try {
+    $db = db_connect();
+    $sql = 'SELECT * FROM m_times';
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    $timetables = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $date = get_cc_plus_time_table($selected_date);
+} catch (PDOException $e) {
+    check($e);
+}
 ?>
 
 <!doctype html>
@@ -28,11 +44,6 @@ $selected_date = $_GET['selected_date'] ?? '';
                     <h1 class="s-career-frame-title mb-4">キャリコンプラス一覧</h1>
                     <p class="s-career-frame-date mb-4"><?php echo h(format_japanese_date($selected_date)); ?></p>
 
-                    <!-- 項目内容が〇なら背景ホワイト、×なら背景グレーのｐｈｐ ※いったんＨＴＭＬだけにした方が変更しやすいかと思ったのでメモとして以下に残します-->
-                    <!-- <td class="<?php echo $is_available ? 's-frame-available' : 's-frame-unavailable'; ?>">
-  <?php echo $is_available ? '○' : '×'; ?>
-</td> -->
-
                     <div class="table-responsive d-flex justify-content-center">
                         <table class="table table-bordered s-career-frame-table w-auto align-middle text-center">
                             <thead>
@@ -42,30 +53,19 @@ $selected_date = $_GET['selected_date'] ?? '';
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>１０：００〜</td>
-                                    <td class="s-frame-available">○</td>
-                                </tr>
-                                <tr>
-                                    <td>１１：００〜</td>
-                                    <td class="s-frame-unavailable">×</td>
-                                </tr>
-                                <tr>
-                                    <td>１２：００〜</td>
-                                    <td class="s-frame-available">○</td>
-                                </tr>
-                                <tr>
-                                    <td>１４：００〜</td>
-                                    <td class="s-frame-unavailable">×</td>
-                                </tr>
-                                <tr>
-                                    <td>１５：００〜</td>
-                                    <td class="s-frame-available">○</td>
-                                </tr>
-                                <tr>
-                                    <td>１６：００〜</td>
-                                    <td class="s-frame-available">○</td>
-                                </tr>
+                                <?php foreach ($timetables as $key => $time): ?>
+                                    <tr>
+                                        <td><?= h($time['display_name']); ?></td>
+                                        <?php if ($date[$key + 1]): ?>
+                                            <td class="s-frame-available js-click" onclick="location.href='student_reserve_edit.php?timeid=<?= h($time['id']) ?>&selected_date=<?= $selected_date ?>&time=<?= h($time['start_time']) ?>'" style="cursor: pointer;">
+                                                〇
+                                            </td>
+                                        <?php else: ?>
+                                            <td class="s-frame-unavailable js-click">✕</td>
+                                        <?php endif; ?>
+                                    </tr>
+                                <?php endforeach; ?>
+
                             </tbody>
                         </table>
                     </div>
