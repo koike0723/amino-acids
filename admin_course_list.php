@@ -3,17 +3,54 @@
 <?php
 require_once __DIR__ . '/functions/functions.php';
 ?>
+
+<?php
+/////////////////////////////////////////////////
+/////////////////////GET通信処理/////////////////
+/////////////////////////////////////////////////
+$date = date('Y-m-d');
+if (isset($_GET['filter'])) {
+    $date = $_GET['date'] !== '' ? $_GET['date'] : null;
+    $room_id = $_GET['room_id'] !== '' ? $_GET['room_id'] : null;
+    $category_id = $_GET['category_id'] !== '' ? $_GET['category_id'] : null;
+}
+?>
 <?php
 /////////////////////////////////////////////////////
 /////////////////////データベース処理/////////////////
 ////////////////////////////////////////////////////
 try {
-    $courses = get_courses(null, false, null, null);
+    $courses = get_courses($date, false, $room_id, $category_id);
 } catch (PDOException $e) {
     exit('情報の取得に失敗しました: ' . $e->getMessage());
 }
+try {
+    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+    $db = new PDO($dsn, DB_USER, DB_PASS);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    // SQL
+    $sql = 'SELECT id,name FROM m_courses_categories';
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    exit('訓練タイプの取得に失敗しました: ' . $e->getMessage());
+}
+try {
+    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+    $db = new PDO($dsn, DB_USER, DB_PASS);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    // SQL
+    $sql = 'SELECT id,name FROM m_rooms';
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    exit('教室データ（m_rooms）の取得に失敗しました: ' . $e->getMessage());
+}
 ?>
-
 
 
 <!DOCTYPE html>
@@ -34,31 +71,39 @@ try {
         <main class="course-wrapper">
             <h1 class="m-5">コース一覧</h1>
             <div class="course-search">
-                <form action="search" class="mx-auto">
-                    <input type="date" id="course-date">
-                    </input>
-                    <select type="text" id="course-room" placeholder="教室名">
-                        <option value="教室名" hidden>教室を選択</option>
-                        <option value="1">6a</option>
-                        <option value="2">6b</option>
-                        <option value="3">6c</option>
-                    </select>
-                    <input type="text" id="course-traning" placeholder="訓練タイプ">
-                    <select name="course-status" id="course-status">
-                        <option value="訓練タイプ" hidden>訓練タイプを選択</option>
-                        <option value="1">求職者支援訓練</option>
-                        <option value="2">公共職業訓練</option>
-                    </select>
-                    <div class="course_detail_btn">
-                        <input type="image" value="検索" src="">
-                        <a href="/admin_course_add.php">追加</a>
+                <form action="admin_course_list.php" method="get" class="row">
+                    <div class="date col-3">
+                        <label for="date" class="form-label">訓練実施日</label>
+                        <input type="date" name="date" id="date" value="<?= $date ?>" class="form-control">
                     </div>
+                    <div class="room col-3">
+                        <label for="room_id" class="form-label">教室名</label>
+                        <select name="room_id" id="room_id" class="form-control">
+                            <option value="" <?= ($room_id == "") ? "selected" : "" ?>>全表示</option>
+                            <?php foreach ($rooms as $room): ?>
+                                <?php if ($room["id"] != 13): ?>
+                                    <option value="<?php echo $room["id"]; ?>" <?= ($room_id == $room["id"]) ? "selected" : "" ?>><?php echo $room["name"]; ?></option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="category col-4">
+                        <label for="category_id" class="form-label">訓練カテゴリー</label>
+                        <select name="category_id" id="category_id" class="form-control">
+                            <option value="" selected <?= ($category_id == "") ? "selected" : "" ?>>全表示</option>
+                            <?php foreach ($categories as $category): ?>
+                                <option value="<?php echo $category["id"]; ?>" <?= ($category_id == $category["id"]) ? "selected" : "" ?>><?php echo $category["name"]; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <input type="submit" value="絞り込む" name="filter" class="btn btn-info">
                 </form>
             </div>
 
 
 
-            <table class="table table-striped">
+            <table class="table table-striped mt-3">
                 <thead>
                     <tr style="background-color: #a0a0a0;">
                         <th>教室名</th>
@@ -86,7 +131,7 @@ try {
             </table>
 
 
-            <div class="l-btn-area">
+            <div class="l-btn-area mb-5">
                 <a class="btn btn-secondary" href="./admin_index.php">トップに戻る</a>
             </div>
         </main>
