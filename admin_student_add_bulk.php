@@ -118,8 +118,10 @@ try {
         </form>
     </div>
 
+    <script src="./js/drop_csv.js"></script>
+    <script src="./js/script.js"></script>
+    <script src="./js/hamburger.js"></script>
 </body>
-<script src="./js/drop_csv.js"></script>
 
 </html>
 <?php

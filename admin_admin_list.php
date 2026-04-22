@@ -67,6 +67,8 @@ require_once __DIR__ . '/functions/functions.php';
             <a class="top-btn" href="./admin_index.php">トップに戻る</a>
         </div>
     </main>
+    <script src="./js/script.js"></script>
+    <script src="./js/hamburger.js"></script>
 </body>
 
 </html>
