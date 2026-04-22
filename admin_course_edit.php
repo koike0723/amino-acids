@@ -173,13 +173,10 @@ try {
             </div>
         </form>
     </div>
-<<<<<<< HEAD
-=======
 
     <script src="js/cc_box_toggle.js"></script>
     <script src="js/script.js"></script>
     <script src="js/hamburger.js"></script>
->>>>>>> main
 </body>
 
 </html>
