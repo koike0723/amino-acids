@@ -366,7 +366,8 @@ foreach ($course['cc'][1] as $date) {
 ---
 
 ### `add_course($course)`
-コースを1件登録する。`cc` キーがある場合は必須CCスケジュールも同時登録される。
+コースを1件登録する。`cc` キーがある場合は必須CCスケジュールも同時登録される。  
+`m_courses` へのINSERTと `t_course_cc_schedules` へのINSERTはトランザクションで一括処理される。
 
 ```php
 add_course([
@@ -385,6 +386,10 @@ add_course([
 | 引数 | 型 | 説明 |
 |---|---|---|
 | `$course` | `array` | コースデータ（`name`, `start_date`, `end_date`, `room_id`, `category_id`, `cc`(任意)） |
+
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true`、失敗時 `false` |
 
 ---
 
@@ -434,18 +439,18 @@ $schedules = get_course_cc_schedules(2);
 
 ---
 
-### `add_course_cc_schedules($course_id, $cc_schedules)`
-必須CCスケジュールを登録する。`add_course` や `update_course` から内部的に呼ばれる。
+### `add_course_cc_schedules(PDO $db, $course_id, $cc_schedules)` ⚠️ 内部関数
+
+必須CCスケジュールを登録する。**直接呼び出さず `add_course()` や `update_course()` を使うこと。**  
+呼び出し元のトランザクション内で実行されるため、`$db` は外部から受け取る。
 
 ```php
-add_course_cc_schedules(2, [
-    1 => ['2026-05-10', '2026-05-17'],
-    2 => ['2026-07-12'],
-]);
+// 直接呼び出しは非推奨。add_course() / update_course() 経由で使用すること。
 ```
 
 | 引数 | 型 | 説明 |
 |---|---|---|
+| `$db` | `PDO` | トランザクション管理中のDB接続 |
 | `$course_id` | `int` | コースID |
 | `$cc_schedules` | `array` | `[cc_count => [date, ...], ...]` 形式のスケジュール |
 
@@ -959,3 +964,10 @@ echo $data['target']['student_name'];   // 相手
 | | |
 |---|---|
 | 戻り値 | `array` 確認画面用データ。いずれかの予約が取得できない場合は空配列 |
+
+
+> **[2026-04-22 変更]** `add_course_cc_schedules` の第1引数に `PDO $db` を追加。
+> `add_course` / `update_course` どちらも同一トランザクション内で INSERT を行うため、
+> DB接続を外部から受け取る内部関数に変更した。
+> 合わせて `add_course` に `beginTransaction` / `commit` / `rollBack` を追加し、
+> 戻り値を `bool` に統一した。
