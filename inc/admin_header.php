@@ -1,6 +1,5 @@
 <!-- 管理者側ヘッダー -->
 <header class="site-header_admin">
-    <?php include('./inc/nav_bar.php'); ?>
     <div class="header-inner">
         <div class="inner-flex">
             <a href="./admin_index.php" style="text-decoration: none;">
@@ -9,6 +8,11 @@
             </a>
             <a href="../php_do/logout.php" style="color: black;">ログアウト</a>
         </div>
-        <a href="./student_message.php" class="message-button">メッセージがあります</a>
+        <a href="./student_message.php" class="message-button">
+            <span id="alert-icon" class="material-symbols-outlined">
+                notifications
+            </span>
+        </a>
     </div>
+    <?php include('./inc/nav_bar.php'); ?>
 </header>

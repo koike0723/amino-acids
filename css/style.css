@@ -15,6 +15,7 @@
 }
 
 .header-inner {
+  width: 90%;
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
@@ -35,21 +36,21 @@
 
 .message-button {
   display: inline-block;
-  padding: 8px 14px;
-  border: 2px solid #333;
-  background-color: #fff;
+  padding-top: 5px;
   color: #222;
   text-decoration: none;
-  font-size: 16px;
 }
 
 .message-button:hover {
-  background-color: #f5f5f5;
   color: #222;
+}
+.material-symbols-outlined{
+  font-size: 32px;
 }
 
 /* admin_header.php */
 .site-header_admin {
+  display: flex;
   background-color: #6CDFFF;
   border-top: 2px solid #00bfff;
   padding: 22px 32px;
