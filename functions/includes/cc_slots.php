@@ -241,3 +241,114 @@ function get_cc_schedule_list(
 
     return $result;
 }
+
+/**
+ * キャリコンプラス枠数を調整する
+ *
+ * 指定日のキャリコンプラス枠数をパラメータに合わせて増減する。
+ * - パラメータ > 現在数: 不足分を追加
+ * - パラメータ < 現在数: 超過分を削除（予約なし枠を優先して削除）
+ * - 削除時に予約がある場合は、紐づく予約（CC+仮予約・確定通常予約）も削除する
+ *   ※ t_cc_requests の booking_id_a/b は FK の ON DELETE SET NULL により自動でNULLになる
+ *
+ * @param  string $date          対象日付（Y-m-d 形式）
+ * @param  int    $cc_plus_count 目標のキャリコンプラス枠数（0以上）
+ * @return bool                  成功時 true、失敗時 false
+ */
+function update_cc_plus_slot_count(string $date, int $cc_plus_count): bool
+{
+    if ($cc_plus_count < 0) {
+        return false;
+    }
+
+    $db = db_connect();
+
+    try {
+        $db->beginTransaction();
+
+        // 1. 現在のCC+スロット一覧を取得（予約数も集計し、削除優先順に並べる）
+        //    ORDER: 予約なし → 予約あり → ID昇順（古い順）
+        $stmt = $db->prepare(
+            'SELECT s.id, COUNT(b.id) AS booking_count
+             FROM t_cc_slots s
+             LEFT JOIN t_cc_bookings b ON b.cc_slot_id = s.id
+             WHERE s.date = :date
+               AND s.is_cc_plus = 1
+             GROUP BY s.id
+             ORDER BY booking_count ASC, s.id ASC'
+        );
+        $stmt->execute([':date' => $date]);
+        $current_slots = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $current_count = count($current_slots);
+
+        $diff = $cc_plus_count - $current_count;
+
+        // 変化なし
+        if ($diff === 0) {
+            $db->commit();
+            return true;
+        }
+
+        // ── 枠を追加 ──────────────────────────────────────────
+        if ($diff > 0) {
+            for ($i = 0; $i < $diff; $i++) {
+                add_cc_slot($date, true);
+            }
+            $db->commit();
+            return true;
+        }
+
+        // ── 枠を削除 ──────────────────────────────────────────
+        // 予約なし枠が先頭に来ているので先頭から $delete_count 件を対象にする
+        $delete_count  = abs($diff);
+        $slots_to_delete = array_slice($current_slots, 0, $delete_count);
+
+        foreach ($slots_to_delete as $slot) {
+            $slot_id = (int) $slot['id'];
+
+            if ((int) $slot['booking_count'] > 0) {
+                // このスロットに紐づくCC+予約IDを取得
+                $id_stmt = $db->prepare(
+                    'SELECT id FROM t_cc_bookings WHERE cc_slot_id = :slot_id'
+                );
+                $id_stmt->execute([':slot_id' => $slot_id]);
+                $cc_plus_booking_ids = $id_stmt->fetchAll(PDO::FETCH_COLUMN);
+
+                if (!empty($cc_plus_booking_ids)) {
+                    $placeholders = implode(
+                        ', ',
+                        array_map(fn($i) => ":bid{$i}", array_keys($cc_plus_booking_ids))
+                    );
+
+                    // ① CC+予約から確定した通常予約を先に削除
+                    $del_derived = $db->prepare(
+                        "DELETE FROM t_cc_bookings
+                         WHERE cc_plus_booking_id IN ({$placeholders})"
+                    );
+                    foreach ($cc_plus_booking_ids as $i => $bid) {
+                        $del_derived->bindValue(":bid{$i}", $bid, PDO::PARAM_INT);
+                    }
+                    $del_derived->execute();
+
+                    // ② CC+仮予約を削除
+                    //    t_cc_requests の booking_id_a/b は FK ON DELETE SET NULL で自動NULL化
+                    $db->prepare(
+                        'DELETE FROM t_cc_bookings WHERE cc_slot_id = :slot_id'
+                    )->execute([':slot_id' => $slot_id]);
+                }
+            }
+
+            // ③ スロットを削除
+            $db->prepare(
+                'DELETE FROM t_cc_slots WHERE id = :slot_id'
+            )->execute([':slot_id' => $slot_id]);
+        }
+
+        $db->commit();
+        return true;
+
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}

@@ -51,6 +51,7 @@ includes/
 | [`add_cc_slot($date, $is_cc_plus)`](#add_cc_slotdate-is_cc_plus--false-int) | CC枠を1件登録してスロットIDを返す |
 | [`get_cc_plus_dates($base_date)`](#get_cc_plus_datesstring-base_date--null-array) | CC+開催日の一覧を重複なしで取得 |
 | [`get_cc_schedule_list($base_date, $range, $course_ids)`](#get_cc_schedule_listbase_date-range-course_ids) | キャリコン開催予定一覧を取得。基準日・表示範囲・コースで絞り込み可能 |
+| [`update_cc_plus_slot_count($date, $cc_plus_count)`](#update_cc_plus_slot_countstring-date-int-cc_plus_count-bool) | 指定日のCC+枠数をパラメータに合わせて増減する |
 
 **CC予約・申請管理（cc_bookings.php）**
 | 関数名 | 説明 |
@@ -583,6 +584,49 @@ $list = get_cc_schedule_list(null, 2, [1, 3]);
 > - `$course_ids` で絞り込んだ場合、`cc_list` は指定コースのみになるが、`cc_plus_count` / `line_count` は全枠数のまま。
 > - `cc_list` の値（`room_name`）は `m_courses.room_id` が未設定の場合 `null` になる。
 
+---
+ 
+### `update_cc_plus_slot_count(string $date, int $cc_plus_count): bool`
+ 
+指定日のCC+枠数（`is_cc_plus = 1`）をパラメータに合わせて増減する。  
+現在の枠数と目標値を比較し、不足分を追加・超過分を削除する。  
+削除時に予約が紐づいている場合は、関連する予約もすべて削除する。
+ 
+```php
+// 2026-05-10 のCC+枠を3枠に設定（現在2枠 → 1枠追加）
+update_cc_plus_slot_count('2026-05-10', 3);
+ 
+// 2026-05-10 のCC+枠を1枠に設定（現在3枠 → 2枠削除、予約なし枠を優先）
+update_cc_plus_slot_count('2026-05-10', 1);
+ 
+// 2026-05-10 のCC+枠をすべて削除
+update_cc_plus_slot_count('2026-05-10', 0);
+```
+ 
+| 引数 | 型 | 説明 |
+|---|---|---|
+| `$date` | `string` | 対象日付（`Y-m-d` 形式） |
+| `$cc_plus_count` | `int` | 目標のCC+枠数（0以上） |
+ 
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true`、`$cc_plus_count < 0` またはDBエラー時 `false` |
+ 
+**削除時の処理順序**
+ 
+削除対象スロットの選定は「予約件数の少ない順 → ID昇順（古い順）」で行う。  
+予約ありスロットを削除する場合は以下の順でカスケード削除される。
+ 
+```
+① CC+仮予約から確定した通常予約（cc_plus_booking_id = CC+予約ID）を削除
+② CC+仮予約（t_cc_bookings の cc_slot_id = 対象スロットID）を削除
+③ スロット（t_cc_slots）を削除
+   ↳ t_cc_requests の booking_id_a / booking_id_b は FK ON DELETE SET NULL により自動でNULLになる
+```
+ 
+> **注意:** 予約ありのスロットを削除した場合、生徒への通知はこの関数の外で別途行う必要がある。  
+> `t_cc_requests` の申請レコード自体は削除されず、`booking_id_a / b` がNULLになった状態で残る点に注意すること。
+ 
 ---
 
 ## CC予約・申請管理（cc_bookings.php）
