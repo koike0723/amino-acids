@@ -50,6 +50,7 @@ includes/
 | [`get_cc_slots($cc_type, $target_date)`](#get_cc_slotscc_type-target_date) | CC枠一覧を取得。種別・日付で絞り込み可能 |
 | [`add_cc_slot($date, $is_cc_plus)`](#add_cc_slotdate-is_cc_plus--false-int) | CC枠を1件登録してスロットIDを返す |
 | [`get_cc_plus_dates($base_date)`](#get_cc_plus_datesstring-base_date--null-array) | CC+開催日の一覧を重複なしで取得 |
+| [`get_cc_schedule_list($base_date, $range, $course_ids)`](#get_cc_schedule_listbase_date-range-course_ids) | キャリコン開催予定一覧を取得。基準日・表示範囲・コースで絞り込み可能 |
 
 **CC予約・申請管理（cc_bookings.php）**
 | 関数名 | 説明 |
@@ -522,6 +523,65 @@ $dates = get_cc_plus_dates('2026-06-01');
 | | |
 |---|---|
 | 戻り値 | `array[]` `[['cc_date' => 'Y-m-d'], ...]` の配列 |
+
+---
+
+### `get_cc_schedule_list($base_date, $range, $course_ids)`
+
+基準日以降・指定範囲内のキャリコン開催予定を返す。  
+`t_cc_slots` の枠数集計と `t_course_cc_schedules` の必須CC開催コース一覧を日付単位でマージした構造で返す。
+
+```php
+// 基本（今日から2か月分・全コース）
+$list = get_cc_schedule_list();
+
+// 基準日と範囲を指定
+$list = get_cc_schedule_list('2026-05-01', 3);
+
+// 特定コースのみ絞り込む
+$list = get_cc_schedule_list(null, 2, [1, 3]);
+```
+
+| 引数 | 型 | 説明 |
+|---|---|---|
+| `$base_date` | `string\|null` | 基準日（デフォルト: 今日）。この日付以降が対象 |
+| `$range` | `int` | 表示範囲（月数）。1, 2, 3, 6, 12 など（デフォルト: 2） |
+| `$course_ids` | `array\|null` | 絞り込むコースIDの配列。`null` の場合は全コース対象 |
+
+| | |
+|---|---|
+| 戻り値 | `array` 年・月・日の3階層をキーとした開催予定の連想配列 |
+
+**戻り値の構造:**
+
+```php
+[
+    'Y' => [
+        'm' => [
+            'd' => [
+                'cc_list'       => [ course_id(int) => room_name(string|null), ... ],
+                'cc_plus_count' => int,  // CC+枠（is_cc_plus=1）の数
+                'line_count'    => int,  // 全枠数（is_cc_plus 問わず）
+            ],
+        ],
+    ],
+]
+```
+
+**取得元テーブル:**
+
+| キー | 取得元 | 備考 |
+|---|---|---|
+| 年・月・日（配列キー） | `t_cc_slots.date` | `$base_date` 以降・`$end_date` 以前。月・日はゼロ埋め2桁 |
+| `cc_list` | `t_course_cc_schedules` + `m_courses` + `m_rooms` | キー: `course_id`、値: コースに設定された教室名 |
+| `cc_plus_count` | `t_cc_slots` | `is_cc_plus = 1` の件数 |
+| `line_count` | `t_cc_slots` | 全枠の件数（`is_cc_plus` 問わず） |
+
+> **注意:**
+> - `t_cc_slots` に枠があるが `t_course_cc_schedules` に予定がない日付も結果に含まれる（`cc_list` が空配列）。
+> - 逆に `t_course_cc_schedules` に予定があるが `t_cc_slots` に枠がない日付も含まれる（`cc_plus_count` / `line_count` が 0）。
+> - `$course_ids` で絞り込んだ場合、`cc_list` は指定コースのみになるが、`cc_plus_count` / `line_count` は全枠数のまま。
+> - `cc_list` の値（`room_name`）は `m_courses.room_id` が未設定の場合 `null` になる。
 
 ---
 
