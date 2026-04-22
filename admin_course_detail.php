@@ -36,6 +36,11 @@ try {
 
 <body>
     <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
+    <?php if (isset($_GET["status"]) && $_GET["status"] === "success"): ?>
+        <div class="alert alert-success">
+            コースを編集しました！
+        </div>
+    <?php endif; ?>
 
     <div class="content-wrap" style="width: 89.33333%; max-width: 1000px; margin-inline: auto;">
 
@@ -73,7 +78,7 @@ try {
                             <label for="cc1_1" class="form-label">１枠目</label>
                             <p href="./admin_cc_course_list.php" id="cc1_1" class="form-control form-control-sm">
                                 <?php
-                                if (!empty($course["cc"][1][0])) {
+                                if (!empty($course["cc"][1][0]) && $course["cc"][1][0] != "0000-00-00") {
                                     echo format_japanese_date($course["cc"][1][0]);
                                 } else {
                                     echo "未設定";
@@ -85,7 +90,7 @@ try {
                             <label for="cc1_2" class="form-label">２枠目</label>
                             <p href="./admin_cc_course_list.php" id="cc1_2" class="form-control form-control-sm">
                                 <?php
-                                if (!empty($course["cc"][1][1])) {
+                                if (!empty($course["cc"][1][1]) && $course["cc"][1][1] != "0000-00-00") {
                                     echo format_japanese_date($course["cc"][1][1]);
                                 } else {
                                     echo "未設定";
@@ -100,7 +105,7 @@ try {
                             <label for="cc2_1" class="form-label">１枠目</label>
                             <p href="./admin_cc_course_list.php" id="cc2_1" class="form-control form-control-sm">
                                 <?php
-                                if (!empty($course["cc"][2][0])) {
+                                if (!empty($course["cc"][2][0]) && $course["cc"][2][0] != "0000-00-00") {
                                     echo format_japanese_date($course["cc"][2][0]);
                                 } else {
                                     echo "未設定";
@@ -112,7 +117,7 @@ try {
                             <label for="cc2_2" class="form-label">２枠目</label>
                             <p href="./admin_cc_course_list.php" id="cc2_2" class="form-control form-control-sm">
                                 <?php
-                                if (!empty($course["cc"][2][1])) {
+                                if (!empty($course["cc"][2][1]) && $course["cc"][2][1] != "0000-00-00") {
                                     echo format_japanese_date($course["cc"][2][1]);
                                 } else {
                                     echo "未設定";
@@ -127,7 +132,7 @@ try {
                             <label for="cc3_1" class="form-label">１枠目</label>
                             <p href="./admin_cc_course_list.php" id="cc3_1" class="form-control form-control-sm">
                                 <?php
-                                if (!empty($course["cc"][3][0])) {
+                                if (!empty($course["cc"][3][0]) && $course["cc"][3][0] != "0000-00-00") {
                                     echo format_japanese_date($course["cc"][3][0]);
                                 } else {
                                     echo "未設定";
@@ -139,7 +144,7 @@ try {
                             <label for="cc3_2" class="form-label">２枠目</label>
                             <p href="./admin_cc_course_list.php" id="cc3_2" class="form-control form-control-sm">
                                 <?php
-                                if (!empty($course["cc"][3][1])) {
+                                if (!empty($course["cc"][3][1]) && $course["cc"][3][1] != "0000-00-00") {
                                     echo format_japanese_date($course["cc"][3][1]);
                                 } else {
                                     echo "未設定";
