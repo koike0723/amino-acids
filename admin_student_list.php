@@ -188,7 +188,7 @@ $filtered_students = array_filter($students, function ($student) use ($date, $st
         </div>
 
         <div class="previous-btn">
-            <a href="#">
+            <a href="./admin_index.php">
                 <button type="button" class="prev-btn">戻る</button>
             </a>
         </div>
@@ -197,4 +197,5 @@ $filtered_students = array_filter($students, function ($student) use ($date, $st
 
 <script src="./js/script.js"></script>
 <script src="./js/hamburger.js"></script>
+
 </html>

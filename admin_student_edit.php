@@ -2,35 +2,26 @@
 <?php
 require_once __DIR__ . '/functions/functions.php';
 
-//$id = $_GET['id'];
+$id = $_GET['id'] ?? '';
 
-//if (!empty($id)) {
-try {
-    $student = get_student(1); //GETで取得した生徒IDを使う
-    $courses = get_courses();
-} catch (PDOException $e) {
-    check($e);
+if (!empty($id)) {
+    try {
+        $student = get_student($id);
+        $courses = get_courses();
+    } catch (PDOException $e) {
+        check($e);
+    }
+} else {
+    header('Location: admin_student_list.php');
+    exit();
 }
-//} 
-// else {
-//     header('location:admin_student_list.php');
-//     exit();
-// }
-?>
-<?php
+
 $db = db_connect();
-$sql = 'SELECT * FROM m_student_status ORDER BY id ASC,name ASC';
+$sql = 'SELECT * FROM m_student_status ORDER BY id ASC, name ASC';
 $stmt = $db->prepare($sql);
 $stmt->execute();
 $student_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// $db2 = db_connect();
-// $sql2 = 'SELECT * FROM m_courses ORDER BY id ASC,name ASC';
-// $stmt2 = $db->prepare($sql2);
-// $stmt2->execute();
-// $courses = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -45,50 +36,76 @@ $student_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
     <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
+
     <main>
         <p class="student-edit-h1">生徒編集</p>
-        <div class="student-edit-area">
-            <div class="student-edit-flex">
-                <div class="style-area" style="padding-block-end: 1.3rem;">
+        <?php check($student); ?>
+        <form action="./php_do/student_edit_do.php" method="post">
+            <input type="hidden" name="student_id" value="<?= h($student['student_id']); ?>">
+
+            <div class="student-edit-area">
+                <div class="student-edit-flex">
+                    <div class="style-area" style="padding-block-end: 1.3rem;">
+                        <label class="student-edit-title">
+                            <span class="student-edit-span">姓</span>
+                            <input
+                                type="text"
+                                name="last_name"
+                                class="student-edit-name"
+                                value="<?= h($student['first_name'] ?? ''); ?>">
+                        </label>
+
+                        <label class="student-edit-title">
+                            <span class="student-edit-span">名</span>
+                            <input
+                                type="text"
+                                name="first_name"
+                                class="student-edit-name"
+                                value="<?= h($student['last_name'] ?? ''); ?>">
+                        </label>
+                    </div>
+
                     <label class="student-edit-title">
-                        <span class="student-edit-span">名前</span>
-                        <input type="text" name="student-edit-name" class="student-edit-name" value="<?= $student['student_name']; ?>">
-                    </label>
-                </div>
-                <label class="student-edit-title">
-                    <span class="student-edit-span">訓練名</span>
-                    <label for="student-edit-option" class="student-edit-option-label">
-                        <select name="student-edit-option-select" id="student-edit-option-select" class="student-edit-option-select" style="width: fit-content;">
+                        <span class="student-edit-span">訓練名</span>
+                        <select name="course_id" class="student-edit-option-select" style="width: fit-content;">
                             <?php foreach ($courses as $course): ?>
-                                <option value="<?= h($course['course_id']); ?>" <?php echo $student['course_id'] === $course['course_id'] ? "selected" : ''; ?>><?= h($course['course_name']); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </label>
-            </div>
-        </div>
-        <div class="student-edit-option-area">
-            <div class="student-edit-option-flex">
-                <div class="student-edit-option-con-flex">
-                    <span class="student-edit-option-span">状態</span>
-                    <label for="student-edit-option" class="student-edit-option-label">
-                        <select name="student-edit-option-select" id="student-edit-option-select" class="student-edit-option-select">
-                            <?php foreach ($student_status as $status): ?>
-                                <option value="<?= h($status['id']); ?>" <?php echo $student['status_id'] === $status['id'] ? "selected" : ''; ?>><?= $status['name']; ?></option>
+                                <option value="<?= h($course['course_id']); ?>" <?= ($student['course_id'] == $course['course_id']) ? 'selected' : ''; ?>>
+                                    <?= h($course['course_name']); ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
                     </label>
                 </div>
             </div>
-        </div>
-        <div class="student-edit-controle-area">
-            <div class="student-edit-controle-flex">
-                <a href="#">
-                    <button type="btn" class="seb-prev">キャンセル</button>
-                </a>
-                <a href="#">
-                    <button type="btn" class="seb-next">確定</button>
-                </a>
+
+            <div class="student-edit-option-area">
+                <div class="student-edit-option-flex">
+                    <div class="student-edit-option-con-flex">
+                        <span class="student-edit-option-span">状態</span>
+                        <label class="student-edit-option-label">
+                            <select name="status_id" class="student-edit-option-select">
+                                <?php foreach ($student_status as $status): ?>
+                                    <option value="<?= h($status['id']); ?>" <?= ($student['status_id'] == $status['id']) ? 'selected' : ''; ?>>
+                                        <?= h($status['name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </label>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <div class="student-edit-controle-area">
+                <div class="student-edit-controle-flex">
+                    <a href="./admin_student_detail.php?id=<?= h($student['student_id']); ?>">
+                        <button type="button" class="seb-prev">キャンセル</button>
+                    </a>
+
+                    <button type="submit" class="seb-next">確定</button>
+                </div>
+            </div>
+        </form>
     </main>
 </body>
+
+</html>
