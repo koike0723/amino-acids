@@ -4,18 +4,17 @@ require_once __DIR__ . '/functions/functions.php';
 ?>
 
 <?php
-//$id = $_GET['id'];
-//if (!empty($_GET['id'])) {
-try {
-    $student = get_student(1);
-} catch (PDOException $e) {
-    check($e);
+$id = $_GET['id'];
+if (!empty($_GET['id'])) {
+    try {
+        $student = get_student($id);
+    } catch (PDOException $e) {
+        check($e);
+    }
+} else {
+    header('location:admin_student_list.php');
+    exit();
 }
-//} 
-//else {
-//header('location:admin_student_list.php');
-//exit();
-//}
 ?>
 
 <!DOCTYPE html>
@@ -31,9 +30,9 @@ try {
 </head>
 
 <body>
-    <?php check($student); ?>
     <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
     <main>
+        <?php check($student); ?>
         <p class="student-detail-h1">生徒詳細</p>
         <div class="student-detail-dl-area">
             <dl class="student-detail-dl">
@@ -61,10 +60,10 @@ try {
                 </div>
             </dl>
             <div class="student-detail-controle-area">
-                <a href="admin_student_edit.php">
+                <a href="admin_student_edit.php?id=<?= h($student['student_id']); ?>">
                     <button type="btn" class="student-detail-editBtn">編集画面へ</button>
                 </a>
-                <a href="#">
+                <a href="./admin_student_list.php">
                     <button type="btn" class="prev-btn" style="border-radius: 5px;">戻る</button>
                 </a>
             </div>
