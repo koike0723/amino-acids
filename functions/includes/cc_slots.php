@@ -109,3 +109,246 @@ function add_cc_slot($date, $is_cc_plus = false): int
     $stmt->execute([':date' => $date, ':is_cc_plus' => $is_cc_plus]);
     return (int) $db->lastInsertId();
 }
+
+/**
+ * キャリコン開催予定一覧を取得
+ *
+ * 基準日以降・指定範囲内のキャリコン開催予定を日付をキーとした連想配列で返す。
+ * t_cc_slots の枠数集計と t_course_cc_schedules の必須CC開催コース一覧をマージして返す。
+ *
+ * 戻り値の構造:
+ * [
+ *   'Y' => [
+ *     'm' => [
+ *       'd' => [
+ *         'cc_list'       => [ course_id(int) => room_name(string), ... ],
+ *         'cc_plus_count' => int,  // is_cc_plus=1 の枠数
+ *         'line_count'    => int,  // 全枠数（is_cc_plus 問わず）
+ *       ],
+ *     ],
+ *   ],
+ * ]
+ *
+ * @param string|null $base_date  基準日（デフォルト: 今日）。この日付以降が対象
+ * @param int         $range      表示範囲（月数）。1, 2, 3, 6, 12 など。デフォルト: 2
+ * @param array|null  $course_ids 絞り込むコースIDの配列。null の場合は全コース対象
+ * @return array キャリコン開催予定一覧
+ */
+function get_cc_schedule_list(
+    ?string $base_date = null,
+    int $range = 2,
+    ?array $course_ids = null
+): array {
+    $base_date ??= date('Y-m-d');
+
+    // 終了日：基準日 + range ヶ月後（当日含む）
+    $end_date = (new DateTime($base_date))
+        ->modify("+{$range} months")
+        ->format('Y-m-d');
+
+    $db = db_connect();
+
+    // --- 1. t_cc_slots から日付ごとの枠数を集計 ---
+    $slot_sql = 'SELECT
+                    date,
+                    SUM(CASE WHEN is_cc_plus = 1 THEN 1 ELSE 0 END) AS cc_plus_count,
+                    COUNT(*) AS line_count
+                 FROM t_cc_slots
+                 WHERE date >= :base_date
+                   AND date <= :end_date
+                 GROUP BY date
+                 ORDER BY date ASC';
+
+    $slot_stmt = $db->prepare($slot_sql);
+    $slot_stmt->execute([
+        ':base_date' => $base_date,
+        ':end_date'  => $end_date,
+    ]);
+    $slot_rows = $slot_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // --- 2. t_course_cc_schedules から必須CC開催コース一覧を取得 ---
+    $schedule_params = [
+        ':base_date' => $base_date,
+        ':end_date'  => $end_date,
+    ];
+
+    $schedule_sql = 'SELECT
+                        s.date,
+                        s.course_id,
+                        r.name AS room_name
+                     FROM t_course_cc_schedules s
+                     JOIN m_courses c ON s.course_id = c.id
+                     LEFT JOIN m_rooms r ON c.room_id = r.id
+                     WHERE s.date >= :base_date
+                       AND s.date <= :end_date';
+
+    // コースIDが指定されている場合は絞り込む
+    if (!empty($course_ids)) {
+        $id_placeholders = [];
+        foreach ($course_ids as $i => $id) {
+            $key = ':course_id_' . $i;
+            $id_placeholders[] = $key;
+            $schedule_params[$key] = $id;
+        }
+        $schedule_sql .= ' AND s.course_id IN (' . implode(', ', $id_placeholders) . ')';
+    }
+
+    $schedule_sql .= ' ORDER BY s.date ASC';
+
+    $schedule_stmt = $db->prepare($schedule_sql);
+    $schedule_stmt->execute($schedule_params);
+    $schedule_rows = $schedule_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // --- 3. 結果をマージして構造化 ---
+    $result = [];
+
+    // ヘルパー: 'Y-m-d' 形式の日付を [Y, m, d] に分解
+    $split_date = fn(string $date): array => explode('-', $date);
+
+    // t_cc_slots の集計をベースに初期化
+    foreach ($slot_rows as $row) {
+        [$y, $m, $d] = $split_date($row['date']);
+        $result[$y][$m][$d] = [
+            'cc_list'       => [],
+            'cc_plus_count' => (int) $row['cc_plus_count'],
+            'line_count'    => (int) $row['line_count'],
+        ];
+    }
+
+    // t_course_cc_schedules の情報を cc_list に追加
+    // ※ t_cc_slots に対応する日付がない場合も許容（カウントは 0 で初期化）
+    foreach ($schedule_rows as $row) {
+        [$y, $m, $d] = $split_date($row['date']);
+        if (!isset($result[$y][$m][$d])) {
+            $result[$y][$m][$d] = [
+                'cc_list'       => [],
+                'cc_plus_count' => 0,
+                'line_count'    => 0,
+            ];
+        }
+        $result[$y][$m][$d]['cc_list'][(int) $row['course_id']] = $row['room_name'];
+    }
+
+    // 年・月・日の順に並び替えて返す
+    ksort($result);
+    foreach ($result as &$months) {
+        ksort($months);
+        foreach ($months as &$days) {
+            ksort($days);
+        }
+    }
+    unset($months, $days);
+
+    return $result;
+}
+
+/**
+ * キャリコンプラス枠数を調整する
+ *
+ * 指定日のキャリコンプラス枠数をパラメータに合わせて増減する。
+ * - パラメータ > 現在数: 不足分を追加
+ * - パラメータ < 現在数: 超過分を削除（予約なし枠を優先して削除）
+ * - 削除時に予約がある場合は、紐づく予約（CC+仮予約・確定通常予約）も削除する
+ *   ※ t_cc_requests の booking_id_a/b は FK の ON DELETE SET NULL により自動でNULLになる
+ *
+ * @param  string $date          対象日付（Y-m-d 形式）
+ * @param  int    $cc_plus_count 目標のキャリコンプラス枠数（0以上）
+ * @return bool                  成功時 true、失敗時 false
+ */
+function update_cc_plus_slot_count(string $date, int $cc_plus_count): bool
+{
+    if ($cc_plus_count < 0) {
+        return false;
+    }
+
+    $db = db_connect();
+
+    try {
+        $db->beginTransaction();
+
+        // 1. 現在のCC+スロット一覧を取得（予約数も集計し、削除優先順に並べる）
+        //    ORDER: 予約なし → 予約あり → ID昇順（古い順）
+        $stmt = $db->prepare(
+            'SELECT s.id, COUNT(b.id) AS booking_count
+             FROM t_cc_slots s
+             LEFT JOIN t_cc_bookings b ON b.cc_slot_id = s.id
+             WHERE s.date = :date
+               AND s.is_cc_plus = 1
+             GROUP BY s.id
+             ORDER BY booking_count ASC, s.id ASC'
+        );
+        $stmt->execute([':date' => $date]);
+        $current_slots = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $current_count = count($current_slots);
+
+        $diff = $cc_plus_count - $current_count;
+
+        // 変化なし
+        if ($diff === 0) {
+            $db->commit();
+            return true;
+        }
+
+        // ── 枠を追加 ──────────────────────────────────────────
+        if ($diff > 0) {
+            for ($i = 0; $i < $diff; $i++) {
+                add_cc_slot($date, true);
+            }
+            $db->commit();
+            return true;
+        }
+
+        // ── 枠を削除 ──────────────────────────────────────────
+        // 予約なし枠が先頭に来ているので先頭から $delete_count 件を対象にする
+        $delete_count  = abs($diff);
+        $slots_to_delete = array_slice($current_slots, 0, $delete_count);
+
+        foreach ($slots_to_delete as $slot) {
+            $slot_id = (int) $slot['id'];
+
+            if ((int) $slot['booking_count'] > 0) {
+                // このスロットに紐づくCC+予約IDを取得
+                $id_stmt = $db->prepare(
+                    'SELECT id FROM t_cc_bookings WHERE cc_slot_id = :slot_id'
+                );
+                $id_stmt->execute([':slot_id' => $slot_id]);
+                $cc_plus_booking_ids = $id_stmt->fetchAll(PDO::FETCH_COLUMN);
+
+                if (!empty($cc_plus_booking_ids)) {
+                    $placeholders = implode(
+                        ', ',
+                        array_map(fn($i) => ":bid{$i}", array_keys($cc_plus_booking_ids))
+                    );
+
+                    // ① CC+予約から確定した通常予約を先に削除
+                    $del_derived = $db->prepare(
+                        "DELETE FROM t_cc_bookings
+                         WHERE cc_plus_booking_id IN ({$placeholders})"
+                    );
+                    foreach ($cc_plus_booking_ids as $i => $bid) {
+                        $del_derived->bindValue(":bid{$i}", $bid, PDO::PARAM_INT);
+                    }
+                    $del_derived->execute();
+
+                    // ② CC+仮予約を削除
+                    //    t_cc_requests の booking_id_a/b は FK ON DELETE SET NULL で自動NULL化
+                    $db->prepare(
+                        'DELETE FROM t_cc_bookings WHERE cc_slot_id = :slot_id'
+                    )->execute([':slot_id' => $slot_id]);
+                }
+            }
+
+            // ③ スロットを削除
+            $db->prepare(
+                'DELETE FROM t_cc_slots WHERE id = :slot_id'
+            )->execute([':slot_id' => $slot_id]);
+        }
+
+        $db->commit();
+        return true;
+
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}

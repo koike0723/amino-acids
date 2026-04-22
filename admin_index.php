@@ -147,7 +147,7 @@ require_once __DIR__ . '/functions/functions.php';
                             </a>
                         </td>
                     </tr>
-                   <tr class="ad-index-tr">
+                    <tr class="ad-index-tr">
                         <td class="ad-index-td">6</td>
                         <td class="ad-index-td">6A</td>
                         <td class="ad-index-td cc-plus-fz">
@@ -266,9 +266,9 @@ require_once __DIR__ . '/functions/functions.php';
             </table>
         </div>
     </main>
+    <script src="./js/script.js"></script>
+    <script src="./js/hamburger.js"></script>
 </body>
 
-<script src="./js/script.js"></script>
-<script src="./js/hamburger.js"></script>
 
 </html>

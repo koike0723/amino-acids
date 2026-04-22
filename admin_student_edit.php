@@ -106,6 +106,8 @@ $student_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </form>
     </main>
+    <script src="./js/script.js"></script>
+    <script src="./js/hamburger.js"></script>
 </body>
 
 </html>

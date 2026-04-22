@@ -69,6 +69,8 @@ if (!empty($_GET['id'])) {
             </div>
         </div>
     </main>
+    <script src="./js/script.js"></script>
+    <script src="./js/hamburger.js"></script>
 </body>
 
 </html>
