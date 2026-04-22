@@ -1,3 +1,4 @@
+<!-- http://localhost:8080/amino-acids/admin_course_edit.php -->
 <!-- コース編集画面 -->
 <?php require_once __DIR__ . '/functions/functions.php'; ?>
 
@@ -12,9 +13,9 @@ if (isset($_GET['course_id'])) {
 ?>
 
 <?php
-/////////////////////////////////////////////////////
-/////////////////////データベース処理/////////////////
-////////////////////////////////////////////////////
+//////////////////////////////////////////////////
+//////////////////データベース処理/////////////////
+//////////////////////////////////////////////////
 try {
     $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
     $db = new PDO($dsn, DB_USER, DB_PASS);
@@ -64,11 +65,7 @@ try {
 <body>
 
     <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
-    <?php if (isset($_GET["status"]) && $_GET["status"] === "success"): ?>
-        <div class="alert alert-success">
-            コースを編集しました！
-        </div>
-    <?php endif; ?>
+
     <?php if (isset($_GET["status"]) && $_GET["status"] === "error"): ?>
         <?php if (isset($_GET["message"])): ?>
             <?php if ($_GET["message"] === "no_data"): ?>
@@ -78,10 +75,6 @@ try {
             <?php elseif ($_GET["message"] === "cant_db"): ?>
                 <div class="alert alert-danger">
                     データベース時のエラー。
-                </div>
-            <?php elseif ($_GET["message"] === "same_course"): ?>
-                <div class="alert alert-danger">
-                    すでにその日付はほかのコースがその教室を使っています！
                 </div>
             <?php elseif ($_GET["message"] === "error_date"): ?>
                 <div class="alert alert-danger">
@@ -100,6 +93,9 @@ try {
         <h1 class="m-5">コース編集</h1>
 
         <form action="php_do/course_edit_do.php" method="post" class="row align-items-start">
+
+            <input type="hidden" name="course_id" id="course_id" value="<?= $course_id ?>">
+
             <div class="course_name col-12 mb-2">
                 <label for="course_name" class="form-label">訓練名</label>
                 <input type="text" name="course_name" id="course_name" required class="form-control" value="<?= $course["course_name"] ?>">
@@ -109,7 +105,7 @@ try {
                 <select name="room_id" id="room_id" required class="form-control">
                     <?php foreach ($rooms as $room): ?>
                         <?php if ($room["id"] != 13): ?>
-                            <option value="<?php echo $room["id"]; ?>" <?= ($course["room_id"] == $room["id"]) ? "checked" : "" ?>><?php echo $room["name"]; ?></option>
+                            <option value="<?php echo $room["id"]; ?>" <?= ($course["room_id"] == $room["id"]) ? "selected" : "" ?>><?php echo $room["name"]; ?></option>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </select>
@@ -118,7 +114,7 @@ try {
                 <label for="category_id" class="form-label">訓練カテゴリー</label>
                 <select name="category_id" id="category_id" required class="form-control">
                     <?php foreach ($categories as $category): ?>
-                        <option value="<?php echo $category["id"]; ?>" <?= ($course["category_id"] == $category["id"]) ? "checked" : "" ?>><?php echo $category["name"]; ?></option>
+                        <option value="<?php echo $category["id"]; ?>" <?= ($course["category_id"] == $category["id"]) ? "selected" : "" ?>><?php echo $category["name"]; ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -129,7 +125,8 @@ try {
                 <input type="date" name="course_finish" id="course_finish" value="<?= $course["end_date"] ?>" required class="form-control form-control-sm">
             </div>
 
-            <dl class="course_cc col-8" id="cc_box">
+
+            <dl class="course_cc col-8" id="cc_box" style="<?= ($course['category_id'] == 1) ? '' : 'display:none;' ?>">
                 <div class="card mb-2 px-1 py-1">
                     <dt class="mb-1">キャリコン１</dt>
                     <dd class="cc1 mb-1 d-flex justify-content-around">
@@ -170,14 +167,12 @@ try {
                     </div>
                 </div>
             </dl>
-
             <div class="col-12 d-flex justify-content-center mt-4 mb-5">
                 <a href="admin_course_list.php" class="btn btn-secondary px-3 mr-5">一覧へ戻る</a>
                 <input type="submit" value="編集完了" class="btn btn-success px-3 ml-5">
             </div>
         </form>
     </div>
-
 </body>
 <script src="js/cc_box_toggle.js"></script>
 
