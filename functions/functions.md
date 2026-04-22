@@ -789,7 +789,8 @@ CC+から確定した通常予約（`cc_plus_booking_id IS NOT NULL`）は除外
 ```php
 $bookings = get_course_cc_bookings(course_id: 2, cc_count: 1);
 foreach ($bookings['2026-05-10']['10:00'] as $b) {
-    echo $b['student_name'];
+    echo $b['student_id'];    // 生徒ID
+    echo $b['student_name'];  // 生徒氏名
 }
 ```
 
@@ -798,7 +799,7 @@ foreach ($bookings['2026-05-10']['10:00'] as $b) {
 [
     '2026-05-10' => [
         '10:00' => [
-            ['booking_id' => 10, 'student_name' => '山田太郎'],
+            ['booking_id' => 10, 'student_id' => 3, 'student_name' => '山田太郎'],
         ],
         '11:00' => [...],
     ],
