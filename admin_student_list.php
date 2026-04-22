@@ -193,8 +193,9 @@ $filtered_students = array_filter($students, function ($student) use ($date, $st
             </a>
         </div>
     </main>
+    <script src="./js/script.js"></script>
+    <script src="./js/hamburger.js"></script>
 </body>
-
 <script src="./js/script.js"></script>
 <script src="./js/hamburger.js"></script>
 </html>
