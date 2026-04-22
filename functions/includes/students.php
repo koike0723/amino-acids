@@ -12,7 +12,7 @@ require_once __DIR__ . '/db.php';
 function student_login($login_id, $password)
 {
     $db = db_connect();
-    $sql = 'SELECT CONCAT(first_name,last_name) AS student_name, id FROM m_students WHERE login_id=:login_id ';
+    $sql = 'SELECT CONCAT(first_name,last_name) AS student_name,password ,id FROM m_students WHERE login_id=:login_id ';
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':login_id', $login_id, PDO::PARAM_STR);
     $stmt->execute();
@@ -20,7 +20,7 @@ function student_login($login_id, $password)
 
     if ($result) {
         if (password_verify($password, $result['password'])) {
-            $_SESSION['id'] = $result['id'];
+            $_SESSION['student_id'] = $result['id'];
             $_SESSION['student_name'] = $result['student_name'];
             $_SESSION['res_message'] = ['status_code' => 1, 'msg' => 'ログイン成功'];
             return true;

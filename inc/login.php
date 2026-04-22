@@ -1,6 +1,8 @@
 <?php 
 require_once __DIR__ . '/../functions/functions.php';
+session_start();
 ?>
+
 
 <!doctype html>
 <html lang="ja">
@@ -19,7 +21,7 @@ require_once __DIR__ . '/../functions/functions.php';
         <div>
             <!-- ここから「本文」-->
             <h1>ログイン</h1>
-            <form class="l-login_form" action="login_do.php" method="post">
+            <form class="l-login_form" action="./../php_do/login_do.php" method="post">
 
                 <div class="mb-3">
                     <label for="name" class="sr-only">名前</label>
