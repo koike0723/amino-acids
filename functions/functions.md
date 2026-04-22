@@ -227,6 +227,8 @@ foreach ($student['bookings'] as $booking) {
 ```php
 [
     'student_id'   => 1,
+    'first_name'   => '太郎',
+    'last_name'    => '山田',
     'student_name' => '山田太郎',
     'number'       => 1,
     'status_id'    => 1,
