@@ -50,6 +50,8 @@ includes/
 | [`get_cc_slots($cc_type, $target_date)`](#get_cc_slotscc_type-target_date) | CC枠一覧を取得。種別・日付で絞り込み可能 |
 | [`add_cc_slot($date, $is_cc_plus)`](#add_cc_slotdate-is_cc_plus--false-int) | CC枠を1件登録してスロットIDを返す |
 | [`get_cc_plus_dates($base_date)`](#get_cc_plus_datesstring-base_date--null-array) | CC+開催日の一覧を重複なしで取得 |
+| [`get_cc_schedule_list($base_date, $range, $course_ids)`](#get_cc_schedule_listbase_date-range-course_ids) | キャリコン開催予定一覧を取得。基準日・表示範囲・コースで絞り込み可能 |
+| [`update_cc_plus_slot_count($date, $cc_plus_count)`](#update_cc_plus_slot_countstring-date-int-cc_plus_count-bool) | 指定日のCC+枠数をパラメータに合わせて増減する |
 
 **CC予約・申請管理（cc_bookings.php）**
 | 関数名 | 説明 |
@@ -225,6 +227,8 @@ foreach ($student['bookings'] as $booking) {
 ```php
 [
     'student_id'   => 1,
+    'first_name'   => '太郎',
+    'last_name'    => '山田',
     'student_name' => '山田太郎',
     'number'       => 1,
     'status_id'    => 1,
@@ -525,6 +529,108 @@ $dates = get_cc_plus_dates('2026-06-01');
 
 ---
 
+### `get_cc_schedule_list($base_date, $range, $course_ids)`
+
+基準日以降・指定範囲内のキャリコン開催予定を返す。  
+`t_cc_slots` の枠数集計と `t_course_cc_schedules` の必須CC開催コース一覧を日付単位でマージした構造で返す。
+
+```php
+// 基本（今日から2か月分・全コース）
+$list = get_cc_schedule_list();
+
+// 基準日と範囲を指定
+$list = get_cc_schedule_list('2026-05-01', 3);
+
+// 特定コースのみ絞り込む
+$list = get_cc_schedule_list(null, 2, [1, 3]);
+```
+
+| 引数 | 型 | 説明 |
+|---|---|---|
+| `$base_date` | `string\|null` | 基準日（デフォルト: 今日）。この日付以降が対象 |
+| `$range` | `int` | 表示範囲（月数）。1, 2, 3, 6, 12 など（デフォルト: 2） |
+| `$course_ids` | `array\|null` | 絞り込むコースIDの配列。`null` の場合は全コース対象 |
+
+| | |
+|---|---|
+| 戻り値 | `array` 年・月・日の3階層をキーとした開催予定の連想配列 |
+
+**戻り値の構造:**
+
+```php
+[
+    'Y' => [
+        'm' => [
+            'd' => [
+                'cc_list'       => [ course_id(int) => room_name(string|null), ... ],
+                'cc_plus_count' => int,  // CC+枠（is_cc_plus=1）の数
+                'line_count'    => int,  // 全枠数（is_cc_plus 問わず）
+            ],
+        ],
+    ],
+]
+```
+
+**取得元テーブル:**
+
+| キー | 取得元 | 備考 |
+|---|---|---|
+| 年・月・日（配列キー） | `t_cc_slots.date` | `$base_date` 以降・`$end_date` 以前。月・日はゼロ埋め2桁 |
+| `cc_list` | `t_course_cc_schedules` + `m_courses` + `m_rooms` | キー: `course_id`、値: コースに設定された教室名 |
+| `cc_plus_count` | `t_cc_slots` | `is_cc_plus = 1` の件数 |
+| `line_count` | `t_cc_slots` | 全枠の件数（`is_cc_plus` 問わず） |
+
+> **注意:**
+> - `t_cc_slots` に枠があるが `t_course_cc_schedules` に予定がない日付も結果に含まれる（`cc_list` が空配列）。
+> - 逆に `t_course_cc_schedules` に予定があるが `t_cc_slots` に枠がない日付も含まれる（`cc_plus_count` / `line_count` が 0）。
+> - `$course_ids` で絞り込んだ場合、`cc_list` は指定コースのみになるが、`cc_plus_count` / `line_count` は全枠数のまま。
+> - `cc_list` の値（`room_name`）は `m_courses.room_id` が未設定の場合 `null` になる。
+
+---
+ 
+### `update_cc_plus_slot_count(string $date, int $cc_plus_count): bool`
+ 
+指定日のCC+枠数（`is_cc_plus = 1`）をパラメータに合わせて増減する。  
+現在の枠数と目標値を比較し、不足分を追加・超過分を削除する。  
+削除時に予約が紐づいている場合は、関連する予約もすべて削除する。
+ 
+```php
+// 2026-05-10 のCC+枠を3枠に設定（現在2枠 → 1枠追加）
+update_cc_plus_slot_count('2026-05-10', 3);
+ 
+// 2026-05-10 のCC+枠を1枠に設定（現在3枠 → 2枠削除、予約なし枠を優先）
+update_cc_plus_slot_count('2026-05-10', 1);
+ 
+// 2026-05-10 のCC+枠をすべて削除
+update_cc_plus_slot_count('2026-05-10', 0);
+```
+ 
+| 引数 | 型 | 説明 |
+|---|---|---|
+| `$date` | `string` | 対象日付（`Y-m-d` 形式） |
+| `$cc_plus_count` | `int` | 目標のCC+枠数（0以上） |
+ 
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true`、`$cc_plus_count < 0` またはDBエラー時 `false` |
+ 
+**削除時の処理順序**
+ 
+削除対象スロットの選定は「予約件数の少ない順 → ID昇順（古い順）」で行う。  
+予約ありスロットを削除する場合は以下の順でカスケード削除される。
+ 
+```
+① CC+仮予約から確定した通常予約（cc_plus_booking_id = CC+予約ID）を削除
+② CC+仮予約（t_cc_bookings の cc_slot_id = 対象スロットID）を削除
+③ スロット（t_cc_slots）を削除
+   ↳ t_cc_requests の booking_id_a / booking_id_b は FK ON DELETE SET NULL により自動でNULLになる
+```
+ 
+> **注意:** 予約ありのスロットを削除した場合、生徒への通知はこの関数の外で別途行う必要がある。  
+> `t_cc_requests` の申請レコード自体は削除されず、`booking_id_a / b` がNULLになった状態で残る点に注意すること。
+ 
+---
+
 ## CC予約・申請管理（cc_bookings.php）
 
 ### 申請種別 (`type_id`) 一覧
@@ -789,7 +895,8 @@ CC+から確定した通常予約（`cc_plus_booking_id IS NOT NULL`）は除外
 ```php
 $bookings = get_course_cc_bookings(course_id: 2, cc_count: 1);
 foreach ($bookings['2026-05-10']['10:00'] as $b) {
-    echo $b['student_name'];
+    echo $b['student_id'];    // 生徒ID
+    echo $b['student_name'];  // 生徒氏名
 }
 ```
 
@@ -798,7 +905,7 @@ foreach ($bookings['2026-05-10']['10:00'] as $b) {
 [
     '2026-05-10' => [
         '10:00' => [
-            ['booking_id' => 10, 'student_name' => '山田太郎'],
+            ['booking_id' => 10, 'student_id' => 3, 'student_name' => '山田太郎'],
         ],
         '11:00' => [...],
     ],

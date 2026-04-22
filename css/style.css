@@ -15,11 +15,24 @@
 }
 
 .header-inner {
+  width: 90%;
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.student-nav-flex{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 50px;
+}
+
+.student-logout{
+  margin: 0;
+  color: #000;
 }
 
 .inner-flex {
@@ -35,43 +48,41 @@
 
 .message-button {
   display: inline-block;
-  padding: 8px 14px;
-  border: 2px solid #333;
-  background-color: #fff;
+  padding-top: 5px;
   color: #222;
   text-decoration: none;
-  font-size: 16px;
 }
 
 .message-button:hover {
-  background-color: #f5f5f5;
   color: #222;
+}
+.material-symbols-outlined{
+  font-size: 32px;
 }
 
 /* admin_header.php */
 .site-header_admin {
+  display: flex;
   background-color: #6CDFFF;
   border-top: 2px solid #00bfff;
   padding: 22px 32px;
 }
 
 /* ハンバーガーメニュー */
-/* チェックボックス自体は隠す */
-.u-hidden {
-  display: none;
-}
 
 /* ヘッダー全体（親要素）の調整 */
 .c-top {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  padding: 10px;
 }
 
 /* ハンバーガーボタンの基本スタイル */
 .hamburger {
   display: block;
   width: 30px;
+  height: 24px;
   cursor: pointer;
   z-index: 101;
   /* メニュー(100)より上に配置 */
@@ -80,11 +91,13 @@
 
 .hamburger span {
   display: block;
+  position: absolute;
+  left: 0;
   width: 100%;
   height: 2px;
   background-color: #333;
   margin-bottom: 6px;
-  transition: 0.3s;
+  transition: all 0.3s ease;
 }
 
 /* メニューの初期状態（右側に隠しておく） */
@@ -104,16 +117,15 @@
   overflow-y: auto;
 }
 
-/* JSのクラス(is-open)がついた時、またはチェックが入った時 */
+/* --- JSでクラスがついた時 --- */
 .hum-menu.is-open {
   right: 0;
-  /* 画面内に戻す */
+  /* 画面内にスライドイン */
 }
 
 /* チェックボックスが入ったらメニューを右から表示 */
-#menu-toggle.hum-menu {
+.hum-menu {
   position: absolute;
-  right: 0;
 }
 
 /* --- 以下、装飾（変更なし） --- */
@@ -156,27 +168,42 @@ summary::-webkit-details-marker {
   color: #007bff;
 }
 
-/* --- ハンバーガーを✕に変えるアニメーション --- */
+/* --- ハンバーガーを✕に変えるcss --- */
+
+/* 1本目、2本目、3本目の初期位置 */
+.hamburger span:nth-of-type(1) {
+  top: 0;
+}
+
+.hamburger span:nth-of-type(2) {
+  top: 10px;
+}
+
+.hamburger span:nth-of-type(3) {
+  top: 20px;
+}
 
 /* 1本目：45度回転させて位置を下げる */
-#menu-toggle:checked~.hamburger span:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
+.hamburger.active span:nth-of-type(1) {
+  top: 10px;
+  transform: rotate(45deg);
 }
 
 /* 2本目：透明にして消す */
-#menu-toggle:checked~.hamburger span:nth-child(2) {
+.hamburger.active span:nth-of-type(2) {
   opacity: 0;
 }
 
 /* 3本目：-45度回転させて位置を上げる */
-#menu-toggle:checked~.hamburger span:nth-child(3) {
-  transform: translateY(-8px) rotate(-45deg);
+.hamburger.active span:nth-of-type(3) {
+  top: 10px;
+  transform: rotate(-45deg);
 }
 
 /* 最後のspanだけ余白を消す（中心を合わせやすくするため） */
-.hamburger span:last-child {
+/* .hamburger span:last-child {
   margin-bottom: 0;
-}
+} */
 
 /* admin_header.php終了 */
 
@@ -614,7 +641,8 @@ th.cc-detail-th-size {
 }
 
 .cc-detail-optional-open {
-  padding-block: 30px;
+  z-index: 101;
+  position: relative;
 }
 
 .cc-detail-optional-openBtn {
@@ -628,6 +656,124 @@ th.cc-detail-th-size {
   border: 1px solid #000;
 }
 
+.cc-detail-table-area-hum {
+  display: flex;
+  padding: 20px 30px 5px 70px;
+  background-color: #CDEFFF;
+  width: 100%;
+}
+
+/* テーブル用ハンバーガーメニューここから */
+.u-hidden {
+  display: none;
+}
+
+/* ハンバーガーボタンの基本スタイル */
+.table-burger {
+  display: flex;
+  width: 100%;
+  cursor: pointer;
+  position: relative;
+  align-items: center;
+}
+
+.table-burger p {
+  text-align: center;
+  background-color: #CDEFFF;
+}
+
+/* ハンバーガーボタン閉じるバージョン */
+.close-burger {
+  display: flex;
+  cursor: pointer;
+  position: relative;
+  align-items: end;
+}
+
+.close-burger p {
+  text-align: center;
+  z-index: 101;
+  background-color: #CDEFFF;
+}
+
+.close-Btn {
+  display: block;
+  width: 30px;
+  background-color: #CDEFFF;
+}
+
+.close-burger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #333;
+  margin-bottom: 6px;
+  transition: 0.3s;
+}
+
+
+
+/*  */
+.Table-Btn {
+  display: block;
+  width: 30px;
+  background-color: #CDEFFF;
+
+}
+
+.table-burger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #333;
+  margin-bottom: 6px;
+  transition: 0.3s;
+}
+
+/* メニューの初期状態 */
+.cc-menu {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: -100%;
+  /* 画面の外（右側）へ完全に隠す */
+  width: 100%;
+  transition: 0.4s;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 100;
+  /* 他の要素より手前に */
+}
+
+.table-burger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #333;
+  margin-bottom: 6px;
+  transition: 0.3s;
+}
+
+/* JSでクラス（open-Table）がついた時の処理 */
+.cc-menu.open-Table {
+  left: 0;
+  /* 画面内にスライド */
+}
+
+/* チェックボックスが入った時（CSSだけでも動くようにしておく） */
+#table-toggle:checked~.cc-menu {
+  left: 0;
+}
+
+/* 任意キャリコンのテキストが見えにくい場合の調整 */
+.table-burger p {
+  display: flex;
+  margin: 0;
+}
+
+/* --- 以下、装飾（変更なし） --- */
+
+/* テーブル用ハンバーガーメニューここまで */
 /* admin_cc_detail.phpここまで */
 
 /* admin_student_detail.phpここから */
@@ -914,23 +1060,24 @@ th.cc-detail-th-size {
 /* studet_reserve_del_confirm.phpここまで */
 
 /* student_require_edit.phpここから */
-.student-require-edit-h1 , .student-require-edit-change-h1{
+.student-require-edit-h1,
+.student-require-edit-change-h1 {
   text-align: center;
   font-size: 24px;
   font-weight: bold;
   padding-block: 50px;
 }
 
-.student-require-edit-flex{
+.student-require-edit-flex {
   display: flex;
   flex-direction: row;
 }
 
-.student-require-edit-dl{
+.student-require-edit-dl {
   margin: 0 auto;
 }
 
-.student-requier-edit-flex-con{
+.student-requier-edit-flex-con {
   display: flex;
   font-size: 20px;
   gap: 40px;
@@ -938,12 +1085,12 @@ th.cc-detail-th-size {
   margin: 0 auto;
 }
 
-.student-require-edit-dt{
+.student-require-edit-dt {
   width: 6em;
   text-align-last: justify;
 }
 
-.student-require-edit-btn-flex{
+.student-require-edit-btn-flex {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -951,17 +1098,17 @@ th.cc-detail-th-size {
   padding-block: 100px 30px;
 }
 
-.btn-require-edit{
-background-color: #88B3EC;
-color: #000;
-width: 100px;
-height: 40px;
-border-radius: 5px;
-text-align: center;
-font-size: 24px;
+.btn-require-edit {
+  background-color: #88B3EC;
+  color: #000;
+  width: 100px;
+  height: 40px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 24px;
 }
 
-.btn-require-prev{
+.btn-require-prev {
   background-color: rgba(0, 0, 0, 0.5);
   color: #000;
   width: fit-content;
@@ -969,4 +1116,5 @@ font-size: 24px;
   font-size: 24px;
   border-radius: 3px;
 }
+
 /* student_require_edit.phpここまで */

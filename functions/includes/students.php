@@ -12,7 +12,7 @@ require_once __DIR__ . '/db.php';
 function student_login($login_id, $password)
 {
     $db = db_connect();
-    $sql = 'SELECT CONCAT(first_name,last_name) AS student_name, id FROM m_students WHERE login_id=:login_id ';
+    $sql = 'SELECT CONCAT(first_name,last_name) AS student_name,password ,id FROM m_students WHERE login_id=:login_id ';
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':login_id', $login_id, PDO::PARAM_STR);
     $stmt->execute();
@@ -20,7 +20,7 @@ function student_login($login_id, $password)
 
     if ($result) {
         if (password_verify($password, $result['password'])) {
-            $_SESSION['id'] = $result['id'];
+            $_SESSION['student_id'] = $result['id'];
             $_SESSION['student_name'] = $result['student_name'];
             $_SESSION['res_message'] = ['status_code' => 1, 'msg' => 'ログイン成功'];
             return true;
@@ -115,6 +115,8 @@ function get_students($filters = [], $is_display_end = false)
  * 生徒の構造
  * [
  * 'student_id',
+ * 'first_name',
+ * 'last_name',
  * 'student_name',
  * 'number',
  * 'status_name',
@@ -138,6 +140,8 @@ function get_student($student_id)
     $db = db_connect();
     $sql = 'SELECT
             s.id AS student_id,
+            s.first_name,
+            s.last_name,
             CONCAT(s.last_name, s.first_name) AS student_name,
             s.number,
             ss.id AS status_id,
@@ -180,6 +184,8 @@ function get_student($student_id)
         if (empty($student)) {
             $student = [
                 'student_id'   => $row['student_id'],
+                'first_name' => $row['first_name'],
+                'last_name' => $row['last_name'],
                 'student_name' => $row['student_name'],
                 'number'       => $row['number'],
                 'status_id'    => $row['status_id'],

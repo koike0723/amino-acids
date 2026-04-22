@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/destyle.css@4.0.1/destyle.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=notifications" />
     <link rel="stylesheet" href="./css/style.css">
     <title>-管理者- キャリコン管理</title>
 </head>
@@ -24,6 +25,9 @@
             <a href="#">
                 <button type="btn" class="prev-btn cc-detail-btn">戻る</button>
             </a>
+            <div class="cc-detail-optional-open">
+                <?php require_once __DIR__ . '/inc/cc_table.php'; ?>
+            </div>
         </div>
         <div class="cc-detail-table-area">
             <table class="cc-detail-table">
@@ -314,251 +318,9 @@
                 </tbody>
             </table>
         </div>
-
-        <!-- 任意キャリコン分のテーブル -->
-        <div class="cc-detail-table-area" style="padding: 50px 0; background-color: #CDEFFF;">
-            <table class="cc-detail-table cc-detail-table-optional" style="background-color: white;">
-                <thead class="cc-detail-thead">
-                    <tr class="cc-detail-headTr">
-                        <th class="cc-detailth cc-detail-th-size">
-                            <p class="null-text" style="margin: 0;">&nbsp;</p>
-                        </th>
-                        <th class="cc-detail-th">10:00</th>
-                        <th class="cc-detail-th">11:00</th>
-                        <th class="cc-detail-th">12:00</th>
-                        <th class="cc-detail-th">13:00</th>
-                        <th class="cc-detail-th">14:00</th>
-                        <th class="cc-detail-th">15:00</th>
-                        <th class="cc-detail-th">16:00</th>
-                    </tr>
-                </thead>
-                <tbody class="cc-detail-tbody">
-                    <tr class="cc-detail-tr">
-                        <td class="cc-detail-td">
-                            <p class="null-text">&nbsp;</p>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                    </tr>
-                    <!-- ダミーテーブル -->
-                    <tr class="cc-detail-tr">
-                        <td class="cc-detail-td">
-                            <p class="null-text">&nbsp;</p>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="cc-detail-tr">
-                        <td class="cc-detail-td">
-                            <p class="null-text">&nbsp;</p>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="cc-detail-tr">
-                        <td class="cc-detail-td">
-                            <p class="null-text">&nbsp;</p>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                        <td class="cc-detail-td">
-                            <div class="cc-detail-student-card">
-                                <p class="cc-detail-student">6c</p>
-                                <p class="cc-detail-student">リカレント太郎</p>
-                                <p class="cc-detail-student">対面</p>
-                            </div>
-                        </td>
-                    </tr>
-                    <!-- ダミーテーブルここまで -->
-                </tbody>
-            </table>
-        </div>
-        <div class="cc-detail-optional-open">
-            <?php require_once __DIR__ . '/inc/cc_table.php'; ?>
-        </div>
-
     </main>
+    <script src="./js/script.js"></script>
+    <script src="./js/hamburger.js"></script>
 </body>
 
 </html>

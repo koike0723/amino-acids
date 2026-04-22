@@ -43,6 +43,13 @@ check($student_1);
     ];
     ?>
     <?php require_once __DIR__ . '/inc/student_header.php'; ?>
+    <?php
+    $student = $_SESSION['student_id'];
+    if(!isset($_SESSION['student_id'])){
+        header('location:./inc/login.php');
+        exit();
+    }
+    ?>
     <main>
         <p class="student-require-edit-h1">変更申請</p>
         <div class="student-require-edit-flex">

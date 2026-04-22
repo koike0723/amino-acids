@@ -144,7 +144,9 @@ try {
         </form>
     </div>
 
+    <script src="js/add_student_input_field.js"></script>
+    <script src="./js/script.js"></script>
+    <script src="./js/hamburger.js"></script>
 </body>
-<script src="js/add_student_input_field.js"></script>
 
 </html>

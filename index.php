@@ -1,9 +1,6 @@
 <?php
 require_once __DIR__ . '/functions/functions.php';
 
-// DBからデータ取得
-$student = get_student(1);
-
 // 以下カレンダーのためのphp
 // 表示したい年月を取得
 $year = isset($_GET['year']) ? (int)$_GET['year'] : date('Y');
@@ -80,7 +77,14 @@ $events = [
 
 <body>
     <?php include('./inc/student_header.php'); ?>
-
+    <?php
+    // DBからデータ取得
+    $student = get_student($_SESSION['student_id']);
+    if (!isset($_SESSION['student_id'])) {
+        header('location:./inc/login.php');
+        exit();
+    }
+    ?>
     <main role="main" class="container py-4" style="padding:60px 15px 0">
         <section class="reserve-list container py-5">
             <div class="row justify-content-center">
@@ -102,7 +106,7 @@ $events = [
                                         <button
                                             type="button"
                                             class="btn btn-primary btn-sm w-100"
-                                            onclick="location.href='./student_reserve.php?selected_date=<?php echo urlencode($booking['cc_date']); ?>'">
+                                            onclick="location.href='./student_reserve.php?selected_date=<?php echo urlencode($booking['cc_date']);?>&booking_id=<?= $booking['booking_id'] ?>'">
                                             変更
                                         </button>
                                     </div>
