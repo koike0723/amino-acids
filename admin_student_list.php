@@ -108,5 +108,5 @@ $course_name = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </main>
 </body>
 <script src="./js/script.js"></script>
-
+<script src="./js/hamburger.js"></script>
 </html>
