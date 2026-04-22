@@ -5,7 +5,7 @@ require_once __DIR__ . '/../functions/functions.php';
 
 // データの有無確認処理
 if (
-    !isset($_POST["course_name"], $_POST["room_id"], $_POST["category_id"], $_POST["course_start"], $_POST["course_finish"], $_POST["cc1_1"], $_POST["cc1_2"], $_POST["cc2_1"], $_POST["cc2_2"], $_POST["cc3_1"], $_POST["cc3_2"]) ||
+    !isset($_POST["course_name"], $_POST["room_id"], $_POST["category_id"], $_POST["course_start"], $_POST["course_finish"]) ||
     empty($_POST["course_name"]) ||
     empty($_POST["room_id"]) ||
     empty($_POST["category_id"]) ||
