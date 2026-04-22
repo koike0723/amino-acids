@@ -144,5 +144,5 @@ try {
 </body>
 <!-- kan-to-do:余力があればリアルタイムで変わるようにする -->
 <script src="./js/admin_course_search.js"></script>
-
+<script src="./js/hamburger.js"></script>
 </html>
