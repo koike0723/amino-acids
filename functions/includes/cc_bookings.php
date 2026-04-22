@@ -762,7 +762,7 @@ function bulk_book_cc(int $course_id): bool
 }
 
 
-/*
+/**
  * 指定コース・回数の必須キャリコン予約を日付・時間でグループ化して返す
  * CC+から確定した通常予約（cc_plus_booking_id IS NOT NULL）は除外する
  *
@@ -770,7 +770,7 @@ function bulk_book_cc(int $course_id): bool
  * [
  *   '2026-01-01' => [
  *     '10:00' => [
- *       ['booking_id' => 1, 'student_name' => '山田太郎'],
+ *       ['booking_id' => 1, 'student_id' => 3, 'student_name' => '山田太郎'],
  *       ...
  *     ],
  *     '11:00' => [...],
@@ -788,6 +788,7 @@ function get_course_cc_bookings(int $course_id, int $cc_count): array
 
     $sql = 'SELECT
                 b.id                                 AS booking_id,
+                s.id                                 AS student_id,
                 CONCAT(s.last_name, s.first_name)    AS student_name,
                 sl.date                              AS cc_date,
                 DATE_FORMAT(t.start_time, \'%H:%i\') AS start_time
@@ -819,6 +820,7 @@ function get_course_cc_bookings(int $course_id, int $cc_count): array
     foreach ($rows as $row) {
         $result[$row['cc_date']][$row['start_time']][] = [
             'booking_id'   => $row['booking_id'],
+            'student_id' => $row['student_id'],
             'student_name' => $row['student_name'],
         ];
     }

@@ -141,8 +141,10 @@ try {
             </div>
         </main>
     </div>
+    <!-- kan-to-do:余力があればリアルタイムで変わるようにする -->
+    <script src="./js/script.js"></script>
+    <script src="./js/admin_course_search.js"></script>
+    <script src="./js/hamburger.js"></script>
 </body>
-<!-- kan-to-do:余力があればリアルタイムで変わるようにする -->
-<script src="./js/admin_course_search.js"></script>
-<script src="./js/hamburger.js"></script>
+
 </html>

@@ -6,15 +6,15 @@ require_once __DIR__ . '/functions/functions.php';
 <?php
 //$id = $_GET['id'];
 //if (!empty($_GET['id'])) {
-    try {
-        $student = get_student(1);
-    } catch (PDOException $e) {
-        check($e);
-    }
+try {
+    $student = get_student(1);
+} catch (PDOException $e) {
+    check($e);
+}
 //} 
 //else {
-    //header('location:admin_student_list.php');
-    //exit();
+//header('location:admin_student_list.php');
+//exit();
 //}
 ?>
 
@@ -55,8 +55,8 @@ require_once __DIR__ . '/functions/functions.php';
                 </div>
                 <div class="student-detail-dl-flex">
                     <dt class="student-detail-dt">キャリコン履歴：</dt>
-                    <?php foreach($student['bookings'] as $booking): ?>
-                    <dd class="student-detail-dd"><?= h($booking['cc_date']); ?>&nbsp;<?= $booking['cc_time']; ?></dd>
+                    <?php foreach ($student['bookings'] as $booking): ?>
+                        <dd class="student-detail-dd"><?= h($booking['cc_date']); ?>&nbsp;<?= $booking['cc_time']; ?></dd>
                     <?php endforeach; ?>
                 </div>
             </dl>
@@ -70,6 +70,8 @@ require_once __DIR__ . '/functions/functions.php';
             </div>
         </div>
     </main>
+    <script src="./js/script.js"></script>
+    <script src="./js/hamburger.js"></script>
 </body>
 
 </html>

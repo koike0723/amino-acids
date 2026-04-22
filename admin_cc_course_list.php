@@ -48,7 +48,7 @@ require_once __DIR__ . '/functions/functions.php';
                             <td class="cc-req-list-td">小松</td>
                         </tr>
                         <!-- ダミーテーブル -->
-                         <tr class="cc-req-list-tr">
+                        <tr class="cc-req-list-tr">
                             <td class="cc-req-list-td">11:00～</td>
                             <td class="cc-req-list-td">梅崎</td>
                             <td class="cc-req-list-td">小松</td>
@@ -90,7 +90,7 @@ require_once __DIR__ . '/functions/functions.php';
                             <td class="cc-req-list-td">小松</td>
                         </tr>
                         <!-- ダミーテーブル -->
-                         <tr class="cc-req-list-tr">
+                        <tr class="cc-req-list-tr">
                             <td class="cc-req-list-td">11:00～</td>
                             <td class="cc-req-list-td">梅崎</td>
                             <td class="cc-req-list-td">小松</td>
@@ -119,6 +119,8 @@ require_once __DIR__ . '/functions/functions.php';
             </a>
         </div>
     </main>
+    <script src="./js/script.js"></script>
+    <script src="./js/hamburger.js"></script>
 </body>
 
 </html>
