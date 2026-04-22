@@ -16,6 +16,14 @@ require_once __DIR__ . '/functions/functions.php';
 
 <body>
     <?php include('./inc/student_header.php'); ?>
+    <?php
+    $student = $_SESSION['student_id'];
+    if (!isset($_SESSION['student_id'])) {
+        header('location:./inc/login.php');
+        exit();
+    }
+    check($student);
+    ?>
 
     <main class="container py-4">
         <section class="student-required-cc-section">

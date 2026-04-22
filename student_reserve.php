@@ -1,11 +1,11 @@
 <!-- 生徒側任意キャリコン予約画面 -->
 <?php
-session_start();
 require_once __DIR__ . '/functions/functions.php';
 
 // 選択された日付データの取得
 $selected_date = $_GET['selected_date'] ?? '';
 $_SESSION['selected_date'] = $_GET['selected_date'];
+$booking_id = $_GET['booking_id'] ?? '';
 ?>
 
 <?php
@@ -35,6 +35,15 @@ try {
 
 <body>
     <?php include('./inc/student_header.php'); ?>
+    <?php
+    $login_student = $_SESSION['student_id'];
+    if(!isset($_SESSION['student_id'])){
+        header('location:./inc/login.php');
+        exit();
+    }else{
+        $stundent = get_student($login_student);
+    }
+    ?>
 
     <main class="container py-5">
         <section class="s-career-frame-section">
@@ -57,7 +66,7 @@ try {
                                     <tr>
                                         <td><?= h($time['display_name']); ?></td>
                                         <?php if ($date[$key + 1]): ?>
-                                            <td class="s-frame-available js-click" onclick="location.href='student_reserve_edit.php?timeid=<?= h($time['id']) ?>&selected_date=<?= $selected_date ?>&time=<?= h($time['start_time']) ?>'" style="cursor: pointer;">
+                                            <td class="s-frame-available js-click" onclick="location.href='student_reserve_edit.php?timeid=<?= h($time['id']) ?>&selected_date=<?= $selected_date ?>&time=<?= h($time['start_time']) ?><?= !empty($booking_id) ? '&booking_id='. $booking_id : '' ?>'" style="cursor: pointer;">
                                                 〇
                                             </td>
                                         <?php else: ?>
