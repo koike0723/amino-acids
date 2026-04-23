@@ -130,8 +130,14 @@ try {
                     </div>
                 </div>
 
-                <div class="mt-3 text-center" id="display_parent">
-                    <a href="#" id="add_btn"><img src="img/add_btn.png" alt=""></a>
+                <!-- 追加・削除ボタン -->
+                <div id="display_parent" class="d-flex justify-content-center align-items-center mt-3 student-add-icon-buttons ">
+                    <a href="#" id="add_btn" class="student-add-icon-btn">
+                        <img src="img/add_btn.png" alt="入力欄を追加">
+                    </a>
+                    <a href="#" id="del_btn" class="student-add-icon-btn">
+                        <img src="img/del_btn.png" alt="入力欄を削除">
+                    </a>
                 </div>
 
             </div>

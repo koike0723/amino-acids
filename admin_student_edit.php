@@ -52,7 +52,7 @@ $student_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 type="text"
                                 name="last_name"
                                 class="student-edit-name"
-                                value="<?= h($student['first_name'] ?? ''); ?>">
+                                value="<?= h($student['last_name'] ?? ''); ?>">
                         </label>
 
                         <label class="student-edit-title">
@@ -61,7 +61,7 @@ $student_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 type="text"
                                 name="first_name"
                                 class="student-edit-name"
-                                value="<?= h($student['last_name'] ?? ''); ?>">
+                                value="<?= h($student['first_name'] ?? ''); ?>">
                         </label>
                     </div>
 

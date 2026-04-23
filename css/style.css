@@ -1142,3 +1142,25 @@ input[type="checkbox"] {
 }
 
 /* student_require_edit.phpここまで */
+
+/* admin_student_add.phpここから */
+.student-add-icon-buttons {
+    gap: 16px;
+}
+
+.student-add-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.student-add-icon-btn img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+/* admin_student_add.phpここまで */
