@@ -56,6 +56,7 @@ function get_cc_slots($cc_type = CC_SLOT_TYPE::Line->name, $target_date = null)
     $db = db_connect();
 
     $sql = 'SELECT 
+            s.id AS slot_id,
             s.date AS cc_date, 
             s.is_cc_plus, 
             CONCAT(c.last_name, c.first_name) AS consultant_name,
