@@ -234,7 +234,7 @@ summary::-webkit-details-marker {
 .h1 {
   text-align: center;
   font-size: 48px;
-  padding-block: 210px 50px;
+  padding-block: 180px 50px;
 }
 
 .cc-area {
@@ -315,6 +315,32 @@ th.ad-index-th {
 
 /* admin_index.php終了 */
 
+/* admin_consultant_list.phpスタート */
+table.ad-cc-list-table {
+  width: 90%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  font-size: 20px;
+}
+
+th.ad-cc-list-th {
+  background-color: #9C9C9C;
+  border: 1px solid #000;
+  text-align: center;
+  padding-block: 10px;
+}
+
+td.ad-cc-list-td {
+  border: 1px solid #000;
+  text-align: center;
+  padding-block: 10px;
+}
+
+tr.ad-cc-list-tr:nth-child(even) {
+  background-color: #DEDEDE;
+}
+
+/* admin_consultant_list.php終了 */
 
 /* admin_student_list.phpスタート */
 .admin-student-list {
@@ -468,6 +494,7 @@ tr.ad-stu-list-tr:nth-child(even) {
   padding: 10px;
   box-sizing: border-box;
 }
+
 .student-edit-number {
   border: 1px solid #000;
   width: 70vw;
@@ -1151,22 +1178,23 @@ input[type="checkbox"] {
 
 /* admin_student_add.phpここから */
 .student-add-icon-buttons {
-    gap: 16px;
+  gap: 16px;
 }
 
 .student-add-icon-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
 }
 
 .student-add-icon-btn img {
-    width: 48px;
-    height: 48px;
-    object-fit: contain;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
 }
+
 /* admin_student_add.phpここまで */
