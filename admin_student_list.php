@@ -16,6 +16,12 @@ $stmt = $db->prepare($sql);
 $stmt->execute();
 $course_name = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// コースの名前を全て取得
+// ※上記 $course_name ではコース名の取得はできていない
+$courses = get_courses();
+
+
+
 /* -----------------------------
    絞り込み条件の受け取り
 ----------------------------- */
@@ -71,6 +77,7 @@ $filtered_students = array_filter($students, function ($student) use ($date, $st
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/destyle.css@4.0.1/destyle.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=notifications" />
     <link rel="stylesheet" href="./css/style.css">
     <title>-管理者- 生徒一覧</title>
 </head>
@@ -119,9 +126,9 @@ $filtered_students = array_filter($students, function ($student) use ($date, $st
                         <label for="course" class="form-label">コース</label>
                         <select name="course" id="course" class="form-control">
                             <option value="">全表示</option>
-                            <?php foreach ($course_list as $course_item): ?>
-                                <option value="<?= h($course_item); ?>" <?= ($course === $course_item) ? 'selected' : ''; ?>>
-                                    <?= h($course_item); ?>
+                            <?php foreach ($courses as $course_item): ?>
+                                <option value="<?= h($course_item["course_name"]); ?>" <?= ($course === $course_item["course_name"]) ? 'selected' : ''; ?>>
+                                    <?= h($course_item["course_name"]); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -188,7 +195,7 @@ $filtered_students = array_filter($students, function ($student) use ($date, $st
         </div>
 
         <div class="previous-btn">
-            <a href="#">
+            <a href="./admin_index.php">
                 <button type="button" class="prev-btn">戻る</button>
             </a>
         </div>
@@ -196,6 +203,5 @@ $filtered_students = array_filter($students, function ($student) use ($date, $st
     <script src="./js/script.js"></script>
     <script src="./js/hamburger.js"></script>
 </body>
-<script src="./js/script.js"></script>
-<script src="./js/hamburger.js"></script>
+
 </html>

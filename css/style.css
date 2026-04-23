@@ -56,7 +56,8 @@
 .message-button:hover {
   color: #222;
 }
-.material-symbols-outlined{
+
+.material-symbols-outlined {
   font-size: 32px;
 }
 
@@ -66,6 +67,25 @@
   background-color: #6CDFFF;
   border-top: 2px solid #00bfff;
   padding: 22px 32px;
+}
+
+.icon-circle {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.icon-circle::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  background-color: #ff0000;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  z-index: 1;
 }
 
 /* ハンバーガーメニュー */
@@ -214,7 +234,7 @@ summary::-webkit-details-marker {
 .h1 {
   text-align: center;
   font-size: 48px;
-  padding-block: 210px 50px;
+  padding-block: 180px 50px;
 }
 
 .cc-area {
@@ -295,6 +315,32 @@ th.ad-index-th {
 
 /* admin_index.php終了 */
 
+/* admin_consultant_list.phpスタート */
+table.ad-cc-list-table {
+  width: 90%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  font-size: 20px;
+}
+
+th.ad-cc-list-th {
+  background-color: #9C9C9C;
+  border: 1px solid #000;
+  text-align: center;
+  padding-block: 10px;
+}
+
+td.ad-cc-list-td {
+  border: 1px solid #000;
+  text-align: center;
+  padding-block: 10px;
+}
+
+tr.ad-cc-list-tr:nth-child(even) {
+  background-color: #DEDEDE;
+}
+
+/* admin_consultant_list.php終了 */
 
 /* admin_student_list.phpスタート */
 .admin-student-list {
@@ -449,6 +495,13 @@ tr.ad-stu-list-tr:nth-child(even) {
   box-sizing: border-box;
 }
 
+.student-edit-number {
+  border: 1px solid #000;
+  width: 70vw;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
 .student-edit-option-flex {
   display: flex;
   flex-direction: row;
@@ -593,13 +646,6 @@ tr.cc-req-list-headTr {
   text-align: center;
 }
 
-.cc-detail-table {
-  width: 95%;
-  margin: 0 auto;
-  border-collapse: collapse;
-  border: 1px solid #000;
-}
-
 thead.cc-detail-thead,
 th.cc-detail-th {
   border: 1px solid #000;
@@ -656,14 +702,11 @@ th.cc-detail-th-size {
   border: 1px solid #000;
 }
 
-.cc-detail-table-area-hum {
-  display: flex;
-  padding: 20px 30px 5px 70px;
-  background-color: #CDEFFF;
-  width: 100%;
+/* テーブル用ハンバーガーメニューここから */
+input[type="checkbox"] {
+  appearance: auto;
 }
 
-/* テーブル用ハンバーガーメニューここから */
 .u-hidden {
   display: none;
 }
@@ -1167,3 +1210,26 @@ th.cc-detail-th-size {
 }
 
 /* student_require_edit.phpここまで */
+
+/* admin_student_add.phpここから */
+.student-add-icon-buttons {
+  gap: 16px;
+}
+
+.student-add-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.student-add-icon-btn img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+/* admin_student_add.phpここまで */
