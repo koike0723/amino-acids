@@ -765,3 +765,25 @@ function _fetch_cc_change_detail(PDO $db, array $request): array
         ],
     ];
 }
+
+/**
+ * 未解決申請の存在確認
+ *
+ * status_id が 新規（1）または未対応（2）の申請が1件以上存在すれば true を返す
+ * 通知バッジ等の表示制御用途を想定
+ *
+ * @return bool 未解決申請が存在する場合 true、すべて解決済みまたは申請がない場合 false
+ */
+function has_unresolved_cc_requests(): bool
+{
+    $db = db_connect();
+
+    $stmt = $db->query(
+        'SELECT EXISTS (
+            SELECT 1 FROM t_cc_requests
+            WHERE status_id IN (1, 2)
+        )'
+    );
+
+    return (bool) $stmt->fetchColumn();
+}
