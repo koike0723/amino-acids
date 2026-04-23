@@ -494,7 +494,7 @@ function get_course_cc_bookings(int $course_id, int $cc_count): array
                 ON  b.time_id = t.id
             WHERE sched.course_id = :course_id_sched
               AND sched.cc_count  = :cc_count
-            ORDER BY sl.date ASC, t.start_time ASC';
+            ORDER BY sl.date ASC, t.start_time ASC, s.number ASC';
 
     $stmt = $db->prepare($sql);
     $stmt->execute([
