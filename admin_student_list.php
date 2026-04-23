@@ -16,6 +16,12 @@ $stmt = $db->prepare($sql);
 $stmt->execute();
 $course_name = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// コースの名前を全て取得
+// ※上記 $course_name ではコース名の取得はできていない
+$courses = get_courses();
+
+
+
 /* -----------------------------
    絞り込み条件の受け取り
 ----------------------------- */
@@ -119,9 +125,9 @@ $filtered_students = array_filter($students, function ($student) use ($date, $st
                         <label for="course" class="form-label">コース</label>
                         <select name="course" id="course" class="form-control">
                             <option value="">全表示</option>
-                            <?php foreach ($course_list as $course_item): ?>
-                                <option value="<?= h($course_item); ?>" <?= ($course === $course_item) ? 'selected' : ''; ?>>
-                                    <?= h($course_item); ?>
+                            <?php foreach ($courses as $course_item): ?>
+                                <option value="<?= h($course_item["course_name"]); ?>" <?= ($course === $course_item["course_name"]) ? 'selected' : ''; ?>>
+                                    <?= h($course_item["course_name"]); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
