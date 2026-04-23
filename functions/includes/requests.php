@@ -787,3 +787,178 @@ function has_unresolved_cc_requests(): bool
 
     return (bool) $stmt->fetchColumn();
 }
+
+// -------------------------------------------------------
+// type 1: CC+予約申請
+// -------------------------------------------------------
+
+/**
+ * CC+予約申請の承認処理
+ * ステータスを承認（3）に更新する。予約はそのまま残す。
+ */
+function approve_cc_plus(int $request_id): bool
+{
+    $db = db_connect();
+    try {
+        $stmt = $db->prepare(
+            'UPDATE t_cc_requests
+             SET status_id = 3
+             WHERE id = :id AND type_id = 1 AND status_id IN (1, 2)'
+        );
+        $stmt->execute([':id' => $request_id]);
+        return $stmt->rowCount() > 0;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * CC+予約申請の却下処理
+ * 予約を削除してステータスを却下（4）に更新する。
+ */
+function reject_cc_plus(int $request_id): bool
+{
+    $db = db_connect();
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare(
+            'SELECT booking_id_a FROM t_cc_requests
+             WHERE id = :id AND type_id = 1 AND status_id IN (1, 2)'
+        );
+        $stmt->execute([':id' => $request_id]);
+        $request = $stmt->fetch();
+
+        if (!$request || !$request['booking_id_a']) {
+            throw new Exception('対象の申請が見つかりません');
+        }
+
+        $db->prepare('DELETE FROM t_cc_bookings WHERE id = :booking_id')
+           ->execute([':booking_id' => $request['booking_id_a']]);
+
+        $db->prepare('UPDATE t_cc_requests SET status_id = 4 WHERE id = :id')
+           ->execute([':id' => $request_id]);
+
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
+
+// -------------------------------------------------------
+// type 3: CC+キャンセル申請
+// -------------------------------------------------------
+
+/**
+ * CC+キャンセル申請の承認処理
+ * 予約を削除してステータスを承認（3）に更新する。
+ */
+function approve_cc_plus_cancel(int $request_id): bool
+{
+    $db = db_connect();
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare(
+            'SELECT booking_id_a FROM t_cc_requests
+             WHERE id = :id AND type_id = 3 AND status_id IN (1, 2)'
+        );
+        $stmt->execute([':id' => $request_id]);
+        $request = $stmt->fetch();
+
+        if (!$request || !$request['booking_id_a']) {
+            throw new Exception('対象の申請が見つかりません');
+        }
+
+        $db->prepare('DELETE FROM t_cc_bookings WHERE id = :booking_id')
+           ->execute([':booking_id' => $request['booking_id_a']]);
+
+        $db->prepare('UPDATE t_cc_requests SET status_id = 3 WHERE id = :id')
+           ->execute([':id' => $request_id]);
+
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
+
+/**
+ * CC+キャンセル申請の却下処理
+ * ステータスを却下（4）に更新する。予約はそのまま残す。
+ */
+function reject_cc_plus_cancel(int $request_id): bool
+{
+    $db = db_connect();
+    try {
+        $stmt = $db->prepare(
+            'UPDATE t_cc_requests
+             SET status_id = 4
+             WHERE id = :id AND type_id = 3 AND status_id IN (1, 2)'
+        );
+        $stmt->execute([':id' => $request_id]);
+        return $stmt->rowCount() > 0;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+// -------------------------------------------------------
+// type 4: 必須CC変更申請
+// -------------------------------------------------------
+
+/**
+ * 必須CC変更申請の承認処理
+ * swap_cc_bookings() で2件の予約を入れ替え、ステータスを承認（3）に更新する。
+ * ※ swap_cc_bookings() は内部でトランザクションを持つため、ここでは分離して呼び出す
+ */
+function approve_cc_change(int $request_id): bool
+{
+    $db = db_connect();
+    try {
+        $stmt = $db->prepare(
+            'SELECT booking_id_a, booking_id_b FROM t_cc_requests
+             WHERE id = :id AND type_id = 4 AND status_id IN (1, 2)'
+        );
+        $stmt->execute([':id' => $request_id]);
+        $request = $stmt->fetch();
+
+        if (!$request || !$request['booking_id_a'] || !$request['booking_id_b']) {
+            return false;
+        }
+
+        if (!swap_cc_bookings($request['booking_id_a'], $request['booking_id_b'])) {
+            return false;
+        }
+
+        $db->prepare('UPDATE t_cc_requests SET status_id = 3 WHERE id = :id')
+           ->execute([':id' => $request_id]);
+
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * 必須CC変更申請の却下処理
+ * ステータスを却下（4）に更新する。予約はそのまま残す。
+ */
+function reject_cc_change(int $request_id): bool
+{
+    $db = db_connect();
+    try {
+        $stmt = $db->prepare(
+            'UPDATE t_cc_requests
+             SET status_id = 4
+             WHERE id = :id AND type_id = 4 AND status_id IN (1, 2)'
+        );
+        $stmt->execute([':id' => $request_id]);
+        return $stmt->rowCount() > 0;
+    } catch (Exception $e) {
+        return false;
+    }
+}
