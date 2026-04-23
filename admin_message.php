@@ -152,6 +152,7 @@ $status_labels = [
   </main>
 
   <script src="./js/script.js"></script>
+  <script src="./js/hamburger.js"></script>
 </body>
 
 </html>
