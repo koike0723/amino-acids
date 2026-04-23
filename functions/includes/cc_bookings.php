@@ -442,7 +442,6 @@ function bulk_book_cc(int $course_id): bool
 
         $db->commit();
         return true;
-
     } catch (Exception $e) {
         $db->rollBack();
         return false;
@@ -457,18 +456,18 @@ function bulk_book_cc(int $course_id): bool
  * 返却構造:
  * [
  *   '2026-01-01' => [
- *     '10:00' => [
+ *     '10時～' => [
  *       ['booking_id' => 1, 'student_id' => 3, 'student_name' => '山田太郎'],
  *       // ...
  *     ],
- *     '11:00' => [...],
+ *     '11時～' => [...],
  *   ],
  *   // ...
  * ]
  *
  * @param int $course_id 対象コースのID
  * @param int $cc_count  対象の回数（第何回目か）
- * @return array 日付 > 時間 > 予約一覧 の三次元配列
+ * @return array 日付 > 時間表示名 > 予約一覧 の三次元配列
  */
 function get_course_cc_bookings(int $course_id, int $cc_count): array
 {
@@ -479,7 +478,7 @@ function get_course_cc_bookings(int $course_id, int $cc_count): array
                 s.id                                 AS student_id,
                 CONCAT(s.last_name, s.first_name)    AS student_name,
                 sl.date                              AS cc_date,
-                DATE_FORMAT(t.start_time, \'%H:%i\') AS start_time
+                t.display_name                       AS display_name
             FROM t_course_cc_schedules sched
             JOIN t_cc_slots sl
                 ON  sl.date       = sched.date
@@ -506,7 +505,7 @@ function get_course_cc_bookings(int $course_id, int $cc_count): array
 
     $result = [];
     foreach ($rows as $row) {
-        $result[$row['cc_date']][$row['start_time']][] = [
+        $result[$row['cc_date']][$row['display_name']][] = [
             'booking_id'   => $row['booking_id'],
             'student_id'   => $row['student_id'],
             'student_name' => $row['student_name'],
