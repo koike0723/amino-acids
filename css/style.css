@@ -593,13 +593,6 @@ tr.cc-req-list-headTr {
   text-align: center;
 }
 
-.cc-detail-table {
-  width: 95%;
-  margin: 0 auto;
-  border-collapse: collapse;
-  border: 1px solid #000;
-}
-
 thead.cc-detail-thead,
 th.cc-detail-th {
   border: 1px solid #000;
@@ -654,13 +647,6 @@ th.cc-detail-th-size {
 
 .cc-detail-optional-openBtn:hover {
   border: 1px solid #000;
-}
-
-.cc-detail-table-area-hum {
-  display: flex;
-  padding: 20px 30px 5px 70px;
-  background-color: #CDEFFF;
-  width: 100%;
 }
 
 /* テーブル用ハンバーガーメニューここから */
