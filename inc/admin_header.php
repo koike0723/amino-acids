@@ -18,11 +18,13 @@
             <a href="../php_do/logout.php" style="color: black;">ログアウト</a>
         </div>
         <a href="./student_message.php" class="message-button bunner">
-            <span class="icon-circle">
-                <i id="alert-icon" class="material-symbols-outlined">
-                    notifications
-                </i>
-            </span>
+            <?php if (notifications_head(1)) : ?>
+                <span class="icon-circle">
+                    <i id="alert-icon" class="material-symbols-outlined">
+                        notifications
+                    </i>
+                </span>
+            <?php endif; ?>
         </a>
     </div>
     <?php include('./inc/nav_bar.php'); ?>
