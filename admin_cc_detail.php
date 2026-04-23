@@ -64,19 +64,15 @@ try {
     exit('任意キャリコンのラインの取得に失敗しました: ' . $e->getMessage());
 }
 try {
-    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
-    $db = new PDO($dsn, DB_USER, DB_PASS);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    // SQL
-    $sql = 'SELECT id, display_name AS name FROM m_times';
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-    $cc_all_bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $cc_all_bookings = get_cc_bookings(["slot_date" => $cc_date]);
 } catch (PDOException $e) {
     exit('キャリコンの予約の取得に失敗しました: ' . $e->getMessage());
 }
+echo "------------------------------------------------------------------";
 check($cc_plus_slots);
+echo "------------------------------------------------------------------";
+check($cc_all_bookings);
+echo "------------------------------------------------------------------";
 ?>
 
 
@@ -129,6 +125,28 @@ check($cc_plus_slots);
                                 </thead>
                                 <tbody class="cc-detail-tbody">
                                     <tr class="cc-detail-tr">
+                                        <!-- 10:00:00 -->
+                                        <td class="cc-detail-td">
+                                            <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]]["10:00:00"])): ?>
+                                            <a href="">
+                                                <div class="cc-detail-student-card">
+                                                    <p class="cc-detail-student">〇</p>
+                                                </div>
+                                            </a>
+                                            <?php endif; ?>
+                                            <div class="cc-detail-student-card">
+                                                <!-- <?php if (!empty($cc_all_bookings[$cc_slot["slot_id"]]["10:00:00"])): ?>
+                                                    <p class="cc-detail-student">
+                                                        <?= $cc_all_bookings[$cc_slot["slot_id"]]["10:00:00"]["course_data"]; ?>
+                                                    </p>
+                                                    <p class="cc-detail-student">リカレント太郎</p>
+                                                    <p class="cc-detail-student">対面</p>
+                                                <?php else: ?>
+                                                    <p class="cc-detail-student">空白</p>
+                                                <?php endif; ?> -->
+                                            </div>
+                                        </td>
+                                        <!-- 11:00:00 -->
                                         <td class="cc-detail-td">
                                             <div class="cc-detail-student-card">
                                                 <p class="cc-detail-student">6c</p>
@@ -136,6 +154,7 @@ check($cc_plus_slots);
                                                 <p class="cc-detail-student">対面</p>
                                             </div>
                                         </td>
+                                        <!-- 12:00:00 -->
                                         <td class="cc-detail-td">
                                             <div class="cc-detail-student-card">
                                                 <p class="cc-detail-student">6c</p>
@@ -143,6 +162,7 @@ check($cc_plus_slots);
                                                 <p class="cc-detail-student">対面</p>
                                             </div>
                                         </td>
+                                        <!-- 14:00:00 -->
                                         <td class="cc-detail-td">
                                             <div class="cc-detail-student-card">
                                                 <p class="cc-detail-student">6c</p>
@@ -150,6 +170,7 @@ check($cc_plus_slots);
                                                 <p class="cc-detail-student">対面</p>
                                             </div>
                                         </td>
+                                        <!-- 15:00:00 -->
                                         <td class="cc-detail-td">
                                             <div class="cc-detail-student-card">
                                                 <p class="cc-detail-student">6c</p>
@@ -157,13 +178,7 @@ check($cc_plus_slots);
                                                 <p class="cc-detail-student">対面</p>
                                             </div>
                                         </td>
-                                        <td class="cc-detail-td">
-                                            <div class="cc-detail-student-card">
-                                                <p class="cc-detail-student">6c</p>
-                                                <p class="cc-detail-student">リカレント太郎</p>
-                                                <p class="cc-detail-student">対面</p>
-                                            </div>
-                                        </td>
+                                        <!-- 16:00:00 -->
                                         <td class="cc-detail-td">
                                             <div class="cc-detail-student-card">
                                                 <p class="cc-detail-student">6c</p>
@@ -210,7 +225,15 @@ check($cc_plus_slots);
                                 <tbody class="cc-detail-tbody">
 
                                     <tr class="cc-detail-tr">
-
+                                        <!-- 10:00:00 -->
+                                        <td class="cc-detail-td">
+                                            <div class="cc-detail-student-card">
+                                                <p class="cc-detail-student"><?php $cc_all_bookings[$cc_slot["slot_id"]] ?></p>
+                                                <p class="cc-detail-student">リカレント太郎</p>
+                                                <p class="cc-detail-student">対面</p>
+                                            </div>
+                                        </td>
+                                        <!-- 11:00:00 -->
                                         <td class="cc-detail-td">
                                             <div class="cc-detail-student-card">
                                                 <p class="cc-detail-student">6c</p>
@@ -218,6 +241,7 @@ check($cc_plus_slots);
                                                 <p class="cc-detail-student">対面</p>
                                             </div>
                                         </td>
+                                        <!-- 12:00:00 -->
                                         <td class="cc-detail-td">
                                             <div class="cc-detail-student-card">
                                                 <p class="cc-detail-student">6c</p>
@@ -225,6 +249,7 @@ check($cc_plus_slots);
                                                 <p class="cc-detail-student">対面</p>
                                             </div>
                                         </td>
+                                        <!-- 14:00:00 -->
                                         <td class="cc-detail-td">
                                             <div class="cc-detail-student-card">
                                                 <p class="cc-detail-student">6c</p>
@@ -232,6 +257,7 @@ check($cc_plus_slots);
                                                 <p class="cc-detail-student">対面</p>
                                             </div>
                                         </td>
+                                        <!-- 15:00:00 -->
                                         <td class="cc-detail-td">
                                             <div class="cc-detail-student-card">
                                                 <p class="cc-detail-student">6c</p>
@@ -239,13 +265,7 @@ check($cc_plus_slots);
                                                 <p class="cc-detail-student">対面</p>
                                             </div>
                                         </td>
-                                        <td class="cc-detail-td">
-                                            <div class="cc-detail-student-card">
-                                                <p class="cc-detail-student">6c</p>
-                                                <p class="cc-detail-student">リカレント太郎</p>
-                                                <p class="cc-detail-student">対面</p>
-                                            </div>
-                                        </td>
+                                        <!-- 16:00:00 -->
                                         <td class="cc-detail-td">
                                             <div class="cc-detail-student-card">
                                                 <p class="cc-detail-student">6c</p>
