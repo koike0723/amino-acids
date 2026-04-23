@@ -6,7 +6,6 @@
         <span></span>
     </div>
     <nav class="hum-menu" id="hum-menu">
-        <a href="./admin_index.php">トップページへ戻る</a>
         <details>
             <summary>訓練生</summary>
             <div class="hamburger-details">
@@ -34,5 +33,6 @@
                 <a href="./admin_consultant_list.php">コンサルタント一覧</a>
             </div>
         </details>
+        <a href="./admin_index.php" class="btn btn-secondary">トップページへ戻る</a>
     </nav>
 </div>
