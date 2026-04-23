@@ -487,3 +487,281 @@ function get_cc_change_confirm(int $booking_id_a, int $booking_id_b): array
         ],
     ];
 }
+
+// ============================================================
+// 申請詳細取得
+// ============================================================
+
+/**
+ * 申請詳細の取得
+ *
+ * request_idから申請の詳細情報を取得する。
+ * 共通情報（申請者・コース・申請日時等）に加え、申請タイプに応じた
+ * 予約詳細を 'detail' キー以下に格納して返す。
+ *
+ * 返却データの構造（共通部分）
+ * [
+ *   'request_id'       => 5,
+ *   'type_id'          => 1,
+ *   'type_name'        => 'cc+予約',
+ *   'status_id'        => 1,
+ *   'status_name'      => '新規',
+ *   'status_label'     => '未解決',   // 新規・未対応:'未解決' / 承認・却下:'対応済み'
+ *   'student_id'       => 11,
+ *   'student_name'     => '山田太郎',
+ *   'course_id'        => 2,
+ *   'course_name'      => 'Webプログラミング科',
+ *   'room_id'          => 3,
+ *   'room_name'        => '6B',
+ *   'course_full_name' => '6B/Webプログラミング科',
+ *   'created_at'       => '2026-04-13 14:30:59',
+ *   'message'          => '申請メッセージ',  // 任意。未入力時はnull
+ *   'booking_id_a'     => 10,   // 承認・却下処理用。常に含まれる
+ *   'booking_id_b'     => 15,   // type 2・4のみ値あり。それ以外はnull
+ *   'detail'           => [...], // タイプ別の予約詳細（下記参照）
+ * ]
+ *
+ * --- detail の構造（type 1: CC+新規予約） ---
+ * 'detail' => [
+ *   'booking_id' => 10,
+ *   'cc_date'    => '2026-05-10',
+ *   'cc_time'    => '10時～',
+ *   'style_id'   => 1,
+ *   'style_name' => 'ZOOM',
+ * ]
+ *
+ * --- detail の構造（type 2: CC+変更申請） ---
+ * 'detail' => [
+ *   'before' => ['booking_id'=>10, 'cc_date'=>'2026-05-10', 'cc_time'=>'10時～', 'style_id'=>1, 'style_name'=>'ZOOM'],
+ *   'after'  => ['booking_id'=>15, 'cc_date'=>'2026-06-07', 'cc_time'=>'14時～', 'style_id'=>2, 'style_name'=>'対面'],
+ * ]
+ *
+ * --- detail の構造（type 3: CC+キャンセル申請） ---
+ * type 1 と同一構造
+ *
+ * --- detail の構造（type 4: 必須CC変更申請） ---
+ * 'detail' => [
+ *   'my_self' => [
+ *     'booking_id'   => 10,
+ *     'from_cc_date' => '2026-05-10',  // 現在の日付
+ *     'from_cc_time' => '10時～',      // 現在の時間
+ *     'to_cc_date'   => '2026-06-07',  // 入れ替え後（=相手の現在）
+ *     'to_cc_time'   => '14時～',
+ *   ],
+ *   'target' => [
+ *     'booking_id'       => 15,
+ *     'student_name'     => '鈴木花子',
+ *     'course_full_name' => '6B/Webプログラミング科',
+ *     'from_cc_date'     => '2026-06-07',
+ *     'from_cc_time'     => '14時～',
+ *     'to_cc_date'       => '2026-05-10',  // 入れ替え後（=申請者の現在）
+ *     'to_cc_time'       => '10時～',
+ *   ],
+ * ]
+ *
+ * @param int $request_id 取得する申請のID
+ * @return array 申請詳細。該当なしの場合は空配列
+ */
+function get_cc_request_detail(int $request_id): array
+{
+    $db = db_connect();
+
+    // 1. 共通情報を取得
+    $sql = 'SELECT
+                req.id                            AS request_id,
+                req.type_id                       AS type_id,
+                rt.name                           AS type_name,
+                req.status_id                     AS status_id,
+                rs.name                           AS status_name,
+                s.id                              AS student_id,
+                CONCAT(s.last_name, s.first_name) AS student_name,
+                c.id                              AS course_id,
+                c.name                            AS course_name,
+                r.id                              AS room_id,
+                r.name                            AS room_name,
+                CONCAT(r.name, "/", c.name)       AS course_full_name,
+                req.created_at                    AS created_at,
+                req.message                       AS message,
+                req.booking_id_a                  AS booking_id_a,
+                req.booking_id_b                  AS booking_id_b
+            FROM t_cc_requests req
+            JOIN m_request_types  rt ON req.type_id    = rt.id
+            JOIN m_request_status rs ON req.status_id  = rs.id
+            JOIN m_students       s  ON req.student_id = s.id
+            JOIN m_courses        c  ON s.course_id    = c.id
+            JOIN m_rooms          r  ON c.room_id      = r.id
+            WHERE req.id = :request_id';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([':request_id' => $request_id]);
+    $request = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$request) {
+        return [];
+    }
+
+    // status_label を付与
+    $request['status_label'] = in_array((int) $request['status_id'], [3, 4])
+        ? '対応済み'
+        : '未解決';
+
+    // 2. タイプ別詳細を取得して 'detail' キーに格納
+    $type_id = (int) $request['type_id'];
+
+    $request['detail'] = match ($type_id) {
+        1, 3    => _fetch_cc_plus_single_detail($db, $request),
+        2       => _fetch_cc_plus_change_detail($db, $request),
+        4       => _fetch_cc_change_detail($db, $request),
+        default => [],
+    };
+
+    return $request;
+}
+
+/**
+ * CC+新規予約・キャンセル申請の予約詳細を取得（type 1・3 共用）
+ *
+ * booking_id_a に紐づく予約の日付・時間・面談方法を返す
+ *
+ * @param PDO   $db      DB接続
+ * @param array $request 共通情報（booking_id_a を含む）
+ * @return array 予約詳細。予約が取得できない場合は空配列
+ */
+function _fetch_cc_plus_single_detail(PDO $db, array $request): array
+{
+    if (!$request['booking_id_a']) {
+        return [];
+    }
+
+    $sql = 'SELECT
+                b.id           AS booking_id,
+                sl.date        AS cc_date,
+                t.display_name AS cc_time,
+                ms.id          AS style_id,
+                ms.name        AS style_name
+            FROM t_cc_bookings b
+            JOIN t_cc_slots       sl ON b.cc_slot_id = sl.id
+            JOIN m_times          t  ON b.time_id    = t.id
+            JOIN m_meating_styles ms ON b.style_id   = ms.id
+            WHERE b.id = :booking_id';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([':booking_id' => $request['booking_id_a']]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $row ?: [];
+}
+
+/**
+ * CC+変更申請の予約詳細を取得（type 2）
+ *
+ * booking_id_a（変更前）と booking_id_b（変更後）の2件を取得して
+ * 'before' / 'after' のキーで返す
+ *
+ * @param PDO   $db      DB接続
+ * @param array $request 共通情報（booking_id_a・booking_id_b を含む）
+ * @return array ['before' => [...], 'after' => [...]]。取得できない場合は空配列
+ */
+function _fetch_cc_plus_change_detail(PDO $db, array $request): array
+{
+    if (!$request['booking_id_a'] || !$request['booking_id_b']) {
+        return [];
+    }
+
+    $sql = 'SELECT
+                b.id           AS booking_id,
+                sl.date        AS cc_date,
+                t.display_name AS cc_time,
+                ms.id          AS style_id,
+                ms.name        AS style_name
+            FROM t_cc_bookings b
+            JOIN t_cc_slots       sl ON b.cc_slot_id = sl.id
+            JOIN m_times          t  ON b.time_id    = t.id
+            JOIN m_meating_styles ms ON b.style_id   = ms.id
+            WHERE b.id IN (:booking_id_a, :booking_id_b)';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([
+        ':booking_id_a' => $request['booking_id_a'],
+        ':booking_id_b' => $request['booking_id_b'],
+    ]);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if (count($rows) !== 2) {
+        return [];
+    }
+
+    $bookings = array_column($rows, null, 'booking_id');
+
+    return [
+        'before' => $bookings[$request['booking_id_a']],
+        'after'  => $bookings[$request['booking_id_b']],
+    ];
+}
+
+/**
+ * 必須CC変更申請の予約詳細を取得（type 4）
+ *
+ * booking_id_a（申請者）と booking_id_b（相手）の2件を取得し、
+ * 入れ替え後の日時を計算した上で 'my_self' / 'target' のキーで返す
+ * 相手の生徒名・コース情報も含む
+ *
+ * @param PDO   $db      DB接続
+ * @param array $request 共通情報（booking_id_a・booking_id_b を含む）
+ * @return array ['my_self' => [...], 'target' => [...]]。取得できない場合は空配列
+ */
+function _fetch_cc_change_detail(PDO $db, array $request): array
+{
+    if (!$request['booking_id_a'] || !$request['booking_id_b']) {
+        return [];
+    }
+
+    $sql = 'SELECT
+                b.id                              AS booking_id,
+                s.id                              AS student_id,
+                CONCAT(s.last_name, s.first_name) AS student_name,
+                CONCAT(r.name, "/", c.name)       AS course_full_name,
+                sl.date                           AS cc_date,
+                t.display_name                    AS cc_time
+            FROM t_cc_bookings b
+            JOIN m_students       s  ON b.student_id = s.id
+            JOIN m_courses        c  ON s.course_id  = c.id
+            JOIN m_rooms          r  ON c.room_id    = r.id
+            JOIN t_cc_slots       sl ON b.cc_slot_id = sl.id
+            JOIN m_times          t  ON b.time_id    = t.id
+            WHERE b.id IN (:booking_id_a, :booking_id_b)';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([
+        ':booking_id_a' => $request['booking_id_a'],
+        ':booking_id_b' => $request['booking_id_b'],
+    ]);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if (count($rows) !== 2) {
+        return [];
+    }
+
+    $bookings = array_column($rows, null, 'booking_id');
+    $a = $bookings[$request['booking_id_a']]; // 申請者
+    $b = $bookings[$request['booking_id_b']]; // 相手
+
+    return [
+        'my_self' => [
+            'booking_id'   => $a['booking_id'],
+            'from_cc_date' => $a['cc_date'],
+            'from_cc_time' => $a['cc_time'],
+            'to_cc_date'   => $b['cc_date'],
+            'to_cc_time'   => $b['cc_time'],
+        ],
+        'target' => [
+            'booking_id'       => $b['booking_id'],
+            'student_name'     => $b['student_name'],
+            'course_full_name' => $b['course_full_name'],
+            'from_cc_date'     => $b['cc_date'],
+            'from_cc_time'     => $b['cc_time'],
+            'to_cc_date'       => $a['cc_date'],
+            'to_cc_time'       => $a['cc_time'],
+        ],
+    ];
+}

@@ -70,6 +70,7 @@ includes/
 | 関数名 | 説明 |
 |---|---|
 | [`get_cc_requests($filters)`](#get_cc_requestsarray-filters---array) | 申請一覧を取得。ステータス・種別・生徒・コースで絞り込み可能 |
+| [`get_cc_request_detail($request_id)`](#get_cc_request_detailint-request_id-array) | 申請IDから詳細情報を取得。タイプ別の予約詳細を `detail` キーに格納 |
 | [`add_cc_request($db, ...)`](#add_cc_requestpdo-db---void-⚠️-内部関数) | ⚠️ 内部関数。申請を1件INSERT |
 | [`book_cc_plus($student_id, ...)`](#book_cc_plusint-student_id-string-date-int-time_id-int-style_id-string-message-bool) | CC+枠の新規予約申請（空き確認・予約・申請を一括処理） |
 | [`book_cc_plus_change($student_id, ...)`](#book_cc_plus_changeint-student_id-int-from_booking_id-string-date-int-time_id-int-style_id-string-message-bool) | CC+予約の変更申請（変更先の仮予約を作成） |
@@ -884,6 +885,37 @@ $requests = get_cc_requests(['type_id' => [1, 2, 3], 'status_id' => [1, 2]]);
     // ...
 ]
 ```
+
+---
+
+### `get_cc_request_detail(int $request_id): array`
+申請IDから詳細情報を取得する。共通情報に加え、申請タイプに応じた予約詳細を `detail` キー以下に格納して返す。  
+内部でタイプ別ヘルパー関数（`_fetch_cc_plus_single_detail` / `_fetch_cc_plus_change_detail` / `_fetch_cc_change_detail`）に委譲する。
+
+```php
+$detail = get_cc_request_detail(5);
+echo $detail['student_name'];                      // 申請者名
+echo $detail['detail']['cc_date'];                 // type 1・3: 予約日付
+echo $detail['detail']['before']['cc_date'];       // type 2: 変更前日付
+echo $detail['detail']['my_self']['from_cc_date']; // type 4: 自分の現在日付
+```
+
+（返却データ構造・各タイプの detail 構造は前掲の通り）
+
+---
+
+### `_fetch_cc_plus_single_detail(PDO $db, array $request): array` ⚠️ 内部関数
+type 1・3 用。`booking_id_a` に紐づく予約の日付・時間・面談方法を返す。直接呼び出さず `get_cc_request_detail()` 経由で使うこと。
+
+---
+
+### `_fetch_cc_plus_change_detail(PDO $db, array $request): array` ⚠️ 内部関数
+type 2 用。`booking_id_a`（変更前）と `booking_id_b`（変更後）の2件を取得し `before` / `after` で返す。直接呼び出さず `get_cc_request_detail()` 経由で使うこと。
+
+---
+
+### `_fetch_cc_change_detail(PDO $db, array $request): array` ⚠️ 内部関数
+type 4 用。`booking_id_a`（申請者）と `booking_id_b`（相手）の2件を取得し、入れ替え後の日時と相手の生徒情報を含めて `my_self` / `target` で返す。直接呼び出さず `get_cc_request_detail()` 経由で使うこと。
 
 ---
 
