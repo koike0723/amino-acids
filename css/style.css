@@ -23,14 +23,14 @@
   align-items: center;
 }
 
-.student-nav-flex{
+.student-nav-flex {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 50px;
 }
 
-.student-logout{
+.student-logout {
   margin: 0;
   color: #000;
 }
@@ -56,7 +56,8 @@
 .message-button:hover {
   color: #222;
 }
-.material-symbols-outlined{
+
+.material-symbols-outlined {
   font-size: 32px;
 }
 
@@ -66,6 +67,25 @@
   background-color: #6CDFFF;
   border-top: 2px solid #00bfff;
   padding: 22px 32px;
+}
+
+.icon-circle {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.icon-circle::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  background-color: #ff0000;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  z-index: 1;
 }
 
 /* ハンバーガーメニュー */
@@ -673,6 +693,7 @@ th.cc-detail-th-size {
 input[type="checkbox"] {
   appearance: auto;
 }
+
 .u-hidden {
   display: none;
 }

@@ -1,7 +1,4 @@
 <!-- 管理者側ヘッダー -->
-<?php $data = $row['status_id']; 
-$iconbanner = !empty($data) 
-?>
 <header class="site-header_admin">
     <div class="header-inner">
         <div class="inner-flex">
@@ -11,11 +8,15 @@ $iconbanner = !empty($data)
             </a>
             <a href="../php_do/logout.php" style="color: black;">ログアウト</a>
         </div>
-        <a href="./student_message.php" class="message-button">
-            <span id="alert-icon" class="material-symbols-outlined">
-                notifications
-            </span>
+        <a href="./student_message.php" class="message-button bunner">
+            <?php if (has_unresolved_cc_requests()) : ?>
+                <span class="icon-circle">
+                <?php endif; ?>
+                <i id="alert-icon" class="material-symbols-outlined">
+                    notifications
+                </i>
+                </span>
         </a>
     </div>
-    <?php include('./inc/nav_bar.php'); ?>
+    <?php require_once('./inc/nav_bar.php'); ?>
 </header>
