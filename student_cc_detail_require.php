@@ -17,12 +17,32 @@ require_once __DIR__ . '/functions/functions.php';
 <body>
     <?php include('./inc/student_header.php'); ?>
     <?php
-    $student = $_SESSION['student_id'];
+    $login_student = $_SESSION['student_id'];
+    $selected_date = $_GET['selected_date'];
     if (!isset($_SESSION['student_id'])) {
         header('location:./inc/login.php');
         exit();
+    } else {
+        $student = get_student($login_student);
     }
-    check($student);
+
+    $cc_require_student = get_course_cc_bookings_by_student((int)$login_student,  $selected_date);
+
+    check($cc_require_student);
+
+    ?>
+
+    <?php //foreach($cc_require_student as $day){
+    //check($day);
+    //foreach($day as $times){
+    // check($times);
+    // foreach($times as $stu){
+    //    check($stu);
+    //    check($stu['student_id']);
+    // }
+    // }
+    // } 
+
     ?>
 
     <main class="container py-4">
@@ -30,76 +50,47 @@ require_once __DIR__ . '/functions/functions.php';
             <div class="row justify-content-center">
                 <div class="col-12 col-md-10 col-lg-8 text-center">
 
-                    <h1 class="student-required-cc-title mb-4">4月 必須キャリコン一覧</h1>
+                    <h1 class="student-required-cc-title mb-4">必須キャリコン一覧</h1>
 
-                    <!-- 時間帯をクリックすると画面遷移するようにしてます -->
-                    <!-- クリックしたときにどの日付かデータを送れるようにしたいなら以下ｐｈｐ -->
-                    <!-- <a href="./student_cc_edit_require.php?date=2027-10-09&time=16:00" class="student-required-cc-time-link">１６：００〜</a> -->
+                    <?php foreach ($cc_require_student as $key => $tbody): ?>
+                        <div class="student-required-cc-block mb-4">
+                            <h2 class="student-required-cc-date mb-3"><?= $key; ?></h2>
+                            <div class="table-responsive d-flex justify-content-center">
+                                <table class="table table-bordered student-required-cc-table w-auto align-middle text-center mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>時間</th>
+                                            <th>必須キャリコン1</th>
+                                            <th>必須キャリコン2</th>
+                                        </tr>
+                                    </thead>
 
-                    <div class="student-required-cc-block mb-4">
-                        <h2 class="student-required-cc-date mb-3">10月9日</h2>
+                                    <tbody>
+                                        <?php foreach ($tbody as $time => $tr): ?>
+                                            <tr>
 
-                        <div class="table-responsive d-flex justify-content-center">
-                            <table class="table table-bordered student-required-cc-table w-auto align-middle text-center mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>時間</th>
-                                        <th>必須キャリコン1</th>
-                                        <th>必須キャリコン2</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <a href="./student_cc_edit_require.php" class="student-required-cc-time-link">１０：００〜</a>
-                                        </td>
-                                        <td>岸本</td>
-                                        <td>兵藤</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <a href="./student_cc_edit_require.php" class="student-required-cc-time-link">１１：００〜</a>
-                                        </td>
-                                        <td>岸本</td>
-                                        <td>兵藤</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <a href="./student_cc_edit_require.php" class="student-required-cc-time-link">１２：００〜</a>
-                                        </td>
-                                        <td>岸本</td>
-                                        <td>兵藤</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <a href="./student_cc_edit_require.php" class="student-required-cc-time-link">１４：００〜</a>
-                                        </td>
-                                        <td>岸本</td>
-                                        <td>兵藤</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <a href="./student_cc_edit_require.php" class="student-required-cc-time-link">１５：００〜</a>
-                                        </td>
-                                        <td>岸本</td>
-                                        <td>兵藤</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="student-required-cc-selected">
-                                            <a href="./student_cc_edit_require.php" class="student-required-cc-time-link">１６：００〜</a>
-                                        </td>
-                                        <td class="student-required-cc-selected">岸本</td>
-                                        <td>兵藤</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                                <td>
+                                                    <?= $time; ?>
+                                                </td>
+                                                <?php foreach ($tr as $td): ?>
+                                                    <td>
+                                                        <a href="./student_cc_edit_require.php?<?= $td['booking_id'] ?>"><?= $td['student_name'] ?>
+                                                        </a>
+                                                    </td>
+
+                                                <?php endforeach; ?>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+
+                                </table>
+                            </div>
                         </div>
-                    </div>
+                    <?php endforeach; ?>
 
                     <!-- 10月16日 -->
-                    <div class="student-required-cc-block mb-5">
+                    <!-- <div class="student-required-cc-block mb-5">
                         <h2 class="student-required-cc-date mb-3">10月16日</h2>
-
                         <div class="table-responsive d-flex justify-content-center">
                             <table class="table table-bordered student-required-cc-table w-auto align-middle text-center mb-0">
                                 <thead>
@@ -155,12 +146,11 @@ require_once __DIR__ . '/functions/functions.php';
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="mt-4">
-                        <a href="./student_reserve_edit.php" class="btn btn-secondary">戻る</a>
+                        <a href="./index.php" class="btn btn-secondary">戻る</a>
                     </div>
-
                 </div>
             </div>
         </section>

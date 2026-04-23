@@ -1,15 +1,34 @@
 <?php
 require_once __DIR__ . '/functions/functions.php';
 
-// DBからデータ取得
-$student = get_student(1);
-
 // index.php から受け取る
-$selected_date = $_GET['cc_date'] ?? '';
-$selected_time = $_GET['cc_time'] ?? '';
+$selected_date = $_GET['selected_date'] ?? '';
+$selected_time = $_GET['time'] ?? '';
 
 // 一致する予約を探す
-$target_booking = null;
+
+?>
+<!doctype html>
+<html lang="ja">
+
+<head>
+    <title>予約追加・変更</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+
+<body>
+    <?php include('./inc/student_header.php'); ?>
+    <?php
+    $login_student = $_SESSION['student_id'];
+    if(!isset($_SESSION['student_id'])){
+        header('location:./inc/login.php');
+        exit();
+    }else{
+        $student = get_student($login_student);
+    }
+
+    $target_booking = null;
 
 if (!empty($student['bookings'])) {
     foreach ($student['bookings'] as $booking) {
@@ -19,19 +38,7 @@ if (!empty($student['bookings'])) {
         }
     }
 }
-?>
-<!doctype html>
-<html lang="ja">
-
-<head>
-    <?php check($student) ?>
-    <title>予約追加・変更</title>
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-</head>
-
-<body>
-    <?php include('./inc/student_header.php'); ?>
+    ?>
 
     <main class="container py-5">
         <section class="student-reservation-detail-section">
@@ -60,14 +67,14 @@ if (!empty($student['bookings'])) {
                                 <div class="col-12 col-sm-4 text-sm-end fw-bold">日時：</div>
                                 <div class="col-12 col-sm-8">
                                     <?php echo htmlspecialchars($target_booking['cc_date'], ENT_QUOTES, 'UTF-8'); ?>
-                                    <?php echo htmlspecialchars(substr($target_booking['cc_time'], 0, 5), ENT_QUOTES, 'UTF-8'); ?>〜
+                                    <?php echo htmlspecialchars(substr($target_booking['cc_time'], 0, 5), ENT_QUOTES, 'UTF-8'); ?>
                                 </div>
                             </div>
 
                             <div class="row mb-5">
                                 <div class="col-12 col-sm-4 text-sm-end fw-bold">方法：</div>
                                 <div class="col-12 col-sm-8">
-                                    <?php echo htmlspecialchars($target_booking['how_to'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php echo htmlspecialchars($target_booking['cc_style_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
                                 </div>
                             </div>
                         </div>

@@ -23,14 +23,14 @@
   align-items: center;
 }
 
-.student-nav-flex{
+.student-nav-flex {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 50px;
 }
 
-.student-logout{
+.student-logout {
   margin: 0;
   color: #000;
 }
@@ -835,55 +835,104 @@ th.cc-detail-th-size {
 /* admin_student_detailここまで */
 
 /* index.php ここから*/
-/* calender section ここから*/
-.calendar-table th,
-.calendar-table td {
-  width: 14.285%;
+.student-index-section{
+  text-align: center;
 }
 
-.calendar-table td {
-  height: 100px;
-  vertical-align: top;
-  padding: 6px 8px;
-  font-size: 14px;
+.student-index-reserve-area{
+  padding-block-end: 100px;
 }
 
-.calendar-table .date-number {
-  display: block;
-  margin-bottom: 4px;
+.student-index-reserve-detail{
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  width: 1000px;
+  margin: 0 auto;
 }
 
-.calendar-table .other-month {
-  color: #adb5bd;
+.student-index-h1{
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  padding-block-start: 30px;
 }
 
-.calendar-table .event-item {
-  font-size: 11px;
-  line-height: 1.4;
-  margin-bottom: 2px;
-  word-break: break-all;
+.student-index-flex-area{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 24px;
+  padding-block-start: 50px;
 }
 
-.calendar-heading-number {
-  font-size: 3rem;
-  line-height: 1;
+.student-index-flex{
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding-block-end: 30px;
 }
 
-.calendar-heading-month {
-  font-size: 1.5rem;
+.student-index-flex-text{
+  padding-block-end: 30px;
 }
 
-.calendar-heading-year {
-  font-size: 2rem;
-  line-height: 1;
+.student-index-text-color1{
+  color: #008CFF;
+}
+.student-index-text-color2{
+  color: red;
+}
+.student-index-flex-notice{
+  color: rgba(255, 0, 0, 0.7);
 }
 
+.student-index-flex-btn-change{
+  background-color: #88B3EC;
+  border: 0;
+  border-radius: 5px;
+  padding: 3px;
+  font-size: 24px;
+}
 
+.student-index-flex-btn-cancel{
+  background-color: #F59870;
+  border: 0;
+  border-radius: 5px;
+  padding: 3px;
+  font-size: 24px;
+}
 
-/* calender section ここまで*/
+.cc-plus-section {
+  padding-block-start: 100px;
+}
 
+.cc-plus-section-h1 {
+  font-size: 24px;
+}
+
+.cc-plus-list-ul {
+  list-style: none;
+  font-size: 20px;
+  color: #000;
+  text-align: center;
+}
+
+.cc-plus-list-li {
+  padding-block: 30px;
+  color: #00bfff;
+}
+
+.cc-plus-list-li a:hover{
+  text-decoration: underline;
+}
+
+.cc-plus-list-li::before {
+  content: '・';
+  color: #000;
+  text-decoration: none;
+  display: inline-block;
+}
 /* index.php  ここまで*/
-
 
 /*login.php ここから  */
 /* ログイン共通 */

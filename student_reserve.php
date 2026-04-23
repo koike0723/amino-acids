@@ -4,7 +4,7 @@ require_once __DIR__ . '/functions/functions.php';
 
 // 選択された日付データの取得
 $selected_date = $_GET['selected_date'] ?? '';
-$_SESSION['selected_date'] = $_GET['selected_date'];
+//$_SESSION['selected_date'] = $_GET['selected_date'];
 $booking_id = $_GET['booking_id'] ?? '';
 ?>
 

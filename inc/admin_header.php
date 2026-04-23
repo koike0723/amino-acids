@@ -1,5 +1,4 @@
 <!-- 管理者側ヘッダー -->
-<?php require_once __DIR__ . '/functions/functions.php'; ?>
 <?php $data = $row['status_id']; 
 $iconbanner = !empty($data) 
 ?>

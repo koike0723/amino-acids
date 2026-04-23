@@ -15,6 +15,14 @@
 
 <body>
     <?php include('./inc/student_header.php'); ?>
+    <?php
+    $student = get_student($_SESSION['student_id']);
+    if (!isset($_SESSION['student_id'])) {
+        header('location:./inc/login.php');
+        exit();
+    } 
+    check($student);
+    ?>
 
     <main class="container py-5">
         <section class="reservation-detail-section">
