@@ -1,7 +1,7 @@
 # functions.php リファレンス
 
 `functions.php` は `require_once` のみを記述したエントリーポイントです。  
-実装は `includes/` 配下の5ファイルに分割されています。
+実装は `includes/` 配下の6ファイルに分割されています。
 
 ```
 includes/
@@ -9,7 +9,8 @@ includes/
 ├── students.php    # 生徒管理
 ├── courses.php     # コース管理
 ├── cc_slots.php    # CC枠管理
-└── cc_bookings.php # CC予約・申請管理
+├── cc_bookings.php # CC予約管理
+└── requests.php    # 申請管理（cc_bookings.phpをrequire）
 ```
 
 ---
@@ -53,7 +54,7 @@ includes/
 | [`get_cc_schedule_list($base_date, $range, $course_ids)`](#get_cc_schedule_listbase_date-range-course_ids) | キャリコン開催予定一覧を取得。基準日・表示範囲・コースで絞り込み可能 |
 | [`update_cc_plus_slot_count($date, $cc_plus_count)`](#update_cc_plus_slot_countstring-date-int-cc_plus_count-bool) | 指定日のCC+枠数をパラメータに合わせて増減する |
 
-**CC予約・申請管理（cc_bookings.php）**
+**CC予約管理（cc_bookings.php）**
 | 関数名 | 説明 |
 |---|---|
 | [`get_cc_bookings($filters)`](#get_cc_bookingsarray-filters---array) | CC予約一覧を `[slot_id][start_time]` の階層構造で取得 |
@@ -61,6 +62,16 @@ includes/
 | [`swap_cc_bookings($booking_id_a, $booking_id_b)`](#swap_cc_bookingsbooking_id_a-booking_id_b) | 2件の予約の日時を入れ替える（管理者による穴埋め調整用） |
 | [`get_cc_plus_time_table($date)`](#get_cc_plus_time_tablestring-date-array) | 指定日のCC+枠の時間ごとの空き状況を取得 |
 | [`add_cc_booking($db, ...)`](#add_cc_bookingpdo-db---int-⚠️-内部関数) | ⚠️ 内部関数。予約を1件INSERT |
+| [`bulk_book_cc($course_id)`](#bulk_book_ccint-course_id-bool) | 指定コースの全生徒に必須CC予約を一括登録 |
+| [`get_course_cc_bookings($course_id, $cc_count)`](#get_course_cc_bookingsint-course_id-int-cc_count-array) | 必須CC予約を日付・時間・予約の階層構造で取得 |
+| [`get_course_cc_bookings_by_student($student_id, $date)`](#get_course_cc_bookings_by_studentint-student_id-string-date-array) | 生徒IDと日付から必須CC予約一覧を取得するラッパー |
+
+**申請管理（requests.php）**
+| 関数名 | 説明 |
+|---|---|
+| [`get_cc_requests($filters)`](#get_cc_requestsarray-filters---array) | 申請一覧を取得。ステータス・種別・生徒・コースで絞り込み可能 |
+| [`get_cc_request_detail($request_id)`](#get_cc_request_detailint-request_id-array) | 申請IDから詳細情報を取得。タイプ別の予約詳細を `detail` キーに格納 |
+| [`has_unresolved_cc_requests()`](#has_unresolved_cc_requests-bool) | 未解決申請が存在するか確認。通知表示制御用 |
 | [`add_cc_request($db, ...)`](#add_cc_requestpdo-db---void-⚠️-内部関数) | ⚠️ 内部関数。申請を1件INSERT |
 | [`book_cc_plus($student_id, ...)`](#book_cc_plusint-student_id-string-date-int-time_id-int-style_id-string-message-bool) | CC+枠の新規予約申請（空き確認・予約・申請を一括処理） |
 | [`book_cc_plus_change($student_id, ...)`](#book_cc_plus_changeint-student_id-int-from_booking_id-string-date-int-time_id-int-style_id-string-message-bool) | CC+予約の変更申請（変更先の仮予約を作成） |
@@ -68,9 +79,6 @@ includes/
 | [`request_cc_change($student_id, ...)`](#request_cc_changeint-student_id-int-booking_id_a-int-booking_id_b-string-message-bool) | 必須CC予約の変更申請（生徒間の入れ替え申請）を登録 |
 | [`approve_cc_plus_change($request_id)`](#approve_cc_plus_changeint-request_id-bool) | CC+変更申請を承認し、変更元の予約を削除 |
 | [`reject_cc_plus_change($request_id)`](#reject_cc_plus_changeint-request_id-bool) | CC+変更申請を却下し、変更先の仮予約を削除 |
-| [`bulk_book_cc($course_id)`](#bulk_book_ccint-course_id-bool) | 指定コースの全生徒に必須CC予約を一括登録 |
-| [`get_course_cc_bookings($course_id, $cc_count)`](#get_course_cc_bookingsint-course_id-int-cc_count-array) | 必須CC予約を日付・時間・予約の階層構造で取得 |
-| [`get_course_cc_bookings_by_student($student_id, $date)`](#get_course_cc_bookings_by_studentint-student_id-string-date-array) | 生徒IDと日付から必須CC予約一覧を取得するラッパー |
 | [`get_cc_change_confirm($booking_id_a, $booking_id_b)`](#get_cc_change_confirmint-booking_id_a-int-booking_id_b-array) | CC変更申請の確認画面用データ（双方の生徒情報・入れ替え日時）を取得 |
 
 ---
@@ -366,8 +374,7 @@ foreach ($course['cc'][1] as $date) {
 ---
 
 ### `add_course($course)`
-コースを1件登録する。`cc` キーがある場合は必須CCスケジュールも同時登録される。  
-`m_courses` へのINSERTと `t_course_cc_schedules` へのINSERTはトランザクションで一括処理される。
+コースを1件登録する。`cc` キーがある場合は必須CCスケジュールも同時登録される。
 
 ```php
 add_course([
@@ -386,10 +393,6 @@ add_course([
 | 引数 | 型 | 説明 |
 |---|---|---|
 | `$course` | `array` | コースデータ（`name`, `start_date`, `end_date`, `room_id`, `category_id`, `cc`(任意)） |
-
-| | |
-|---|---|
-| 戻り値 | `bool` 成功時 `true`、失敗時 `false` |
 
 ---
 
@@ -439,18 +442,18 @@ $schedules = get_course_cc_schedules(2);
 
 ---
 
-### `add_course_cc_schedules(PDO $db, $course_id, $cc_schedules)` ⚠️ 内部関数
-
-必須CCスケジュールを登録する。**直接呼び出さず `add_course()` や `update_course()` を使うこと。**  
-呼び出し元のトランザクション内で実行されるため、`$db` は外部から受け取る。
+### `add_course_cc_schedules($course_id, $cc_schedules)`
+必須CCスケジュールを登録する。`add_course` や `update_course` から内部的に呼ばれる。
 
 ```php
-// 直接呼び出しは非推奨。add_course() / update_course() 経由で使用すること。
+add_course_cc_schedules(2, [
+    1 => ['2026-05-10', '2026-05-17'],
+    2 => ['2026-07-12'],
+]);
 ```
 
 | 引数 | 型 | 説明 |
 |---|---|---|
-| `$db` | `PDO` | トランザクション管理中のDB接続 |
 | `$course_id` | `int` | コースID |
 | `$cc_schedules` | `array` | `[cc_count => [date, ...], ...]` 形式のスケジュール |
 
@@ -636,18 +639,7 @@ update_cc_plus_slot_count('2026-05-10', 0);
  
 ---
 
-## CC予約・申請管理（cc_bookings.php）
-
-### 申請種別 (`type_id`) 一覧
-
-| `type_id` | 説明 |
-|---|---|
-| 1 | CC+予約申請 |
-| 2 | CC+変更申請 |
-| 3 | CC+キャンセル申請 |
-| 4 | 必須CC変更申請 |
-
----
+## CC予約管理（cc_bookings.php）
 
 ### `get_cc_bookings(array $filters = []): array`
 CC予約一覧を `[slot_id][start_time]` の階層構造で取得する。
@@ -751,11 +743,195 @@ $timetable = get_cc_plus_time_table('2026-05-10');
 | `$cc_slot_id` | `int` | スロットID |
 | `$time_id` | `int` | 時間ID |
 | `$style_id` | `int` | 面談スタイルID |
-| `$cc_plus_booking_id` | `int\|null` | CC+仮予約から確定する場合の元予約ID |
+| `$cc_plus_booking_id` | `int\|null` | CC+仮予約から確定する場合の元CC+予約ID |
 
 | | |
 |---|---|
 | 戻り値 | `int` 採番された予約ID |
+
+---
+
+### `bulk_book_cc(int $course_id): bool`
+指定コースの全生徒に対して、全回数分の必須CC予約を一括登録する。
+
+**処理方針**
+- `cc_count` ごとに生徒を日付数で均等分割（端数は前の日付グループへ）
+- 各グループ内の生徒を `m_times` の件数ずつチャンクに分割し、チャンクごとにスロットを生成
+- 既に同 `cc_count` の予約がある生徒はスキップして続行
+- `style_id` はデフォルト値（1）で登録
+
+```php
+$result = bulk_book_cc(course_id: 2);
+```
+
+| 引数 | 型 | 説明 |
+|---|---|---|
+| `$course_id` | `int` | 対象コースID |
+
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true`、DBエラー時 `false` |
+
+---
+
+### `get_course_cc_bookings(int $course_id, int $cc_count): array`
+指定コース・回数の必須CC予約を、日付 > 時間 > 予約一覧 の三次元構造で返す。  
+CC+から確定した通常予約（`cc_plus_booking_id IS NOT NULL`）は除外される。
+
+```php
+$bookings = get_course_cc_bookings(course_id: 2, cc_count: 1);
+foreach ($bookings['2026-05-10']['10:00'] as $b) {
+    echo $b['student_id'];    // 生徒ID
+    echo $b['student_name'];  // 生徒氏名
+}
+```
+
+**返却データ構造**
+```php
+[
+    '2026-05-10' => [
+        '10:00' => [
+            ['booking_id' => 10, 'student_id' => 3, 'student_name' => '山田太郎'],
+        ],
+        '11:00' => [...],
+    ],
+]
+```
+
+---
+
+### `get_course_cc_bookings_by_student(int $student_id, string $date): array`
+生徒IDと日付から `get_course_cc_bookings()` を呼び出すラッパー。  
+`student_id → course_id → cc_count` の順に解決してから委譲する。
+
+```php
+$bookings = get_course_cc_bookings_by_student(student_id: 1, date: '2026-05-10');
+```
+
+| | |
+|---|---|
+| 戻り値 | `array` `get_course_cc_bookings()` と同じ構造。解決できない場合は空配列 |
+
+---
+
+## 申請管理（requests.php）
+
+### 申請種別 (`type_id`) 一覧
+
+| `type_id` | 説明 |
+|---|---|
+| 1 | CC+予約申請 |
+| 2 | CC+変更申請 |
+| 3 | CC+キャンセル申請 |
+| 4 | 必須CC変更申請 |
+
+---
+
+### `get_cc_requests(array $filters = []): array`
+申請一覧を取得する。フィルタなしで呼ぶと全申請を新着順で返す。
+
+```php
+// 未解決のみ（新規＋未対応）
+$requests = get_cc_requests(['status_id' => [1, 2]]);
+
+// 対応済みのみ（承認＋却下）
+$requests = get_cc_requests(['status_id' => [3, 4]]);
+
+// 新規のみ（単品指定）
+$requests = get_cc_requests(['status_id' => 1]);
+
+// 特定生徒の申請履歴
+$requests = get_cc_requests(['student_id' => 11]);
+
+// CC+関連かつ未解決
+$requests = get_cc_requests(['type_id' => [1, 2, 3], 'status_id' => [1, 2]]);
+```
+
+| 引数 | 型 | 説明 |
+|---|---|---|
+| `$filters` | `array` | 絞り込み条件。各キーはスカラーまたは配列で指定可能（後述） |
+
+**`$filters` に指定できるキー**
+
+| キー | 型 | 説明 |
+|---|---|---|
+| `status_id` | `int\|int[]` | ステータスIDで絞り込み。配列でIN検索 |
+| `type_id` | `int\|int[]` | 申請種別IDで絞り込み |
+| `student_id` | `int\|int[]` | 生徒IDで絞り込み |
+| `course_id` | `int\|int[]` | コースIDで絞り込み |
+
+| | |
+|---|---|
+| 戻り値 | `array[]` 申請一覧（下記構造）。新着順 |
+
+**返却データ構造**
+```php
+[
+    [
+        'request_id'       => 5,
+        'type_id'          => 1,
+        'type_name'        => 'cc+予約',
+        'status_id'        => 1,
+        'status_name'      => '新規',
+        'status_label'     => '未解決',   // 新規・未対応:'未解決' / 承認・却下:'対応済み'
+        'student_id'       => 11,
+        'student_name'     => '山田太郎',
+        'course_id'        => 2,
+        'course_name'      => 'Webプログラミング科',
+        'room_id'          => 3,
+        'room_name'        => '6B',
+        'course_full_name' => '6B/Webプログラミング科',
+        'created_at'       => '2026-04-13 14:30:59',
+    ],
+    // ...
+]
+```
+
+---
+
+### `get_cc_request_detail(int $request_id): array`
+申請IDから詳細情報を取得する。共通情報に加え、申請タイプに応じた予約詳細を `detail` キー以下に格納して返す。  
+内部でタイプ別ヘルパー関数（`_fetch_cc_plus_single_detail` / `_fetch_cc_plus_change_detail` / `_fetch_cc_change_detail`）に委譲する。
+
+```php
+$detail = get_cc_request_detail(5);
+echo $detail['student_name'];                      // 申請者名
+echo $detail['detail']['cc_date'];                 // type 1・3: 予約日付
+echo $detail['detail']['before']['cc_date'];       // type 2: 変更前日付
+echo $detail['detail']['my_self']['from_cc_date']; // type 4: 自分の現在日付
+```
+
+（返却データ構造・各タイプの detail 構造は前掲の通り）
+
+---
+
+### `_fetch_cc_plus_single_detail(PDO $db, array $request): array` ⚠️ 内部関数
+type 1・3 用。`booking_id_a` に紐づく予約の日付・時間・面談方法を返す。直接呼び出さず `get_cc_request_detail()` 経由で使うこと。
+
+---
+
+### `_fetch_cc_plus_change_detail(PDO $db, array $request): array` ⚠️ 内部関数
+type 2 用。`booking_id_a`（変更前）と `booking_id_b`（変更後）の2件を取得し `before` / `after` で返す。直接呼び出さず `get_cc_request_detail()` 経由で使うこと。
+
+---
+
+### `_fetch_cc_change_detail(PDO $db, array $request): array` ⚠️ 内部関数
+type 4 用。`booking_id_a`（申請者）と `booking_id_b`（相手）の2件を取得し、入れ替え後の日時と相手の生徒情報を含めて `my_self` / `target` で返す。直接呼び出さず `get_cc_request_detail()` 経由で使うこと。
+
+---
+
+### `has_unresolved_cc_requests(): bool`
+未解決申請（新規・未対応）が1件以上存在するか確認する。通知バッジ等の表示制御を想定。
+
+```php
+if (has_unresolved_cc_requests()) {
+    // 通知バッジを表示
+}
+```
+
+| | |
+|---|---|
+| 戻り値 | `bool` 未解決申請が存在する場合 `true`、すべて解決済みまたは申請がない場合 `false` |
 
 ---
 
@@ -870,69 +1046,6 @@ $result = reject_cc_plus_change(request_id: 5);
 
 ---
 
-### `bulk_book_cc(int $course_id): bool`
-指定コースの全生徒に対して、全回数分の必須CC予約を一括登録する。
-
-**処理方針**
-- `cc_count` ごとに生徒を日付数で均等分割（端数は前の日付グループへ）
-- 各グループ内の生徒を `m_times` の件数ずつチャンクに分割し、チャンクごとにスロットを生成
-- 既に同 `cc_count` の予約がある生徒はスキップして続行
-- `style_id` はデフォルト値（1）で登録
-
-```php
-$result = bulk_book_cc(course_id: 2);
-```
-
-| 引数 | 型 | 説明 |
-|---|---|---|
-| `$course_id` | `int` | 対象コースID |
-
-| | |
-|---|---|
-| 戻り値 | `bool` 成功時 `true`、DBエラー時 `false` |
-
----
-
-### `get_course_cc_bookings(int $course_id, int $cc_count): array`
-指定コース・回数の必須CC予約を、日付 > 時間 > 予約一覧 の三次元構造で返す。  
-CC+から確定した通常予約（`cc_plus_booking_id IS NOT NULL`）は除外される。
-
-```php
-$bookings = get_course_cc_bookings(course_id: 2, cc_count: 1);
-foreach ($bookings['2026-05-10']['10:00'] as $b) {
-    echo $b['student_id'];    // 生徒ID
-    echo $b['student_name'];  // 生徒氏名
-}
-```
-
-**返却データ構造**
-```php
-[
-    '2026-05-10' => [
-        '10:00' => [
-            ['booking_id' => 10, 'student_id' => 3, 'student_name' => '山田太郎'],
-        ],
-        '11:00' => [...],
-    ],
-]
-```
-
----
-
-### `get_course_cc_bookings_by_student(int $student_id, string $date): array`
-生徒IDと日付から `get_course_cc_bookings()` を呼び出すラッパー。  
-`student_id → course_id → cc_count` の順に解決してから委譲する。
-
-```php
-$bookings = get_course_cc_bookings_by_student(student_id: 1, date: '2026-05-10');
-```
-
-| | |
-|---|---|
-| 戻り値 | `array` `get_course_cc_bookings()` と同じ構造。解決できない場合は空配列 |
-
----
-
 ### `get_cc_change_confirm(int $booking_id_a, int $booking_id_b): array`
 必須CC変更申請の確認画面用データを取得する。  
 2つの予約のそれぞれの生徒情報と入れ替え後の日時を返す。
@@ -964,10 +1077,3 @@ echo $data['target']['student_name'];   // 相手
 | | |
 |---|---|
 | 戻り値 | `array` 確認画面用データ。いずれかの予約が取得できない場合は空配列 |
-
-
-> **[2026-04-22 変更]** `add_course_cc_schedules` の第1引数に `PDO $db` を追加。
-> `add_course` / `update_course` どちらも同一トランザクション内で INSERT を行うため、
-> DB接続を外部から受け取る内部関数に変更した。
-> 合わせて `add_course` に `beginTransaction` / `commit` / `rollBack` を追加し、
-> 戻り値を `bool` に統一した。
