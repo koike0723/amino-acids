@@ -1,6 +1,12 @@
 <!-- 管理者側ヘッダー -->
-<?php $data = $row['status_id']; 
-$iconbanner = !empty($data) 
+<?php function notifications_head($var)
+{
+    if (!empty($var)) {
+        return true;
+    } else {
+        return false;
+    }
+}
 ?>
 <header class="site-header_admin">
     <div class="header-inner">
@@ -11,9 +17,11 @@ $iconbanner = !empty($data)
             </a>
             <a href="../php_do/logout.php" style="color: black;">ログアウト</a>
         </div>
-        <a href="./student_message.php" class="message-button">
-            <span id="alert-icon" class="material-symbols-outlined">
-                notifications
+        <a href="./student_message.php" class="message-button bunner">
+            <span class="icon-circle">
+                <i id="alert-icon" class="material-symbols-outlined">
+                    notifications
+                </i>
             </span>
         </a>
     </div>
