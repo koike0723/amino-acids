@@ -63,10 +63,11 @@ $student_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 class="student-edit-name"
                                 value="<?= h($student['first_name'] ?? ''); ?>">
                         </label>
+
                     </div>
 
-                    <label class="student-edit-title">
-                        <span class="student-edit-span">訓練名</span>
+                    <label class="student-edit-title mb-4">
+                        <span class="student-edit-spanstudent-edit-span">訓練名</span>
                         <select name="course_id" class="student-edit-option-select" style="width: fit-content;">
                             <?php foreach ($courses as $course): ?>
                                 <option value="<?= h($course['course_id']); ?>" <?= ($student['course_id'] == $course['course_id']) ? 'selected' : ''; ?>>
@@ -75,6 +76,18 @@ $student_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <?php endforeach; ?>
                         </select>
                     </label>
+                    <div class="student-edit-title student-edit-class-wrap mb-4">
+                        <p class="student-edit-class mb-0">
+                            <span class="student-edit-class-label">クラス：</span>
+                            <span class="student-edit-class-value"><?= h($student["room_name"]); ?></span>
+                        </p>
+                    </div>
+                    <div class="student-edit-title student-edit-class-wrap mb-4">
+                        <p class="student-edit-class mb-0">
+                            <span class="student-edit-class-label">出席番号：</span>
+                            <span class="student-edit-class-value"><?= h($student["number"]); ?></span>
+                        </p>
+                    </div>
                 </div>
             </div>
 

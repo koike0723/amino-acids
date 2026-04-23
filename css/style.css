@@ -448,6 +448,12 @@ tr.ad-stu-list-tr:nth-child(even) {
   padding: 10px;
   box-sizing: border-box;
 }
+.student-edit-number {
+  border: 1px solid #000;
+  width: 70vw;
+  padding: 10px;
+  box-sizing: border-box;
+}
 
 .student-edit-option-flex {
   display: flex;
