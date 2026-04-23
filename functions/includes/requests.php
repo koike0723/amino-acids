@@ -324,7 +324,7 @@ function approve_cc_plus_change(int $request_id): bool
              FROM t_cc_requests
              WHERE id = :request_id
                AND type_id   = 2
-               AND status_id = 1'
+               AND status_id IN (1,2)'
         );
         $req_stmt->execute([':request_id' => $request_id]);
         $request = $req_stmt->fetch();
@@ -387,7 +387,7 @@ function reject_cc_plus_change(int $request_id): bool
              FROM t_cc_requests
              WHERE id = :request_id
                AND type_id   = 2
-               AND status_id = 1'
+               AND status_id = IN (1, 2)'
         );
         $req_stmt->execute([':request_id' => $request_id]);
         $request = $req_stmt->fetch();
