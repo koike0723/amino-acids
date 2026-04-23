@@ -5,28 +5,34 @@
         <span></span>
         <span></span>
     </div>
-        <nav class="hum-menu" id="hum-menu">
-            <a href="./admin_index.php">トップページへ戻る</a>
-            <details>
-                <summary>訓練生</summary>
-                <div class="hamburger-details">
-                    <a href="./admin_student_list.php">訓練生一覧</a><br>
-                    <a href="./admin_student_add.php">訓練生追加</a><br>
-                    <a href="./admin_student_add_bulk.php">訓練生一括追加</a>
-                </div>
-            </details>
-            <details>
-                <summary>コース</summary>
-                <div class="hamburger-details">
-                    <a href="./admin_course_list.php">コース一覧</a><br>
-                    <a href="./admin_course_add.php">コース追加</a>
-                </div>
-            </details>
-            <details>
-                <summary>メッセージ</summary>
-                <div class="hamburger-details">
-                    <a href="./admin_message.php">メッセージ一覧</a>
-                </div>
-            </details>
-        </nav>
-    </div>
+    <nav class="hum-menu" id="hum-menu">
+        <a href="./admin_index.php">トップページへ戻る</a>
+        <details>
+            <summary>訓練生</summary>
+            <div class="hamburger-details">
+                <a href="./admin_student_list.php">訓練生一覧</a><br>
+                <a href="./admin_student_add.php">訓練生追加</a><br>
+                <a href="./admin_student_add_bulk.php">訓練生一括追加</a>
+            </div>
+        </details>
+        <details>
+            <summary>コース</summary>
+            <div class="hamburger-details">
+                <a href="./admin_course_list.php">コース一覧</a><br>
+                <a href="./admin_course_add.php">コース追加</a>
+            </div>
+        </details>
+        <details>
+            <summary>メッセージ</summary>
+            <div class="hamburger-details">
+                <a href="./admin_message.php">メッセージ一覧</a>
+            </div>
+        </details>
+        <details>
+            <summary>コンサルタント</summary>
+            <div class="hamburger-details">
+                <a href="./admin_consultant_list.php">コンサルタント一覧</a>
+            </div>
+        </details>
+    </nav>
+</div>
