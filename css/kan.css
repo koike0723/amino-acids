@@ -1,8 +1,17 @@
 /*  */
+a {
+    display: block;
+}
 select {
     background-color: rgb(183, 183, 183);
 }
 
+td {
+    padding: 3px;
+}
+td p{
+    font-size: 0.5em;
+}
 /*  */
 
 .cc-plus-list-flex {
@@ -19,6 +28,19 @@ select {
 
 /*  */
 
+
+/* 表関係 */
+.cc-detail-student-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    /* 6.25rem => 100px */
+    width: clamp(3rem, 1.856rem + 4.883vw, 6.25rem);
+    height: clamp(6.25rem, 5.810rem + 1.878vw, 7.5rem);
+}
+
+/*  */
 
 .cc-detail-table-area {
     padding: 1rem;
