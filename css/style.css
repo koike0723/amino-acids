@@ -134,17 +134,12 @@
   padding: 20px;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   z-index: 100;
-  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* --- JSでクラスがついた時 --- */
 .hum-menu.is-open {
   right: 0;
-  /* 画面内にスライドイン */
-}
-
-/* チェックボックスが入ったらメニューを右から表示 */
-.hum-menu {
   position: absolute;
 }
 
@@ -450,6 +445,7 @@ tr.ad-stu-list-tr:nth-child(even) {
   margin: 0 auto;
   text-align: center;
   padding-block-start: 20px;
+  margin-bottom: 20px;
 }
 
 .prev-btn {
