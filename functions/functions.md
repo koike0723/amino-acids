@@ -775,12 +775,12 @@ $result = bulk_book_cc(course_id: 2);
 ---
 
 ### `get_course_cc_bookings(int $course_id, int $cc_count): array`
-指定コース・回数の必須CC予約を、日付 > 時間 > 予約一覧 の三次元構造で返す。  
+指定コース・回数の必須CC予約を、日付 > 時間表示名 > 予約一覧 の三次元構造で返す。  
 CC+から確定した通常予約（`cc_plus_booking_id IS NOT NULL`）は除外される。
 
 ```php
 $bookings = get_course_cc_bookings(course_id: 2, cc_count: 1);
-foreach ($bookings['2026-05-10']['10:00'] as $b) {
+foreach ($bookings['2026-05-10']['10時～'] as $b) {
     echo $b['student_id'];    // 生徒ID
     echo $b['student_name'];  // 生徒氏名
 }
@@ -790,10 +790,10 @@ foreach ($bookings['2026-05-10']['10:00'] as $b) {
 ```php
 [
     '2026-05-10' => [
-        '10:00' => [
+        '10時～' => [
             ['booking_id' => 10, 'student_id' => 3, 'student_name' => '山田太郎'],
         ],
-        '11:00' => [...],
+        '11時～' => [...],
     ],
 ]
 ```
