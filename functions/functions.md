@@ -490,7 +490,7 @@ $slots = get_cc_slots(CC_SLOT_TYPE::All->name, '2026-05-10');
 
 | | |
 |---|---|
-| 戻り値 | `array[]` 枠情報（`cc_date`, `is_cc_plus`, `consultant_name`, `room_name`） |
+| 戻り値 | `array[]` 枠情報（`slot_id`, `cc_date`, `is_cc_plus`, `consultant_name`, `room_name`） |
 
 > **注意:** `consultant_name` と `room_name` は `null` の可能性があるため、使用時はnullチェックを行うこと。
 
