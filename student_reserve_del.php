@@ -12,11 +12,12 @@
     }
 
     // session の student_id を使ってDBから取得
-    // $student = get_student($_SESSION['student_id']);
-    $student = get_student(1);
+    $student = get_student($_SESSION['student_id']);
+    // $student = get_student(1);
 
     $cc_date = $_GET['cc_date'];
     $cc_time = $_GET['cc_time'];
+
 
     // 配列の中身確認
     check($cc_date);
@@ -74,7 +75,10 @@
                      </div>
 
                      <div class="text-center d-flex justify-content-center gap-3">
-                         <a href="./php_do/reserve_del_do.php" class="btn btn-warning fw-bold">キャンセル申請</a>
+                         <a href="./php_do/reserve_del_do.php?student_id=<?php echo urlencode($student['student_id']); ?>&booking_id=<?php echo urlencode($booking['booking_id']); ?>"
+                             class="btn btn-warning fw-bold">
+                             キャンセル申請
+                         </a>
                          <a href="index.php" class="btn btn-secondary">戻る</a>
                      </div>
 
