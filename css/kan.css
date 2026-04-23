@@ -1,4 +1,4 @@
-/*  */
+/* まとめて設定系 */
 a {
     display: block;
 }
@@ -12,8 +12,12 @@ td {
 td p{
     font-size: 0.5em;
 }
-/*  */
 
+
+
+
+
+/* フレックス・レイアウト系 */
 .cc-plus-list-flex {
     display: flex;
     gap: 10px;
@@ -26,38 +30,9 @@ td p{
 }
 
 
-/*  */
 
 
-/* 表関係 */
-.cc-detail-student-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-    /* 6.25rem => 100px */
-    width: clamp(3rem, 1.856rem + 4.883vw, 6.25rem);
-    height: clamp(6.25rem, 5.810rem + 1.878vw, 7.5rem);
-}
-
-/*  */
-
-.cc-detail-table-area {
-    padding: 1rem;
-    margin-bottom: 350px;
-    border-radius: 5px;
-    border: 2px solid black;
-}
-
-.cc-plus-table-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 5px;
-    border-radius: 5px;
-    background-color: #cdefff8a;
-}
-
+/* ボタン系 */
 .kan_btn {
     display: inline-block;
     border: 2px solid black;
@@ -100,9 +75,33 @@ td p{
     font-size: 1.5rem;
 }
 
-.kan-table .cc-detail-tbody {
-    width: 50%;
-    background-color: red;
+
+
+
+
+/*全体の表関係 */
+.cc-detail-student-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    /* 6.25rem => 100px */
+    width: clamp(3rem, 1.856rem + 4.883vw, 6.25rem);
+    height: clamp(6.25rem, 5.810rem + 1.878vw, 7.5rem);
+}
+
+
+
+
+
+/* 任意キャリコン関係 */
+.cc-plus-table-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #cdefff8a;
 }
 .cc-plus-table {
     border-collapse: collapse;
@@ -110,29 +109,49 @@ td p{
     margin-bottom: 5px;
 }
 
-/* 必須キャリコン関係のCSS */
 
+
+
+/* 必須キャリコン関係のCSS */
+.cc-detail-table-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 380px;
+    border-radius: 5px;
+    border: 2px solid black;
+}
 .cc_slot{
+    display: flex;
+    flex-direction: column;
+    justify-self: start;
+    align-items: center;
     margin-bottom: 10px;
     background-color: rgb(179, 255, 214);
     border-radius: 5px;
     padding: 5px;
 }
+.select_bix_area{
+    align-self: flex-start;
+}
+
+
+
 
 
 /* drawer処理 */
 .cc-plus-table-area {
     position: fixed;
     left: -200%;
+    width: 100vw;
     /* 画面外に隠す */
     bottom: 0;
     transition: 0.3s;
 }
-
 .open .cc-plus-table-area {
     left: 0;
 }
-
 .open .kan_open-btn {
     display: none;
 }
