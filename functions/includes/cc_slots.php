@@ -79,7 +79,7 @@ function get_cc_slots($cc_type = CC_SLOT_TYPE::Line->name, $target_date = null)
     // 対象の日付のキャリコン枠を取得
     if ($target_date !== null) {
         $where_clauses[] = 's.date = :target_date';
-        $params[':taget_date'] = $target_date;
+        $params[':target_date'] = $target_date;
     }
 
     // Where句の組み立て

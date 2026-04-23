@@ -167,16 +167,24 @@ function add_course($course)
 
     $sql .= '(' . implode(', ', $row_placeholders) . ')';
 
-    // 3. 結合して実行
-    if (!empty($row_values)) {
-        $stmt = $db->prepare($sql);
-        $stmt->execute($params);
-        $last_id = $db->lastInsertId();
-    }
+    try {
+        $db->beginTransaction();
+        // 3. 結合して実行
+        if (!empty($row_values)) {
+            $stmt = $db->prepare($sql);
+            $stmt->execute($params);
+            $last_id = $db->lastInsertId();
+        }
 
-    //必須キャリコンのスケジュール登録
-    if (isset($course['cc']) && $course['cc'] != '') {
-        add_course_cc_schedules($last_id, $course['cc']);
+        //必須キャリコンのスケジュール登録
+        if (isset($course['cc']) && $course['cc'] != '') {
+            add_course_cc_schedules($db, $last_id, $course['cc']);
+        }
+        $db->commit();
+        return true;
+    } catch (PDOException $e) {
+        $db->rollback();
+        return false;
     }
 }
 
@@ -207,7 +215,7 @@ function add_course($course)
  * @param  array $data      更新するカラムと値の連想配列
  * @return bool  成功時 true、失敗時 false
  */
-function update_course(int $course_id, array $data): bool
+function update_course(int $course_id, array $data)
 {
     $allowed_columns = ['name', 'start_date', 'end_date', 'room_id', 'category_id'];
 
@@ -279,16 +287,15 @@ function update_course(int $course_id, array $data): bool
 
             // 既存スケジュールを全削除して再登録
             $db->prepare('DELETE FROM t_course_cc_schedules WHERE course_id = :course_id')
-               ->execute([':course_id' => $course_id]);
+                ->execute([':course_id' => $course_id]);
 
             if (!empty($data['cc'])) {
-                add_course_cc_schedules($course_id, $data['cc']);
+                add_course_cc_schedules($db, $course_id, $data['cc']);
             }
         }
 
         $db->commit();
         return true;
-
     } catch (Exception $e) {
         $db->rollBack();
         return false;
@@ -336,9 +343,8 @@ function get_course_cc_schedules($course_id)
  * ]
  * キーが cc_count（第何回目か）、値が実施日付の配列
  */
-function add_course_cc_schedules($course_id, $cc_schedules)
+function add_course_cc_schedules($db, $course_id, $cc_schedules)
 {
-    $db = db_connect();
 
     // カラム定義
     $definition = [

@@ -1,0 +1,22 @@
+.cc-detail-table-area-hum{
+    display: flex;
+    justify-content: center;
+}
+.kan_btn {
+    display: inline-block;
+    border: 2px solid black;
+    margin: 5px 5px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px 1px rgb(133, 133, 133);
+}
+.kan_btn button {
+    padding: 2px 5px;
+}
+.kan_open-btn{
+    background-color: rgb(213, 255, 255);
+}
+.kan_close-btn{
+    white-space: nowrap;
+    align-self:flex-end;
+    background-color: white;
+}

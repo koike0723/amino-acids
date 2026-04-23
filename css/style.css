@@ -664,6 +664,9 @@ th.cc-detail-th-size {
 }
 
 /* テーブル用ハンバーガーメニューここから */
+input[type="checkbox"] {
+  appearance: auto;
+}
 .u-hidden {
   display: none;
 }
