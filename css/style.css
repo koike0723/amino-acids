@@ -61,10 +61,6 @@ a.hover-disable:hover {
   color: #222;
 }
 
-.material-symbols-outlined {
-  font-size: 32px;
-}
-
 /* admin_header.php */
 .site-header_admin {
   display: flex;
