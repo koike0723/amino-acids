@@ -26,6 +26,7 @@ require_once __DIR__ . '/functions/functions.php';
         $student = get_student($login_student);
         $cc_plus_table = get_cc_plus_dates();
     }
+
     ?>
     <main role="main" class="student-index-main" style="padding:60px 15px 0">
         <section class="student-index-section">

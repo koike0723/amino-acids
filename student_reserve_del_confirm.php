@@ -3,7 +3,7 @@ require_once __DIR__ . '/functions/functions.php';
 
 // index.php から受け取る
 $selected_date = $_GET['selected_date'] ?? '';
-$selected_time = $_GET['time'] ?? '';
+$time = $_GET['time'] ?? '';
 
 // 一致する予約を探す
 
@@ -32,7 +32,7 @@ $selected_time = $_GET['time'] ?? '';
 
 if (!empty($student['bookings'])) {
     foreach ($student['bookings'] as $booking) {
-        if ($booking['cc_date'] === $selected_date && $booking['cc_time'] === $selected_time) {
+        if ($booking['cc_date'] === $selected_date && $booking['cc_time'] === $time) {
             $target_booking = $booking;
             break;
         }
@@ -43,7 +43,6 @@ if (!empty($student['bookings'])) {
 <html lang="ja">
 
 <head>
-    <?php check($student) ?>
     <title>予約追加・変更</title>
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
@@ -51,8 +50,6 @@ if (!empty($student['bookings'])) {
 </head>
 
 <body>
-    <?php include('./inc/student_header.php'); ?>
-
     <main class="container py-5">
         <section class="student-reservation-detail-section">
             <div class="row justify-content-center">
