@@ -5,7 +5,7 @@ require_once __DIR__ . '/functions/functions.php';
 /////////////////////////////////////////////////
 // GET通信処理
 /////////////////////////////////////////////////
-$status_filter       = $_GET['status_filter'] ?? '';
+$status_filter = $_GET['status_filter'] ?? 'label_unsolved';
 $status_label_filter = '';
 $status_id_filter    = '';
 $type_id_filter      = $_GET['type_id']      ?? '';
@@ -135,7 +135,7 @@ $status_labels = [
                     <?php $datetime = date('Y/m/d H:i', strtotime($request['created_at'])); ?>
                     <td><?php echo $datetime; ?></td>
                     <td>
-                      <a href="./admin_message_detail.php?request_id=<?= $request['request_id'] ?>" class="btn btn-success btn-sm">詳細</a>
+                      <a href="./admin_message_detail.php?request_id=<?= $request['request_id'] ?>&<?= h($_SERVER['QUERY_STRING']) ?>" class="btn btn-success btn-sm">詳細</a>
                     </td>
                   </tr>
                 <?php endforeach; ?>

@@ -79,9 +79,15 @@ includes/
 | [`book_cc_plus_change($student_id, ...)`](#book_cc_plus_changeint-student_id-int-from_booking_id-string-date-int-time_id-int-style_id-string-message-bool) | CC+予約の変更申請（変更先の仮予約を作成） |
 | [`book_cc_plus_cancel($student_id, ...)`](#book_cc_plus_cancelint-student_id-int-booking_id-string-message-bool) | CC+予約のキャンセル申請を登録 |
 | [`request_cc_change($student_id, ...)`](#request_cc_changeint-student_id-int-booking_id_a-int-booking_id_b-string-message-bool) | 必須CC予約の変更申請（生徒間の入れ替え申請）を登録 |
+| [`get_cc_change_confirm($booking_id_a, $booking_id_b)`](#get_cc_change_confirmint-booking_id_a-int-booking_id_b-array) | CC変更申請の確認画面用データ（双方の生徒情報・入れ替え日時）を取得 |
 | [`approve_cc_plus_change($request_id)`](#approve_cc_plus_changeint-request_id-bool) | CC+変更申請を承認し、変更元の予約を削除 |
 | [`reject_cc_plus_change($request_id)`](#reject_cc_plus_changeint-request_id-bool) | CC+変更申請を却下し、変更先の仮予約を削除 |
-| [`get_cc_change_confirm($booking_id_a, $booking_id_b)`](#get_cc_change_confirmint-booking_id_a-int-booking_id_b-array) | CC変更申請の確認画面用データ（双方の生徒情報・入れ替え日時）を取得 |
+| [`approve_cc_plus($request_id)`](#approve_cc_plusint-request_id-bool) | CC+予約申請を承認。ステータスを承認に更新。予約はそのまま残す |
+| [`reject_cc_plus($request_id)`](#reject_cc_plusint-request_id-bool) | CC+予約申請を却下。予約を削除してステータスを却下に更新 |
+| [`approve_cc_plus_cancel($request_id)`](#approve_cc_plus_cancelint-request_id-bool) | CC+キャンセル申請を承認。予約を削除してステータスを承認に更新 |
+| [`reject_cc_plus_cancel($request_id)`](#reject_cc_plus_cancelint-request_id-bool) | CC+キャンセル申請を却下。ステータスのみ却下に更新 |
+| [`approve_cc_change($request_id)`](#approve_cc_changeint-request_id-bool) | 必須CC変更申請を承認。予約を入れ替えてステータスを承認に更新 |
+| [`reject_cc_change($request_id)`](#reject_cc_changeint-request_id-bool) | 必須CC変更申請を却下。ステータスのみ却下に更新 |
 
 ---
 
@@ -1070,32 +1076,6 @@ $result = request_cc_change(
 
 ---
 
-### `approve_cc_plus_change(int $request_id): bool`
-CC+変更申請を承認する。変更元の仮予約（とそれに紐づく確定済み通常予約）を削除し、ステータスを承認済みに更新する。
-
-```php
-$result = approve_cc_plus_change(request_id: 5);
-```
-
-| | |
-|---|---|
-| 戻り値 | `bool` 成功時 `true` |
-
----
-
-### `reject_cc_plus_change(int $request_id): bool`
-CC+変更申請を却下する。変更先の仮予約を削除し、変更元は現状維持のままステータスを却下に更新する。
-
-```php
-$result = reject_cc_plus_change(request_id: 5);
-```
-
-| | |
-|---|---|
-| 戻り値 | `bool` 成功時 `true` |
-
----
-
 ### `get_cc_change_confirm(int $booking_id_a, int $booking_id_b): array`
 必須CC変更申請の確認画面用データを取得する。  
 2つの予約のそれぞれの生徒情報と入れ替え後の日時を返す。
@@ -1127,3 +1107,107 @@ echo $data['target']['student_name'];   // 相手
 | | |
 |---|---|
 | 戻り値 | `array` 確認画面用データ。いずれかの予約が取得できない場合は空配列 |
+
+---
+
+### `approve_cc_plus_change(int $request_id): bool`
+CC+変更申請を承認する。変更元の仮予約（とそれに紐づく確定済み通常予約）を削除し、ステータスを承認済みに更新する。
+
+```php
+$result = approve_cc_plus_change(request_id: 5);
+```
+
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true` |
+
+---
+
+### `reject_cc_plus_change(int $request_id): bool`
+CC+変更申請を却下する。変更先の仮予約を削除し、変更元は現状維持のままステータスを却下に更新する。
+
+```php
+$result = reject_cc_plus_change(request_id: 5);
+```
+
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true` |
+
+---
+
+### `approve_cc_plus(int $request_id): bool`
+CC+予約申請（type_id=1）を承認する。ステータスを承認（3）に更新する。予約はそのまま残す。
+
+```php
+$result = approve_cc_plus(request_id: 5);
+```
+
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true`（対象申請なし・DB失敗時は `false`） |
+
+---
+
+### `reject_cc_plus(int $request_id): bool`
+CC+予約申請（type_id=1）を却下する。`booking_id_a` の予約を削除し、ステータスを却下（4）に更新する。
+
+```php
+$result = reject_cc_plus(request_id: 5);
+```
+
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true`、失敗時 `false` |
+
+---
+
+### `approve_cc_plus_cancel(int $request_id): bool`
+CC+キャンセル申請（type_id=3）を承認する。`booking_id_a` の予約を削除し、ステータスを承認（3）に更新する。
+
+```php
+$result = approve_cc_plus_cancel(request_id: 5);
+```
+
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true`、失敗時 `false` |
+
+---
+
+### `reject_cc_plus_cancel(int $request_id): bool`
+CC+キャンセル申請（type_id=3）を却下する。ステータスを却下（4）に更新する。予約はそのまま残す。
+
+```php
+$result = reject_cc_plus_cancel(request_id: 5);
+```
+
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true`（対象申請なし・DB失敗時は `false`） |
+
+---
+
+### `approve_cc_change(int $request_id): bool`
+必須CC変更申請（type_id=4）を承認する。`swap_cc_bookings()` で `booking_id_a` と `booking_id_b` の予約を入れ替え、ステータスを承認（3）に更新する。
+
+```php
+$result = approve_cc_change(request_id: 5);
+```
+
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true`、`swap_cc_bookings()` 失敗時またはDB失敗時は `false` |
+
+---
+
+### `reject_cc_change(int $request_id): bool`
+必須CC変更申請（type_id=4）を却下する。ステータスを却下（4）に更新する。予約はそのまま残す。
+
+```php
+$result = reject_cc_change(request_id: 5);
+```
+
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true`（対象申請なし・DB失敗時は `false`） |

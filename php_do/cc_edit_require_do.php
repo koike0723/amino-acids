@@ -3,33 +3,17 @@
 require_once __DIR__ . '/../functions/functions.php';
 
 session_start();
-
-$student_id = $_SESSION['student_id'];
-$selected_date = $_GET['selected_date'];
+$login_student = $_SESSION['student_id'];
+$login_booking_id = $_GET['login_booking_id'];
 $booking_id = $_GET['booking_id'];
 
-$student = get_student($student_id);
-foreach($student['bookings'] as $booking){
-if($booking['booking_id'] === $booking_id){
-    $
+if (!isset($login_student) || !isset($login_booking_id) || !isset($booking_id)) {
+    header('location:../index.php');
+    exit();
+} else {
+    request_cc_change((int)$login_student, (int)$login_booking_id, (int)$booking_id);
 }
-}
 
-
-
-$result = book_cc_plus_change(
-    // ログインしてればOK
-    student_id: 1,
-
-    from_booking_id: 10,
-    date: '2026-06-07',
-    time_id: 3,
-    style_id: 1,
-);
-
+header('location:../index.php');
+exit();
 ?>
-
-// <a href="./student_cc_detail_require.php?selected_date=<?= $selected_date
-                                                            ?>&booking_id=<?= $login_booking_id ?>">
-
-                                                            selected_date=<?php echo ($booking['cc_date']); ?>

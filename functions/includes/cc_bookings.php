@@ -181,7 +181,10 @@ function swap_cc_bookings($booking_id_a, $booking_id_b)
     try {
         $db->beginTransaction();
 
-        $stmt = $db->prepare('SELECT * FROM t_cc_bookings WHERE id IN (:id_a, :id_b)');
+        // 入れ替え前の student_id・style_id を取得
+        $stmt = $db->prepare(
+            'SELECT id, student_id, style_id FROM t_cc_bookings WHERE id IN (:id_a, :id_b)'
+        );
         $stmt->execute([':id_a' => $booking_id_a, ':id_b' => $booking_id_b]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -189,33 +192,18 @@ function swap_cc_bookings($booking_id_a, $booking_id_b)
             throw new Exception('対象の予約が見つかりません');
         }
 
-        [$a, $b] = $rows;
+        $bookings = array_column($rows, null, 'id');
+        $a = $bookings[$booking_id_a];
+        $b = $bookings[$booking_id_b];
 
-        // 一旦2件削除（ユニーク制約から解放）
-        $stmt = $db->prepare('DELETE FROM t_cc_bookings WHERE id IN (:id_a, :id_b)');
-        $stmt->execute([':id_a' => $booking_id_a, ':id_b' => $booking_id_b]);
-
-        // cc_slot_id と time_id を入れ替えて再INSERT
+        // cc_slot_id / time_id はそのままにし
+        // student_id と style_id のみ入れ替える
+        // → uq_slot_time 制約に一切影響しない
         $stmt = $db->prepare(
-            'INSERT INTO t_cc_bookings (id, student_id, cc_slot_id, time_id, style_id)
-             VALUES (:id, :student_id, :cc_slot_id, :time_id, :style_id)'
+            'UPDATE t_cc_bookings SET student_id = ?, style_id = ? WHERE id = ?'
         );
-
-        $stmt->execute([
-            ':id'         => $a['id'],
-            ':student_id' => $a['student_id'],
-            ':cc_slot_id' => $b['cc_slot_id'],
-            ':time_id'    => $b['time_id'],
-            ':style_id'   => $a['style_id'],
-        ]);
-
-        $stmt->execute([
-            ':id'         => $b['id'],
-            ':student_id' => $b['student_id'],
-            ':cc_slot_id' => $a['cc_slot_id'],
-            ':time_id'    => $a['time_id'],
-            ':style_id'   => $b['style_id'],
-        ]);
+        $stmt->execute([$b['student_id'], $b['style_id'], $booking_id_a]);
+        $stmt->execute([$a['student_id'], $a['style_id'], $booking_id_b]);
 
         $db->commit();
         return true;
