@@ -2,7 +2,7 @@
 require_once __DIR__ . '/functions/functions.php';
 
 ?>
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 
 <head>
