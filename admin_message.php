@@ -135,7 +135,7 @@ $status_labels = [
                     <?php $datetime = date('Y/m/d H:i', strtotime($request['created_at'])); ?>
                     <td><?php echo $datetime; ?></td>
                     <td>
-                      <a href="./admin_message_detail.php?request_id=<?= $request['request_id'] ?>" class="btn btn-success btn-sm">詳細</a>
+                      <a href="./admin_message_detail.php?request_id=<?= $request['request_id'] ?>&<?= h($_SERVER['QUERY_STRING']) ?>" class="btn btn-success btn-sm">詳細</a>
                     </td>
                   </tr>
                 <?php endforeach; ?>
