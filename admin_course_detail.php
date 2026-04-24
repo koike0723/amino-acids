@@ -70,99 +70,103 @@ try {
             </p>
         </div>
         <?php if ($course["category_id"] == 1): ?>
-            <div class="d-flex px-2 py-3" style="background-color: #bbd8ff; border-radius: 10px;">
-                <dl class="course_cc col-6">
-                    <label for="course_days" class="form-label">キャリコンの日時</label>
-                    <dt class="mb-1">キャリコン１</dt>
-                    <dd class="cc1 mb-1 d-flex justify-content-around">
-                        <div class="1st_cc_day mt-1">
-                            <label for="cc1_1" class="form-label">１枠目</label>
-                            <p href="./admin_cc_course_list.php" id="cc1_1" class="form-control form-control-sm">
-                                <?php
-                                if (!empty($course["cc"][1][0]) && $course["cc"][1][0] != "0000-00-00") {
-                                    echo format_japanese_date($course["cc"][1][0]);
-                                } else {
-                                    echo "未設定";
-                                }
-                                ?>
-                            </p>
+            <dl class="course_cc col-8" id="cc_box">
+                <label for="course_days" class="form-label">キャリコンの日時</label>
+                <a class="course_cc_bulk" href="">一括登録</a>
+                <div class="d-flex px-2 py-3" style="background-color: #bbd8ff; border-radius: 10px;">
+                    <dl class="course_cc col-6">
+                        <dt class="mb-1">キャリコン１</dt>
+                        <dd class="cc1 mb-1 d-flex justify-content-around">
+                            <div class="1st_cc_day mt-1">
+                                <label for="cc1_1" class="form-label">１枠目</label>
+                                <p href="./admin_cc_course_list.php" id="cc1_1" class="form-control form-control-sm">
+                                    <?php
+                                    if (!empty($course["cc"][1][0]) && $course["cc"][1][0] != "0000-00-00") {
+                                        echo format_japanese_date($course["cc"][1][0]);
+                                    } else {
+                                        echo "未設定";
+                                    }
+                                    ?>
+                                </p>
+                            </div>
+                            <div class="2nd_cc_day mt-1">
+                                <label for="cc1_2" class="form-label">２枠目</label>
+                                <p href="./admin_cc_course_list.php" id="cc1_2" class="form-control form-control-sm">
+                                    <?php
+                                    if (!empty($course["cc"][1][1]) && $course["cc"][1][1] != "0000-00-00") {
+                                        echo format_japanese_date($course["cc"][1][1]);
+                                    } else {
+                                        echo "未設定";
+                                    }
+                                    ?>
+                                </p>
+                            </div>
+                        </dd>
+                        <dt class="mb-1">キャリコン２</dt>
+                        <div class="cc2 mb-1 d-flex justify-content-around">
+                            <div class="1st_cc_day mt-1">
+                                <label for="cc2_1" class="form-label">１枠目</label>
+                                <p href="./admin_cc_course_list.php" id="cc2_1" class="form-control form-control-sm">
+                                    <?php
+                                    if (!empty($course["cc"][2][0]) && $course["cc"][2][0] != "0000-00-00") {
+                                        echo format_japanese_date($course["cc"][2][0]);
+                                    } else {
+                                        echo "未設定";
+                                    }
+                                    ?>
+                                </p>
+                            </div>
+                            <div class="2nd_cc_day mt-1">
+                                <label for="cc2_2" class="form-label">２枠目</label>
+                                <p href="./admin_cc_course_list.php" id="cc2_2" class="form-control form-control-sm">
+                                    <?php
+                                    if (!empty($course["cc"][2][1]) && $course["cc"][2][1] != "0000-00-00") {
+                                        echo format_japanese_date($course["cc"][2][1]);
+                                    } else {
+                                        echo "未設定";
+                                    }
+                                    ?>
+                                </p>
+                            </div>
                         </div>
-                        <div class="2nd_cc_day mt-1">
-                            <label for="cc1_2" class="form-label">２枠目</label>
-                            <p href="./admin_cc_course_list.php" id="cc1_2" class="form-control form-control-sm">
-                                <?php
-                                if (!empty($course["cc"][1][1]) && $course["cc"][1][1] != "0000-00-00") {
-                                    echo format_japanese_date($course["cc"][1][1]);
-                                } else {
-                                    echo "未設定";
-                                }
-                                ?>
-                            </p>
+                        <dt class="mb-1">キャリコン３</dt>
+                        <div class="cc3 mb-1 d-flex justify-content-around">
+                            <div class="1st_cc_day mt-1">
+                                <label for="cc3_1" class="form-label">１枠目</label>
+                                <p href="./admin_cc_course_list.php" id="cc3_1" class="form-control form-control-sm">
+                                    <?php
+                                    if (!empty($course["cc"][3][0]) && $course["cc"][3][0] != "0000-00-00") {
+                                        echo format_japanese_date($course["cc"][3][0]);
+                                    } else {
+                                        echo "未設定";
+                                    }
+                                    ?>
+                                </p>
+                            </div>
+                            <div class="2nd_cc_day mt-1">
+                                <label for="cc3_2" class="form-label">２枠目</label>
+                                <p href="./admin_cc_course_list.php" id="cc3_2" class="form-control form-control-sm">
+                                    <?php
+                                    if (!empty($course["cc"][3][1]) && $course["cc"][3][1] != "0000-00-00") {
+                                        echo format_japanese_date($course["cc"][3][1]);
+                                    } else {
+                                        echo "未設定";
+                                    }
+                                    ?>
+                                </p>
+                            </div>
                         </div>
-                    </dd>
-                    <dt class="mb-1">キャリコン２</dt>
-                    <div class="cc2 mb-1 d-flex justify-content-around">
-                        <div class="1st_cc_day mt-1">
-                            <label for="cc2_1" class="form-label">１枠目</label>
-                            <p href="./admin_cc_course_list.php" id="cc2_1" class="form-control form-control-sm">
-                                <?php
-                                if (!empty($course["cc"][2][0]) && $course["cc"][2][0] != "0000-00-00") {
-                                    echo format_japanese_date($course["cc"][2][0]);
-                                } else {
-                                    echo "未設定";
-                                }
-                                ?>
-                            </p>
-                        </div>
-                        <div class="2nd_cc_day mt-1">
-                            <label for="cc2_2" class="form-label">２枠目</label>
-                            <p href="./admin_cc_course_list.php" id="cc2_2" class="form-control form-control-sm">
-                                <?php
-                                if (!empty($course["cc"][2][1]) && $course["cc"][2][1] != "0000-00-00") {
-                                    echo format_japanese_date($course["cc"][2][1]);
-                                } else {
-                                    echo "未設定";
-                                }
-                                ?>
-                            </p>
+                    </dl>
+                    <div class="d-flex col-6 flex-column mb-4">
+                        <div class="mt-auto">
+                            <a href="admin_cc_course_list.php?<?= $course["course_id"] ?>" class="btn btn-info">
+                                キャリコン詳細へ
+                            </a>
                         </div>
                     </div>
-                    <dt class="mb-1">キャリコン３</dt>
-                    <div class="cc3 mb-1 d-flex justify-content-around">
-                        <div class="1st_cc_day mt-1">
-                            <label for="cc3_1" class="form-label">１枠目</label>
-                            <p href="./admin_cc_course_list.php" id="cc3_1" class="form-control form-control-sm">
-                                <?php
-                                if (!empty($course["cc"][3][0]) && $course["cc"][3][0] != "0000-00-00") {
-                                    echo format_japanese_date($course["cc"][3][0]);
-                                } else {
-                                    echo "未設定";
-                                }
-                                ?>
-                            </p>
-                        </div>
-                        <div class="2nd_cc_day mt-1">
-                            <label for="cc3_2" class="form-label">２枠目</label>
-                            <p href="./admin_cc_course_list.php" id="cc3_2" class="form-control form-control-sm">
-                                <?php
-                                if (!empty($course["cc"][3][1]) && $course["cc"][3][1] != "0000-00-00") {
-                                    echo format_japanese_date($course["cc"][3][1]);
-                                } else {
-                                    echo "未設定";
-                                }
-                                ?>
-                            </p>
-                        </div>
-                    </div>
-                </dl>
-                <div class="d-flex col-6 flex-column mb-4">
-                    <div class="mt-auto">
-                        <a href="admin_cc_course_list.php?<?= $course["course_id"] ?>" class="btn btn-info">
-                            キャリコン詳細へ
-                        </a>
-                    </div>
+
                 </div>
-            </div>
+            </dl>
         <?php endif; ?>
         <div class="col-12 d-flex justify-content-center mt-4 mb-5">
             <a class="btn btn-success btn-lg mr-5 my-1" href='admin_course_edit.php?course_id=<?= $course["course_id"] ?>'>編集</a>
