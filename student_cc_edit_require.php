@@ -88,9 +88,9 @@ require_once __DIR__ . '/functions/functions.php';
                     <!-- 送信データ -->
                      <input type="hidden" name="login_booking_id" value="<?= h($login_booking_id); ?>">
                      <input type="hidden" name="booking_id" value="<?= h($booking_id); ?>">
-                    <button type="btn" class="btn-require-edit">変更申請</button>
-                    <a href="./index.php">
-                        <button type="btn" class="btn-require-prev">戻る</button>
+                    <button type="submit" class="btn-require-edit">変更申請</button>
+                    <a href="./index.php" class="btn-require-prev">
+                        戻る
                     </a>
                 </div>
             </div>
