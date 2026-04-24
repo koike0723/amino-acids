@@ -78,7 +78,7 @@ try {
                 <div class="ml-5"><a href="admin_course_add.php" style="background-color: #1828ff;" class="btn btn-primary btn-lg">コース追加</a></div>
             </div>
             <div class="course-search">
-                <form action="admin_course_list.php" method="get" class="row">
+                <form action="admin_course_list.php" method="get" class="hum-row">
                     <div class="date col-3">
                         <label for="date" class="form-label">訓練実施日</label>
                         <input type="date" name="date" id="date" value="<?= $date ?>" class="form-control">

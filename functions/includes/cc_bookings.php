@@ -181,7 +181,10 @@ function swap_cc_bookings($booking_id_a, $booking_id_b)
     try {
         $db->beginTransaction();
 
-        $stmt = $db->prepare('SELECT * FROM t_cc_bookings WHERE id IN (:id_a, :id_b)');
+        // 入れ替え前の student_id・style_id を取得
+        $stmt = $db->prepare(
+            'SELECT id, student_id, style_id FROM t_cc_bookings WHERE id IN (:id_a, :id_b)'
+        );
         $stmt->execute([':id_a' => $booking_id_a, ':id_b' => $booking_id_b]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -189,36 +192,201 @@ function swap_cc_bookings($booking_id_a, $booking_id_b)
             throw new Exception('対象の予約が見つかりません');
         }
 
-        [$a, $b] = $rows;
+        $bookings = array_column($rows, null, 'id');
+        $a = $bookings[$booking_id_a];
+        $b = $bookings[$booking_id_b];
 
-        // 一旦2件削除（ユニーク制約から解放）
-        $stmt = $db->prepare('DELETE FROM t_cc_bookings WHERE id IN (:id_a, :id_b)');
-        $stmt->execute([':id_a' => $booking_id_a, ':id_b' => $booking_id_b]);
-
-        // cc_slot_id と time_id を入れ替えて再INSERT
+        // cc_slot_id / time_id はそのままにし
+        // student_id と style_id のみ入れ替える
+        // → uq_slot_time 制約に一切影響しない
         $stmt = $db->prepare(
-            'INSERT INTO t_cc_bookings (id, student_id, cc_slot_id, time_id, style_id)
-             VALUES (:id, :student_id, :cc_slot_id, :time_id, :style_id)'
+            'UPDATE t_cc_bookings SET student_id = ?, style_id = ? WHERE id = ?'
         );
+        $stmt->execute([$b['student_id'], $b['style_id'], $booking_id_a]);
+        $stmt->execute([$a['student_id'], $a['style_id'], $booking_id_b]);
 
-        $stmt->execute([
-            ':id'         => $a['id'],
-            ':student_id' => $a['student_id'],
-            ':cc_slot_id' => $b['cc_slot_id'],
-            ':time_id'    => $b['time_id'],
-            ':style_id'   => $a['style_id'],
-        ]);
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
 
+/**
+ * 必須CC予約の枠移動
+ *
+ * 1件の必須CC予約を別のスロット・時間に移動する（管理者によるライン調整用）
+ * swap_cc_bookings() が2件の入れ替えであるのに対し、こちらは1件を任意の空き枠へ移動する。
+ *
+ * 前提条件:
+ * - 移動元予約のスロットが is_cc_plus = 0（必須CC枠）であること
+ * - 移動先スロット ($to_slot_id) が is_cc_plus = 0 であること
+ * - 移動先 ($to_slot_id, $to_time_id) が空きであること
+ *
+ * @param int $booking_id  移動対象の予約ID
+ * @param int $to_slot_id  移動先のスロットID
+ * @param int $to_time_id  移動先の時間ID
+ * @return bool 成功時 true、失敗時 false
+ */
+function move_cc_booking(int $booking_id, int $to_slot_id, int $to_time_id): bool
+{
+    $db = db_connect();
+
+    try {
+        $db->beginTransaction();
+
+        // 1. 移動元予約を取得し、必須CC枠（is_cc_plus=0）であることを確認
+        $stmt = $db->prepare(
+            'SELECT b.id
+             FROM t_cc_bookings b
+             JOIN t_cc_slots sl ON b.cc_slot_id = sl.id
+             WHERE b.id = :booking_id
+               AND sl.is_cc_plus = 0'
+        );
+        $stmt->execute([':booking_id' => $booking_id]);
+        if (!$stmt->fetch()) {
+            throw new Exception('移動対象の必須CC予約が見つかりません');
+        }
+
+        // 2. 移動先スロットが is_cc_plus = 0 であることを確認
+        $stmt = $db->prepare(
+            'SELECT id FROM t_cc_slots WHERE id = :slot_id AND is_cc_plus = 0'
+        );
+        $stmt->execute([':slot_id' => $to_slot_id]);
+        if (!$stmt->fetch()) {
+            throw new Exception('移動先が必須CC枠ではありません');
+        }
+
+        // 3. 移動先 (cc_slot_id, time_id) に空きがあることを確認（UNIQUE制約の事前チェック）
+        $stmt = $db->prepare(
+            'SELECT id FROM t_cc_bookings
+             WHERE cc_slot_id = :slot_id AND time_id = :time_id'
+        );
+        $stmt->execute([':slot_id' => $to_slot_id, ':time_id' => $to_time_id]);
+        if ($stmt->fetch()) {
+            throw new Exception('移動先の枠は既に予約されています');
+        }
+
+        // 4. 予約を移動先に更新（1件のみなので DELETE→REINSERT ではなく UPDATE で完結）
+        $stmt = $db->prepare(
+            'UPDATE t_cc_bookings
+             SET cc_slot_id = :to_slot_id,
+                 time_id    = :to_time_id
+             WHERE id = :booking_id'
+        );
         $stmt->execute([
-            ':id'         => $b['id'],
-            ':student_id' => $b['student_id'],
-            ':cc_slot_id' => $a['cc_slot_id'],
-            ':time_id'    => $a['time_id'],
-            ':style_id'   => $b['style_id'],
+            ':to_slot_id' => $to_slot_id,
+            ':to_time_id' => $to_time_id,
+            ':booking_id' => $booking_id,
         ]);
 
         $db->commit();
         return true;
+
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
+
+/**
+ * CC+予約をライン枠へ登録
+ *
+ * 承認済みのCC+仮予約を、実際の必須CCライン枠（is_cc_plus=0）に登録確定する。
+ * style_id は元のCC+予約から自動的に引き継ぐ。
+ * CC+仮予約本体はスロットの空き状況維持のため削除せず履歴として保持する。
+ *
+ * 前提条件:
+ * - $cc_plus_booking_id が is_cc_plus=1 スロットの予約であること
+ * - CC+申請（type_id=1）が承認済み（status_id=3）であること
+ * - 既にライン登録済み（cc_plus_booking_id 参照レコードが存在する）でないこと
+ * - $line_slot_id が is_cc_plus=0 であること
+ * - ($line_slot_id, $time_id) が空きであること
+ *
+ * @param int $cc_plus_booking_id  登録元のCC+予約ID
+ * @param int $line_slot_id        登録先の必須CCスロットID
+ * @param int $time_id             登録先の時間ID
+ * @return bool 成功時 true、失敗時 false
+ */
+function register_cc_plus_to_line(
+    int $cc_plus_booking_id,
+    int $line_slot_id,
+    int $time_id
+): bool {
+    $db = db_connect();
+
+    try {
+        $db->beginTransaction();
+
+        // 1. CC+予約を取得し、is_cc_plus=1 スロットであることを確認
+        $stmt = $db->prepare(
+            'SELECT b.student_id, b.style_id
+             FROM t_cc_bookings b
+             JOIN t_cc_slots sl ON b.cc_slot_id = sl.id
+             WHERE b.id = :booking_id
+               AND sl.is_cc_plus = 1'
+        );
+        $stmt->execute([':booking_id' => $cc_plus_booking_id]);
+        $cc_plus_booking = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$cc_plus_booking) {
+            throw new Exception('対象のCC+予約が見つかりません');
+        }
+
+        // 2. CC+申請が承認済みであることを確認（type_id=1:CC+新規, status_id=3:承認済み）
+        $stmt = $db->prepare(
+            'SELECT id FROM t_cc_requests
+             WHERE booking_id_a = :booking_id
+               AND type_id      = 1
+               AND status_id    = 3'
+        );
+        $stmt->execute([':booking_id' => $cc_plus_booking_id]);
+        if (!$stmt->fetch()) {
+            throw new Exception('承認済みのCC+申請が見つかりません');
+        }
+
+        // 3. 既にライン登録済みでないか確認（cc_plus_booking_id の参照レコードが存在しないこと）
+        $stmt = $db->prepare(
+            'SELECT id FROM t_cc_bookings WHERE cc_plus_booking_id = :booking_id'
+        );
+        $stmt->execute([':booking_id' => $cc_plus_booking_id]);
+        if ($stmt->fetch()) {
+            throw new Exception('このCC+予約は既にライン登録済みです');
+        }
+
+        // 4. 登録先スロットが is_cc_plus = 0 であることを確認
+        $stmt = $db->prepare(
+            'SELECT id FROM t_cc_slots WHERE id = :slot_id AND is_cc_plus = 0'
+        );
+        $stmt->execute([':slot_id' => $line_slot_id]);
+        if (!$stmt->fetch()) {
+            throw new Exception('登録先が必須CC枠ではありません');
+        }
+
+        // 5. 登録先 (line_slot_id, time_id) に空きがあることを確認
+        $stmt = $db->prepare(
+            'SELECT id FROM t_cc_bookings
+             WHERE cc_slot_id = :slot_id AND time_id = :time_id'
+        );
+        $stmt->execute([':slot_id' => $line_slot_id, ':time_id' => $time_id]);
+        if ($stmt->fetch()) {
+            throw new Exception('登録先の枠は既に予約されています');
+        }
+
+        // 6. ライン予約を登録（style_id はCC+予約から引き継ぎ、cc_plus_booking_id で紐づけ）
+        add_cc_booking(
+            $db,
+            (int) $cc_plus_booking['student_id'],
+            $line_slot_id,
+            $time_id,
+            (int) $cc_plus_booking['style_id'],
+            $cc_plus_booking_id
+        );
+
+        $db->commit();
+        return true;
+
     } catch (Exception $e) {
         $db->rollBack();
         return false;

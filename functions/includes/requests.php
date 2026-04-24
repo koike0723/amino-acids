@@ -324,7 +324,7 @@ function approve_cc_plus_change(int $request_id): bool
              FROM t_cc_requests
              WHERE id = :request_id
                AND type_id   = 2
-               AND status_id = 1'
+               AND status_id IN (1,2)'
         );
         $req_stmt->execute([':request_id' => $request_id]);
         $request = $req_stmt->fetch();
@@ -359,7 +359,6 @@ function approve_cc_plus_change(int $request_id): bool
 
         $db->commit();
         return true;
-
     } catch (Exception $e) {
         $db->rollBack();
         return false;
@@ -387,7 +386,7 @@ function reject_cc_plus_change(int $request_id): bool
              FROM t_cc_requests
              WHERE id = :request_id
                AND type_id   = 2
-               AND status_id = 1'
+               AND status_id IN (1, 2)'
         );
         $req_stmt->execute([':request_id' => $request_id]);
         $request = $req_stmt->fetch();
@@ -408,7 +407,6 @@ function reject_cc_plus_change(int $request_id): bool
 
         $db->commit();
         return true;
-
     } catch (Exception $e) {
         $db->rollBack();
         return false;
@@ -664,7 +662,11 @@ function _fetch_cc_plus_single_detail(PDO $db, array $request): array
  */
 function _fetch_cc_plus_change_detail(PDO $db, array $request): array
 {
-    if (!$request['booking_id_a'] || !$request['booking_id_b']) {
+    $booking_id_a = $request['booking_id_a'];
+    $booking_id_b = $request['booking_id_b'];
+
+    // 両方nullなら空配列
+    if (!$booking_id_a && !$booking_id_b) {
         return [];
     }
 
@@ -678,25 +680,23 @@ function _fetch_cc_plus_change_detail(PDO $db, array $request): array
             JOIN t_cc_slots       sl ON b.cc_slot_id = sl.id
             JOIN m_times          t  ON b.time_id    = t.id
             JOIN m_meating_styles ms ON b.style_id   = ms.id
-            WHERE b.id IN (:booking_id_a, :booking_id_b)';
+            WHERE b.id = :booking_id';
 
-    $stmt = $db->prepare($sql);
-    $stmt->execute([
-        ':booking_id_a' => $request['booking_id_a'],
-        ':booking_id_b' => $request['booking_id_b'],
-    ]);
-    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $result = ['before' => [], 'after' => []];
 
-    if (count($rows) !== 2) {
-        return [];
+    if ($booking_id_a) {
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':booking_id' => $booking_id_a]);
+        $result['before'] = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
     }
 
-    $bookings = array_column($rows, null, 'booking_id');
+    if ($booking_id_b) {
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':booking_id' => $booking_id_b]);
+        $result['after'] = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+    }
 
-    return [
-        'before' => $bookings[$request['booking_id_a']],
-        'after'  => $bookings[$request['booking_id_b']],
-    ];
+    return $result;
 }
 
 /**
@@ -742,9 +742,13 @@ function _fetch_cc_change_detail(PDO $db, array $request): array
         return [];
     }
 
-    $bookings = array_column($rows, null, 'booking_id');
-    $a = $bookings[$request['booking_id_a']]; // 申請者
-    $b = $bookings[$request['booking_id_b']]; // 相手
+    $bookings     = array_column($rows, null, 'booking_id');
+    $a            = $bookings[$request['booking_id_a']];
+    $b            = $bookings[$request['booking_id_b']];
+
+    // swap後はstudent_idが入れ替わるため、申請者以外の方をtargetとして特定
+    $applicant_id = (int) $request['student_id'];
+    $target_data  = ((int) $a['student_id'] !== $applicant_id) ? $a : $b;
 
     return [
         'my_self' => [
@@ -756,8 +760,8 @@ function _fetch_cc_change_detail(PDO $db, array $request): array
         ],
         'target' => [
             'booking_id'       => $b['booking_id'],
-            'student_name'     => $b['student_name'],
-            'course_full_name' => $b['course_full_name'],
+            'student_name'     => $target_data['student_name'],
+            'course_full_name' => $target_data['course_full_name'],
             'from_cc_date'     => $b['cc_date'],
             'from_cc_time'     => $b['cc_time'],
             'to_cc_date'       => $a['cc_date'],
@@ -786,4 +790,179 @@ function has_unresolved_cc_requests(): bool
     );
 
     return (bool) $stmt->fetchColumn();
+}
+
+// -------------------------------------------------------
+// type 1: CC+予約申請
+// -------------------------------------------------------
+
+/**
+ * CC+予約申請の承認処理
+ * ステータスを承認（3）に更新する。予約はそのまま残す。
+ */
+function approve_cc_plus(int $request_id): bool
+{
+    $db = db_connect();
+    try {
+        $stmt = $db->prepare(
+            'UPDATE t_cc_requests
+             SET status_id = 3
+             WHERE id = :id AND type_id = 1 AND status_id IN (1, 2)'
+        );
+        $stmt->execute([':id' => $request_id]);
+        return $stmt->rowCount() > 0;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * CC+予約申請の却下処理
+ * 予約を削除してステータスを却下（4）に更新する。
+ */
+function reject_cc_plus(int $request_id): bool
+{
+    $db = db_connect();
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare(
+            'SELECT booking_id_a FROM t_cc_requests
+             WHERE id = :id AND type_id = 1 AND status_id IN (1, 2)'
+        );
+        $stmt->execute([':id' => $request_id]);
+        $request = $stmt->fetch();
+
+        if (!$request || !$request['booking_id_a']) {
+            throw new Exception('対象の申請が見つかりません');
+        }
+
+        $db->prepare('DELETE FROM t_cc_bookings WHERE id = :booking_id')
+            ->execute([':booking_id' => $request['booking_id_a']]);
+
+        $db->prepare('UPDATE t_cc_requests SET status_id = 4 WHERE id = :id')
+            ->execute([':id' => $request_id]);
+
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
+
+// -------------------------------------------------------
+// type 3: CC+キャンセル申請
+// -------------------------------------------------------
+
+/**
+ * CC+キャンセル申請の承認処理
+ * 予約を削除してステータスを承認（3）に更新する。
+ */
+function approve_cc_plus_cancel(int $request_id): bool
+{
+    $db = db_connect();
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare(
+            'SELECT booking_id_a FROM t_cc_requests
+             WHERE id = :id AND type_id = 3 AND status_id IN (1, 2)'
+        );
+        $stmt->execute([':id' => $request_id]);
+        $request = $stmt->fetch();
+
+        if (!$request || !$request['booking_id_a']) {
+            throw new Exception('対象の申請が見つかりません');
+        }
+
+        $db->prepare('DELETE FROM t_cc_bookings WHERE id = :booking_id')
+            ->execute([':booking_id' => $request['booking_id_a']]);
+
+        $db->prepare('UPDATE t_cc_requests SET status_id = 3 WHERE id = :id')
+            ->execute([':id' => $request_id]);
+
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
+
+/**
+ * CC+キャンセル申請の却下処理
+ * ステータスを却下（4）に更新する。予約はそのまま残す。
+ */
+function reject_cc_plus_cancel(int $request_id): bool
+{
+    $db = db_connect();
+    try {
+        $stmt = $db->prepare(
+            'UPDATE t_cc_requests
+             SET status_id = 4
+             WHERE id = :id AND type_id = 3 AND status_id IN (1, 2)'
+        );
+        $stmt->execute([':id' => $request_id]);
+        return $stmt->rowCount() > 0;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+// -------------------------------------------------------
+// type 4: 必須CC変更申請
+// -------------------------------------------------------
+
+/**
+ * 必須CC変更申請の承認処理
+ * swap_cc_bookings() で2件の予約を入れ替え、ステータスを承認（3）に更新する。
+ * ※ swap_cc_bookings() は内部でトランザクションを持つため、ここでは分離して呼び出す
+ */
+function approve_cc_change(int $request_id): bool
+{
+    $db = db_connect();
+    try {
+        $stmt = $db->prepare(
+            'SELECT booking_id_a, booking_id_b FROM t_cc_requests
+             WHERE id = :id AND type_id = 4 AND status_id IN (1, 2)'
+        );
+        $stmt->execute([':id' => $request_id]);
+        $request = $stmt->fetch();
+
+        if (!$request || !$request['booking_id_a'] || !$request['booking_id_b']) {
+            return false;
+        }
+
+        if (!swap_cc_bookings($request['booking_id_a'], $request['booking_id_b'])) {
+            return false;
+        }
+
+        $db->prepare('UPDATE t_cc_requests SET status_id = 3 WHERE id = :id')
+            ->execute([':id' => $request_id]);
+
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * 必須CC変更申請の却下処理
+ * ステータスを却下（4）に更新する。予約はそのまま残す。
+ */
+function reject_cc_change(int $request_id): bool
+{
+    $db = db_connect();
+    try {
+        $stmt = $db->prepare(
+            'UPDATE t_cc_requests
+             SET status_id = 4
+             WHERE id = :id AND type_id = 4 AND status_id IN (1, 2)'
+        );
+        $stmt->execute([':id' => $request_id]);
+        return $stmt->rowCount() > 0;
+    } catch (Exception $e) {
+        return false;
+    }
 }
