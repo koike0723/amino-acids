@@ -60,6 +60,8 @@ includes/
 | [`get_cc_bookings($filters)`](#get_cc_bookingsarray-filters---array) | CC予約一覧を `[slot_id][start_time]` の階層構造で取得 |
 | [`get_cc_booking($booking_id)`](#get_cc_bookingint-booking_id-array) | 予約IDから予約を1件取得 |
 | [`swap_cc_bookings($booking_id_a, $booking_id_b)`](#swap_cc_bookingsbooking_id_a-booking_id_b) | 2件の予約の日時を入れ替える（管理者による穴埋め調整用） |
+| [`move_cc_booking($booking_id, $to_slot_id, $to_time_id)`](#move_cc_bookingint-booking_id-int-to_slot_id-int-to_time_id-bool) | 1件の必須CC予約を別のスロット・時間に移動する（管理者によるライン調整用） |
+| [`register_cc_plus_to_line($cc_plus_booking_id, $line_slot_id, $time_id)`](#register_cc_plus_to_lineint-cc_plus_booking_id-int-line_slot_id-int-time_id-bool) | 承認済みCC+仮予約を必須CCライン枠に登録確定する |
 | [`get_cc_plus_time_table($date)`](#get_cc_plus_time_tablestring-date-array) | 指定日のCC+枠の時間ごとの空き状況を取得 |
 | [`add_cc_booking($db, ...)`](#add_cc_bookingpdo-db---int-⚠️-内部関数) | ⚠️ 内部関数。予約を1件INSERT |
 | [`bulk_book_cc($course_id)`](#bulk_book_ccint-course_id-bool) | 指定コースの全生徒に必須CC予約を一括登録 |
@@ -711,6 +713,54 @@ $result = swap_cc_bookings(10, 15);
 | | |
 |---|---|
 | 戻り値 | `bool` 成功時 `true`、失敗時 `false` |
+
+---
+
+### `move_cc_booking(int $booking_id, int $to_slot_id, int $to_time_id): bool`
+1件の必須CC予約を別のスロット・時間に移動する（管理者によるライン調整用）。  
+`swap_cc_bookings()` が2件の入れ替えであるのに対し、こちらは1件を任意の空き枠へ移動する。
+
+```php
+$result = move_cc_booking(
+    booking_id:  10,
+    to_slot_id:  5,
+    to_time_id:  3,
+);
+```
+
+| 引数 | 型 | 説明 |
+|---|---|---|
+| `$booking_id` | `int` | 移動対象の予約ID |
+| `$to_slot_id` | `int` | 移動先のスロットID（`is_cc_plus = 0` の必須CC枠であること） |
+| `$to_time_id` | `int` | 移動先の時間ID |
+
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true`。移動元が必須CC枠でない・移動先がCC+枠・移動先に空きがない場合は `false` |
+
+---
+
+### `register_cc_plus_to_line(int $cc_plus_booking_id, int $line_slot_id, int $time_id): bool`
+承認済みのCC+仮予約を、実際の必須CCライン枠（`is_cc_plus = 0`）に登録確定する。  
+`style_id` は元のCC+予約から自動的に引き継ぐ。CC+仮予約本体はスロットの空き状況維持のため削除せず履歴として保持する。
+
+```php
+$result = register_cc_plus_to_line(
+    cc_plus_booking_id: 11,
+    line_slot_id:       3,
+    time_id:            2,
+);
+```
+
+| 引数 | 型 | 説明 |
+|---|---|---|
+| `$cc_plus_booking_id` | `int` | 登録元のCC+予約ID（`is_cc_plus = 1` スロットの予約） |
+| `$line_slot_id` | `int` | 登録先の必須CCスロットID（`is_cc_plus = 0` であること） |
+| `$time_id` | `int` | 登録先の時間ID |
+
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true`。対象のCC+予約が存在しない・承認済み申請がない・既にライン登録済み・登録先が必須CC枠でない・登録先に空きがない場合は `false` |
 
 ---
 
