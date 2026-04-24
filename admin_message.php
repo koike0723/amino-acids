@@ -5,7 +5,7 @@ require_once __DIR__ . '/functions/functions.php';
 /////////////////////////////////////////////////
 // GET通信処理
 /////////////////////////////////////////////////
-$status_filter       = $_GET['status_filter'] ?? '';
+$status_filter = $_GET['status_filter'] ?? 'label_unsolved';
 $status_label_filter = '';
 $status_id_filter    = '';
 $type_id_filter      = $_GET['type_id']      ?? '';
