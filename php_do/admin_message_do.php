@@ -1,4 +1,5 @@
 <?php
+session_start(); 
 require_once __DIR__ . '/../functions/functions.php';
 
 /////////////////////////////////////////////////
@@ -66,5 +67,6 @@ if ($action === 'approve') {
   }
 }
 
+$_SESSION['flash'] = $success ? 'success' : 'error';
 header('Location: ../admin_message_detail.php?request_id=' . $request_id);
 exit;

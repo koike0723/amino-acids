@@ -1,5 +1,8 @@
 <!-- 管理者メッセージ詳細画面 -->
 <?php
+session_start();
+$flash = $_SESSION['flash'] ?? '';
+unset($_SESSION['flash']);
 require_once __DIR__ . '/functions/functions.php';
 
 /////////////////////////////////////////////////
@@ -60,6 +63,12 @@ $back_url = './admin_message.php' . (!empty($back_query) ? '?' . http_build_quer
       <div class="row justify-content-center">
         <div class="col-12 col-lg-8">
           <h1 class="mb-5 text-center">メッセージ詳細</h1>
+          <?php if ($flash === 'success'): ?>
+            <div class="alert alert-success">処理が完了しました。</div>
+          <?php elseif ($flash === 'error'): ?>
+            <div class="alert alert-danger">処理に失敗しました。</div>
+          <?php endif; ?>
+
 
           <!-- 申請共通情報 -->
           <table class="table table-bordered mb-4">
