@@ -1,4 +1,7 @@
 /* まとめて設定系 */
+table{
+    background-color: white;
+}
 a {
     display: block;
 }
@@ -12,8 +15,12 @@ td {
 td p{
     font-size: 0.5em;
 }
-
-
+.opacity-50 {
+    opacity: 0.5;
+}
+.accent-cell{
+    background-color: hsl(var(--hue, 0), 100%, 50%);
+}
 
 
 
@@ -86,8 +93,10 @@ td p{
     align-items: center;
     justify-content: space-around;
     /* 6.25rem => 100px */
+    /* 5rem => 80px */
+    /* 3.75rem => 60px */
     width: clamp(3rem, 1.856rem + 4.883vw, 6.25rem);
-    height: clamp(6.25rem, 5.810rem + 1.878vw, 7.5rem);
+    height: clamp(3.75rem, 3.310rem + 1.878vw, 5rem);
 }
 
 
@@ -118,7 +127,7 @@ td p{
     flex-direction: column;
     align-items: center;
     padding: 1rem;
-    margin-bottom: 380px;
+    margin-bottom:clamp(15.625rem, 14.525rem + 4.695vw, 18.75rem);
     border-radius: 5px;
     border: 2px solid black;
 }

@@ -87,19 +87,6 @@ $filtered_students = array_filter($students, function ($student) use ($date, $st
     <main>
         <h1 class="h1">生徒一覧</h1>
 
-        <!-- 生徒一括追加機能 選択欄 -->
-        <div class="admin-student-select">
-            <div class="admin-add-flex">
-                <a href="./admin_student_add.php">
-                    <button type="button" class="add-btn">生徒追加</button>
-                </a>
-
-                <a href="./admin_student_add_bulk.php">
-                    <button type="button" class="add-btn">生徒一括追加</button>
-                </a>
-            </div>
-        </div>
-
         <!-- 生徒絞り込み機能 項目選択欄 -->
         <div class="course-search container-fluid mb-4">
             <form action="admin_student_list.php" method="get">
@@ -177,10 +164,10 @@ $filtered_students = array_filter($students, function ($student) use ($date, $st
                                 </td>
                                 <td class="ad-stu-list-td"><?= h($student['status_name']); ?></td>
                                 <td class="ad-stu-list-td">
-                                    <?php if(($student['status_name'] == "在校中") || ($student['status_name'] == "終了")): ?>
-                                    <a href="admin_cc_detail.php?id=<?= h($student['student_id']); ?>">
-                                        <button type="button" class="controle-btn controle-edit" style="background-color: #0084ffaa;">追加</button>
-                                    </a>
+                                    <?php if (($student['status_name'] == "在校中") || ($student['status_name'] == "終了")): ?>
+                                        <a href="php_do/cc_detail_student_add_do.php?id=<?= h($student['student_id']); ?>">
+                                            <button type="button" class="controle-btn controle-edit" style="background-color: #0084ffaa;">追加</button>
+                                        </a>
                                     <?php endif; ?>
                                 </td>
                             </tr>
