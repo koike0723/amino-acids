@@ -554,6 +554,16 @@ tr.ad-stu-list-tr:nth-child(even) {
 
 /* admin_student_edit.phpここまで */
 
+/* admin_course_add,admin_course_edit,admin_course_detail
+スタート*/
+.row {
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* admin_course_add,admin_course_edit,admin_course_detail
+ここまで */
+
 /* admin_cc_course_listスタート */
 .cc-title-flex {
   display: flex;
