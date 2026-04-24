@@ -99,7 +99,7 @@ function get_students($filters = [], $is_display_end = false)
     if (!empty($where_clauses)) {
         $sql .= ' WHERE ' . implode(' AND ', $where_clauses);
     }
-    $sql .= ' ORDER BY s.number ASC, r.id ASC';
+    $sql .= ' ORDER BY  r.id ASC, s.number ASC';
     $stmt = $db->prepare($sql);
 
     // 4. まとめてバインドして実行

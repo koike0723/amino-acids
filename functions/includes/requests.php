@@ -96,7 +96,7 @@ function get_cc_requests(array $filters = []): array
         $sql .= ' WHERE ' . implode(' AND ', $where_clauses);
     }
 
-    $sql .= ' ORDER BY req.created_at DESC';
+    $sql .= ' ORDER BY req.id DESC';
 
     $stmt = $db->prepare($sql);
     $stmt->execute($params);

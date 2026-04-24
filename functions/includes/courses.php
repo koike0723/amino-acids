@@ -56,7 +56,7 @@ function get_courses($target_date = null, $is_display_not_start = false, $room_i
         $sql .= ' WHERE ' . implode(' AND ', $where_clauses);
     }
 
-    $sql .= ' ORDER BY c.start_date ASC';
+    $sql .= ' ORDER BY r.id ASC, c.start_date ASC';
 
     $stmt = $db->prepare($sql);
     $stmt->execute($params);
