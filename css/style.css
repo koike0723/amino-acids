@@ -584,6 +584,10 @@ tr.ad-stu-list-tr:nth-child(even) {
   gap: 20px;
 }
 
+.btn-info {
+  margin-top: 10px;
+}
+
 /* admin_course_add,admin_course_edit,admin_course_detail
 ここまで */
 
