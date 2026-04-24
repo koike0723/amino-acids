@@ -179,13 +179,26 @@ function get_student($student_id)
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // 1パス目: 同一日付に複数の異なる時間帯を持つCC+予約の日付を特定する
+    $cc_plus_times_by_date = [];
+    foreach ($result as $row) {
+        if ($row['booking_id'] && $row['is_cc_plus']) {
+            $cc_plus_times_by_date[$row['cc_date']][$row['cc_time']] = true;
+        }
+    }
+    // 異なる時間帯が2つ以上ある日付のみ残す（除外対象）
+    $conflict_cc_plus_dates = array_filter(
+        $cc_plus_times_by_date,
+        fn($times) => count($times) > 1
+    );
+    
     $student = [];
     foreach ($result as $row) {
         if (empty($student)) {
             $student = [
                 'student_id'   => $row['student_id'],
-                'first_name' => $row['first_name'],
-                'last_name' => $row['last_name'],
+                'first_name'   => $row['first_name'],
+                'last_name'    => $row['last_name'],
                 'student_name' => $row['student_name'],
                 'number'       => $row['number'],
                 'status_id'    => $row['status_id'],
@@ -197,17 +210,21 @@ function get_student($student_id)
             ];
         }
         if ($row['booking_id']) {
+            // CC+予約かつ同日に異なる時間帯が複数存在する場合はスキップ
+            if ($row['is_cc_plus'] && isset($conflict_cc_plus_dates[$row['cc_date']])) {
+                continue;
+            }
             $student['bookings'][] = [
-                'booking_id'    => $row['booking_id'],
-                'cc_slot_id'    => $row['cc_slot_id'],
-                'is_cc_plus'    => (bool) $row['is_cc_plus'],
-                'cc_consultant' => $row['cc_consultant'],
-                'cc_room'       => $row['cc_room'],
-                'cc_date'       => $row['cc_date'],
-                'cc_time'       => $row['cc_time'],
+                'booking_id'      => $row['booking_id'],
+                'cc_slot_id'      => $row['cc_slot_id'],
+                'is_cc_plus'      => (bool) $row['is_cc_plus'],
+                'cc_consultant'   => $row['cc_consultant'],
+                'cc_room'         => $row['cc_room'],
+                'cc_date'         => $row['cc_date'],
+                'cc_time'         => $row['cc_time'],
                 'cc_display_time' => $row['cc_display_time'],
-                'cc_style_id'   => $row['cc_style_id'],
-                'cc_style_name' => $row['cc_style_name'],
+                'cc_style_id'     => $row['cc_style_id'],
+                'cc_style_name'   => $row['cc_style_name'],
             ];
         }
     }
