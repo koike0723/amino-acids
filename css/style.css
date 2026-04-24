@@ -8,6 +8,10 @@
 } */
 
 /* student_header.phpここから */
+a.hover-disable:hover {
+  text-decoration: none;
+}
+
 .site-header {
   background-color: #98e6c5;
   border-top: 2px solid #00bfff;
@@ -941,6 +945,7 @@ input[type="checkbox"] {
   display: flex;
   justify-content: center;
   gap: 40px;
+  width: fit-content;
   padding-block-end: 30px;
 }
 
@@ -958,6 +963,10 @@ input[type="checkbox"] {
 
 .student-index-flex-notice {
   color: rgba(255, 0, 0, 0.7);
+}
+
+.student-index-flex-style {
+  width: 70px;
 }
 
 .student-index-flex-btn-change {

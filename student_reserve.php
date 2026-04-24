@@ -51,7 +51,7 @@ try {
                 <div class="col-12 col-md-8 col-lg-6 text-center">
 
                     <h1 class="s-career-frame-title mb-4">キャリコンプラス一覧</h1>
-                    <p class="s-career-frame-date mb-4"><?php echo h(format_japanese_date($selected_date)); ?></p>
+                    <p class="s-career-frame-date mb-4"><?= h(format_japanese_date($selected_date)); ?></p>
 
                     <div class="table-responsive d-flex justify-content-center">
                         <table class="table table-bordered s-career-frame-table w-auto align-middle text-center">
@@ -66,7 +66,7 @@ try {
                                     <tr>
                                         <td><?= h($time['display_name']); ?></td>
                                         <?php if ($date[$key + 1]): ?>
-                                            <td class="s-frame-available js-click" onclick="location.href='student_reserve_edit.php?timeid=<?= h($time['id']) ?>&selected_date=<?= $selected_date ?>&time=<?= h($time['start_time']) ?><?= !empty($booking_id) ? '&booking_id='. $booking_id : '' ?>'" style="cursor: pointer;">
+                                            <td class="s-frame-available js-click" onclick="location.href='student_reserve_edit.php?timeid=<?= h($time['id']); ?>&selected_date=<?= h($selected_date); ?>&time=<?= h($time['start_time']) ?><?= !empty($booking_id) ? '&booking_id='. $booking_id : '' ?>'" style="cursor: pointer;">
                                                 〇
                                             </td>
                                         <?php else: ?>

@@ -24,16 +24,20 @@ require_once __DIR__ . '/functions/functions.php';
     $login_student = $_SESSION['student_id'];
     $login_booking_id = $_GET['login_booking_id'];
     $booking_id = $_GET['booking_id'];
-    if(!isset($_SESSION['student_id'])){
+    if (!isset($_SESSION['student_id'])) {
         header('location:./inc/login.php');
         exit();
-    }else{
+    } else {
         $student = get_student($login_student);
     }
-    $cc_change = get_cc_change_confirm($login_booking_id,$booking_id);
+    $cc_change = get_cc_change_confirm($login_booking_id, $booking_id);
 
     $myself = $cc_change['my_self'];
     $target = $cc_change['target'];
+
+
+
+
     ?>
     <main>
         <p class="student-require-edit-h1">変更申請</p>
