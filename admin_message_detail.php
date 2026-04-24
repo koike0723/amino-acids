@@ -91,78 +91,94 @@ $back_url = './admin_message.php' . (!empty($back_query) ? '?' . http_build_quer
 
           <?php if ((int)$detail['type_id'] === 1): // CC+予約申請 
           ?>
-            <h5 class="mb-3">予約情報</h5>
-            <table class="table table-bordered mb-4">
-              <tr>
-                <th class="table-secondary w-25">予約日</th>
-                <td><?= h(date('Y/m/d', strtotime($detail['detail']['cc_date']))) ?></td>
-              </tr>
-              <tr>
-                <th class="table-secondary">時間</th>
-                <td><?= h($detail['detail']['cc_time']) ?></td>
-              </tr>
-              <tr>
-                <th class="table-secondary">面談方法</th>
-                <td><?= h($detail['detail']['style_name']) ?></td>
-              </tr>
-            </table>
+            <?php if (!empty($detail['detail'])): ?>
+              <h5 class="mb-3">予約情報</h5>
+              <table class="table table-bordered mb-4">
+                <tr>
+                  <th class="table-secondary w-25">予約日</th>
+                  <td><?= h(date('Y/m/d', strtotime($detail['detail']['cc_date']))) ?></td>
+                </tr>
+                <tr>
+                  <th class="table-secondary">時間</th>
+                  <td><?= h($detail['detail']['cc_time']) ?></td>
+                </tr>
+                <tr>
+                  <th class="table-secondary">面談方法</th>
+                  <td><?= h($detail['detail']['style_name']) ?></td>
+                </tr>
+              </table>
+            <?php else: ?>
+              <p class="text-muted mb-4">予約情報は削除されました。</p>
+            <?php endif; ?>
 
           <?php elseif ((int)$detail['type_id'] === 2): // CC+変更申請 
           ?>
             <div class="row mb-4">
               <div class="col-md-6">
                 <h5 class="mb-3">変更前</h5>
-                <table class="table table-bordered">
-                  <tr>
-                    <th class="table-secondary">予約日</th>
-                    <td><?= h($detail['detail']['before']['cc_date']) ?></td>
-                  </tr>
-                  <tr>
-                    <th class="table-secondary">時間</th>
-                    <td><?= h($detail['detail']['before']['cc_time']) ?></td>
-                  </tr>
-                  <tr>
-                    <th class="table-secondary">面談方法</th>
-                    <td><?= h($detail['detail']['before']['style_name']) ?></td>
-                  </tr>
-                </table>
+                <?php if (!empty($detail['detail']['before'])): ?>
+                  <table class="table table-bordered">
+                    <tr>
+                      <th class="table-secondary">予約日</th>
+                      <td><?= h($detail['detail']['before']['cc_date']) ?></td>
+                    </tr>
+                    <tr>
+                      <th class="table-secondary">時間</th>
+                      <td><?= h($detail['detail']['before']['cc_time']) ?></td>
+                    </tr>
+                    <tr>
+                      <th class="table-secondary">面談方法</th>
+                      <td><?= h($detail['detail']['before']['style_name']) ?></td>
+                    </tr>
+                  </table>
+                <?php else: ?>
+                  <p class="text-muted">変更元の予約は削除されました。</p>
+                <?php endif; ?>
               </div>
               <div class="col-md-6">
                 <h5 class="mb-3">変更後</h5>
-                <table class="table table-bordered">
-                  <tr>
-                    <th class="table-secondary">予約日</th>
-                    <td><?= h($detail['detail']['after']['cc_date']) ?></td>
-                  </tr>
-                  <tr>
-                    <th class="table-secondary">時間</th>
-                    <td><?= h($detail['detail']['after']['cc_time']) ?></td>
-                  </tr>
-                  <tr>
-                    <th class="table-secondary">面談方法</th>
-                    <td><?= h($detail['detail']['after']['style_name']) ?></td>
-                  </tr>
-                </table>
+                <?php if (!empty($detail['detail']['after'])): ?>
+                  <table class="table table-bordered">
+                    <tr>
+                      <th class="table-secondary">予約日</th>
+                      <td><?= h($detail['detail']['after']['cc_date']) ?></td>
+                    </tr>
+                    <tr>
+                      <th class="table-secondary">時間</th>
+                      <td><?= h($detail['detail']['after']['cc_time']) ?></td>
+                    </tr>
+                    <tr>
+                      <th class="table-secondary">面談方法</th>
+                      <td><?= h($detail['detail']['after']['style_name']) ?></td>
+                    </tr>
+                  </table>
+                <?php else: ?>
+                  <p class="text-muted">変更先の予約は削除されました。</p>
+                <?php endif; ?>
               </div>
             </div>
 
           <?php elseif ((int)$detail['type_id'] === 3): // CC+キャンセル申請 
           ?>
             <h5 class="mb-3">キャンセル対象予約</h5>
-            <table class="table table-bordered mb-4">
-              <tr>
-                <th class="table-secondary w-25">予約日</th>
-                <td><?= h($detail['detail']['cc_date']) ?></td>
-              </tr>
-              <tr>
-                <th class="table-secondary">時間</th>
-                <td><?= h($detail['detail']['cc_time']) ?></td>
-              </tr>
-              <tr>
-                <th class="table-secondary">面談方法</th>
-                <td><?= h($detail['detail']['style_name']) ?></td>
-              </tr>
-            </table>
+            <?php if (!empty($detail['detail'])): ?>
+              <table class="table table-bordered mb-4">
+                <tr>
+                  <th class="table-secondary w-25">予約日</th>
+                  <td><?= h($detail['detail']['cc_date']) ?></td>
+                </tr>
+                <tr>
+                  <th class="table-secondary">時間</th>
+                  <td><?= h($detail['detail']['cc_time']) ?></td>
+                </tr>
+                <tr>
+                  <th class="table-secondary">面談方法</th>
+                  <td><?= h($detail['detail']['style_name']) ?></td>
+                </tr>
+              </table>
+            <?php else: ?>
+              <p class="text-muted mb-4">キャンセル対象の予約は削除されました。</p>
+            <?php endif; ?>
 
           <?php elseif ((int)$detail['type_id'] === 4): // 必須CC変更申請 
           ?>
