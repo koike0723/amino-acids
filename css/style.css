@@ -61,10 +61,6 @@ a.hover-disable:hover {
   color: #222;
 }
 
-.material-symbols-outlined {
-  font-size: 32px;
-}
-
 /* admin_header.php */
 .site-header_admin {
   display: flex;
@@ -586,6 +582,10 @@ tr.ad-stu-list-tr:nth-child(even) {
 .hum-row {
   flex-direction: column;
   gap: 20px;
+}
+
+.btn-info {
+  margin-top: 10px;
 }
 
 /* admin_course_add,admin_course_edit,admin_course_detail
