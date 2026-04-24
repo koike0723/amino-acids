@@ -24,70 +24,73 @@ require_once __DIR__ . '/functions/functions.php';
     $login_student = $_SESSION['student_id'];
     $login_booking_id = $_GET['login_booking_id'];
     $booking_id = $_GET['booking_id'];
-    if(!isset($_SESSION['student_id'])){
+    if (!isset($_SESSION['student_id'])) {
         header('location:./inc/login.php');
         exit();
-    }else{
+    } else {
         $student = get_student($login_student);
     }
-    $cc_change = get_cc_change_confirm($login_booking_id,$booking_id);
+    $cc_change = get_cc_change_confirm($login_booking_id, $booking_id);
 
     $myself = $cc_change['my_self'];
     $target = $cc_change['target'];
     ?>
     <main>
-        <p class="student-require-edit-h1">変更申請</p>
-        <div class="student-require-edit-flex">
-            <dl class="student-require-edit-dl">
-                <div class="student-requier-edit-flex-con">
-                    <dt class="student-require-edit-dt">クラス：</dt>
-                    <dd class="student-require-edit-dd"><?= $myself['course_name'] ?></dd>
-                </div>
-                <div class="student-requier-edit-flex-con">
-                    <dt class="student-require-edit-dt">名前：</dt>
-                    <dd class="student-require-edit-dd"><?= $myself['student_name'] ?></dd>
-                </div>
-                <div class="student-requier-edit-flex-con">
-                    <dt class="student-require-edit-dt">変更前日時：</dt>
-                    <dd class="student-require-edit-dd"><?= $myself['from_datetime'] ?></dd>
-                </div>
-                <div class="student-requier-edit-flex-con">
-                    <dt class="student-require-edit-dt">変更後日時：</dt>
-                    <dd class="student-require-edit-dd"><?= $myself['to_datetime'] ?></dd>
-                </div>
-            </dl>
-        </div>
-        <p class="student-require-edit-change-h1">変更相手</p>
-        <div class="student-require-edit-flex">
-            <dl class="student-require-edit-dl">
-                <div class="student-requier-edit-flex-con">
-                    <dt class="student-require-edit-dt">クラス：</dt>
-                    <dd class="student-require-edit-dd"><?= $target['course_name'] ?></dd>
-                </div>
-                <div class="student-requier-edit-flex-con">
-                    <dt class="student-require-edit-dt">名前：</dt>
-                    <dd class="student-require-edit-dd"><?= $target['student_name'] ?></dd>
-                </div>
-                <div class="student-requier-edit-flex-con">
-                    <dt class="student-require-edit-dt">変更前日時：</dt>
-                    <dd class="student-require-edit-dd"><?= $target['from_datetime'] ?></dd>
-                </div>
-                <div class="student-requier-edit-flex-con">
-                    <dt class="student-require-edit-dt">変更後日時：</dt>
-                    <dd class="student-require-edit-dd"><?= $target['to_datetime'] ?></dd>
-                </div>
-            </dl>
-        </div>
-        <div class="student-require-edit-btn">
-            <div class="student-require-edit-btn-flex">
-                <a href="./php_do/cc_edit_require_do.php">
-                    <button type="btn" class="btn-require-edit">変更申請</button>
-                </a>
-                <a href="./student_cc_detail_require.php?selected_date=<?= $selected_date ?>&booking_id=<?= $login_booking_id ?>">
-                    <button type="btn" class="btn-require-prev">戻る</button>
-                </a>
+        <form action="./php_do/cc_edit_require_do.php" method="GET">
+            <p class="student-require-edit-h1">変更申請</p>
+            <div class="student-require-edit-flex">
+                <dl class="student-require-edit-dl">
+                    <div class="student-requier-edit-flex-con">
+                        <dt class="student-require-edit-dt">クラス：</dt>
+                        <dd class="student-require-edit-dd"><?= $myself['course_name'] ?></dd>
+                    </div>
+                    <div class="student-requier-edit-flex-con">
+                        <dt class="student-require-edit-dt">名前：</dt>
+                        <dd class="student-require-edit-dd"><?= $myself['student_name'] ?></dd>
+                    </div>
+                    <div class="student-requier-edit-flex-con">
+                        <dt class="student-require-edit-dt">変更前日時：</dt>
+                        <dd class="student-require-edit-dd"><?= $myself['from_datetime'] ?></dd>
+                    </div>
+                    <div class="student-requier-edit-flex-con">
+                        <dt class="student-require-edit-dt">変更後日時：</dt>
+                        <dd class="student-require-edit-dd"><?= $myself['to_datetime'] ?></dd>
+                    </div>
+                </dl>
             </div>
-        </div>
+            <p class="student-require-edit-change-h1">変更相手</p>
+            <div class="student-require-edit-flex">
+                <dl class="student-require-edit-dl">
+                    <div class="student-requier-edit-flex-con">
+                        <dt class="student-require-edit-dt">クラス：</dt>
+                        <dd class="student-require-edit-dd"><?= $target['course_name'] ?></dd>
+                    </div>
+                    <div class="student-requier-edit-flex-con">
+                        <dt class="student-require-edit-dt">名前：</dt>
+                        <dd class="student-require-edit-dd"><?= $target['student_name'] ?></dd>
+                    </div>
+                    <div class="student-requier-edit-flex-con">
+                        <dt class="student-require-edit-dt">変更前日時：</dt>
+                        <dd class="student-require-edit-dd"><?= $target['from_datetime'] ?></dd>
+                    </div>
+                    <div class="student-requier-edit-flex-con">
+                        <dt class="student-require-edit-dt">変更後日時：</dt>
+                        <dd class="student-require-edit-dd"><?= $target['to_datetime'] ?></dd>
+                    </div>
+                </dl>
+            </div>
+            <div class="student-require-edit-btn">
+                <div class="student-require-edit-btn-flex">
+                    <!-- 送信データ -->
+                     <input type="hidden" name="login_booking_id" value="<?= h($login_booking_id); ?>">
+                     <input type="hidden" name="booking_id" value="<?= h($booking_id); ?>">
+                    <button type="btn" class="btn-require-edit">変更申請</button>
+                    <a href="./index.php">
+                        <button type="btn" class="btn-require-prev">戻る</button>
+                    </a>
+                </div>
+            </div>
+        </form>
     </main>
     <script src="/js/script.js"></script>
 </body>
