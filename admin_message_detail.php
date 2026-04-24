@@ -50,15 +50,11 @@ $is_unresolved = in_array($detail['status_id'], [1, 2]);
           <table class="table table-bordered mb-4">
             <tr>
               <th class="table-secondary w-25">申請者</th>
-              <td><?= h($detail['student_name']) ?>（<?= h($detail['course_full_name']) ?>）</td>
+              <td><?= h($detail['room_name']) ?> / <?= h($detail['student_name']) ?></td>
             </tr>
             <tr>
               <th class="table-secondary">申請種別</th>
               <td><?= h($detail['type_name']) ?></td>
-            </tr>
-            <tr>
-              <th class="table-secondary">対応状況</th>
-              <td><?= h($detail['status_label']) ?></td>
             </tr>
             <tr>
               <th class="table-secondary">状態</th>
@@ -84,11 +80,11 @@ $is_unresolved = in_array($detail['status_id'], [1, 2]);
             <table class="table table-bordered mb-4">
               <tr>
                 <th class="table-secondary w-25">予約日</th>
-                <td><?= h($detail['detail']['cc_date']) ?></td>
+                <td><?= h(date('Y/m/d', strtotime($detail['detail']['cc_date']))) ?></td>
               </tr>
               <tr>
                 <th class="table-secondary">時間</th>
-                <td><?= h($detail['detail']['start_time']) ?></td>
+                <td><?= h($detail['detail']['cc_time']) ?></td>
               </tr>
               <tr>
                 <th class="table-secondary">面談方法</th>
@@ -108,7 +104,7 @@ $is_unresolved = in_array($detail['status_id'], [1, 2]);
                   </tr>
                   <tr>
                     <th class="table-secondary">時間</th>
-                    <td><?= h($detail['detail']['before']['start_time']) ?></td>
+                    <td><?= h($detail['detail']['before']['cc_time']) ?></td>
                   </tr>
                   <tr>
                     <th class="table-secondary">面談方法</th>
@@ -125,7 +121,7 @@ $is_unresolved = in_array($detail['status_id'], [1, 2]);
                   </tr>
                   <tr>
                     <th class="table-secondary">時間</th>
-                    <td><?= h($detail['detail']['after']['start_time']) ?></td>
+                    <td><?= h($detail['detail']['after']['cc_time']) ?></td>
                   </tr>
                   <tr>
                     <th class="table-secondary">面談方法</th>
@@ -145,7 +141,7 @@ $is_unresolved = in_array($detail['status_id'], [1, 2]);
               </tr>
               <tr>
                 <th class="table-secondary">時間</th>
-                <td><?= h($detail['detail']['start_time']) ?></td>
+                <td><?= h($detail['detail']['cc_time']) ?></td>
               </tr>
               <tr>
                 <th class="table-secondary">面談方法</th>
@@ -157,7 +153,7 @@ $is_unresolved = in_array($detail['status_id'], [1, 2]);
           ?>
             <div class="row mb-4">
               <div class="col-md-6">
-                <h5 class="mb-3">申請者（<?= h($detail['detail']['my_self']['student_name']) ?>）</h5>
+                <h5 class="mb-3">申請者（<?= h($detail['student_name']) ?>）</h5>
                 <table class="table table-bordered">
                   <tr>
                     <th class="table-secondary">現在の日時</th>
