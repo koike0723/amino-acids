@@ -126,7 +126,7 @@ try {
 
         <h1 class="m-5" style="text-align: center;">コース追加</h1>
 
-        <form action="php_do/course_add_do.php" method="post" class="row align-items-start">
+        <form action="php_do/course_add_do.php" method="post" class="hum-row align-items-start">
             <div class="course_name col-12 mb-2">
                 <label for="course_name" class="form-label">訓練名</label>
                 <input type="text" name="course_name" id="course_name" required class="form-control">

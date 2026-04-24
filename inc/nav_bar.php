@@ -33,6 +33,6 @@
                 <a href="./admin_consultant_list.php">コンサルタント一覧</a>
             </div>
         </details>
-        <a href="./admin_index.php" class="btn btn-secondary">トップページへ戻る</a>
+        <a href="./admin_index.php" class="btn btn-secondary">トップページ</a>
     </nav>
 </div>

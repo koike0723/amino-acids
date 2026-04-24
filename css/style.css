@@ -67,6 +67,7 @@
   background-color: #6CDFFF;
   border-top: 2px solid #00bfff;
   padding: 22px 32px;
+  padding-right: 5px;
 }
 
 .icon-circle {
@@ -87,6 +88,7 @@
   border: 2px solid #fff;
   z-index: 1;
 }
+
 
 /* ハンバーガーメニュー */
 
@@ -131,10 +133,14 @@
   width: 250px;
   background: #ffffff;
   transition: 0.4s;
-  padding: 20px;
+  padding: 6% 30px 30px 30px;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   z-index: 100;
   overflow-x: hidden;
+}
+
+.btn-secondary {
+  margin-top: 10px;
 }
 
 /* --- JSでクラスがついた時 --- */
@@ -151,7 +157,7 @@ details {
 }
 
 summary {
-  padding: 10px;
+  padding: 10px 0px;
   cursor: pointer;
   font-weight: bold;
   list-style: none;
@@ -163,7 +169,7 @@ summary::-webkit-details-marker {
 }
 
 .hamburger-details {
-  padding: 10px 20px;
+  padding: 10px 10px;
   background: #ffffff;
 }
 
@@ -553,10 +559,27 @@ tr.ad-stu-list-tr:nth-child(even) {
 }
 
 /* admin_student_edit.phpここまで */
+/* admin_course_edit ここから */
+.course_term {
+  padding-bottom: 1rem;
+}
+
+/* admin_course_editここまで */
+
+/* admin_course_detail ここから */
+.course_cc_bulk {
+  color: #000;
+  margin-left: 50px;
+  background-color: #6CDFFF;
+  padding: 3px;
+  border-radius: 10%;
+}
+
+/* admin_course_detail ここまで */
 
 /* admin_course_add,admin_course_edit,admin_course_detail
 スタート*/
-.row {
+.hum-row {
   flex-direction: column;
   gap: 20px;
 }
@@ -884,29 +907,29 @@ input[type="checkbox"] {
 /* admin_student_detailここまで */
 
 /* index.php ここから*/
-.student-index-section{
+.student-index-section {
   text-align: center;
 }
 
-.student-index-reserve-area{
+.student-index-reserve-area {
   padding-block-end: 100px;
 }
 
-.student-index-reserve-detail{
+.student-index-reserve-detail {
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 5px;
   width: 1000px;
   margin: 0 auto;
 }
 
-.student-index-h1{
+.student-index-h1 {
   font-size: 24px;
   font-weight: bold;
   text-align: center;
   padding-block-start: 30px;
 }
 
-.student-index-flex-area{
+.student-index-flex-area {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -914,28 +937,30 @@ input[type="checkbox"] {
   padding-block-start: 50px;
 }
 
-.student-index-flex{
+.student-index-flex {
   display: flex;
   justify-content: center;
   gap: 40px;
   padding-block-end: 30px;
 }
 
-.student-index-flex-text{
+.student-index-flex-text {
   padding-block-end: 30px;
 }
 
-.student-index-text-color1{
+.student-index-text-color1 {
   color: #008CFF;
 }
-.student-index-text-color2{
+
+.student-index-text-color2 {
   color: red;
 }
-.student-index-flex-notice{
+
+.student-index-flex-notice {
   color: rgba(255, 0, 0, 0.7);
 }
 
-.student-index-flex-btn-change{
+.student-index-flex-btn-change {
   background-color: #88B3EC;
   border: 0;
   border-radius: 5px;
@@ -943,7 +968,7 @@ input[type="checkbox"] {
   font-size: 24px;
 }
 
-.student-index-flex-btn-cancel{
+.student-index-flex-btn-cancel {
   background-color: #F59870;
   border: 0;
   border-radius: 5px;
@@ -971,7 +996,7 @@ input[type="checkbox"] {
   color: #00bfff;
 }
 
-.cc-plus-list-li a:hover{
+.cc-plus-list-li a:hover {
   text-decoration: underline;
 }
 
@@ -981,6 +1006,7 @@ input[type="checkbox"] {
   text-decoration: none;
   display: inline-block;
 }
+
 /* index.php  ここまで*/
 
 /*login.php ここから  */

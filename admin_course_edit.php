@@ -93,7 +93,7 @@ try {
 
         <h1 class="m-5">コース編集</h1>
 
-        <form action="php_do/course_edit_do.php" method="post" class="row align-items-start">
+        <form action="php_do/course_edit_do.php" method="post" class="hum-row align-items-start">
 
             <input type="hidden" name="course_id" id="course_id" value="<?= $course_id ?>">
 
@@ -128,6 +128,7 @@ try {
 
 
             <dl class="course_cc col-8" id="cc_box" style="<?= ($course['category_id'] == 1) ? '' : 'display:none;' ?>">
+                <label for="course_cc" class="form-label">キャリコンの日時設定</label>
                 <div class="card mb-2 px-1 py-1">
                     <dt class="mb-1">キャリコン１</dt>
                     <dd class="cc1 mb-1 d-flex justify-content-around">
@@ -167,6 +168,15 @@ try {
                         </div>
                     </div>
                 </div>
+                <!-- 追加・削除ボタン -->
+                <div id="display_parent" class="d-flex justify-content-center align-items-center mt-3 student-add-icon-buttons ">
+                    <a href="#" id="add_btn" class="student-add-icon-btn">
+                        <img src="img/add_btn.png" alt="入力欄を追加">
+                    </a>
+                    <a href="#" id="del_btn" class="student-add-icon-btn">
+                        <img src="img/del_btn.png" alt="入力欄を削除">
+                    </a>
+                </div>
             </dl>
             <div class="col-12 d-flex justify-content-center mt-4 mb-5">
                 <a href="admin_course_list.php" class="btn btn-secondary px-3 mr-5">一覧へ戻る</a>
@@ -174,7 +184,7 @@ try {
             </div>
         </form>
     </div>
-
+    <script src="./js/add_couese_input_field.js"></script>
     <script src="js/cc_box_toggle.js"></script>
     <script src="js/script.js"></script>
     <script src="js/hamburger.js"></script>
