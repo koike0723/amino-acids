@@ -31,7 +31,7 @@ require_once __DIR__ . '/functions/functions.php';
         $student = get_student($login_student);
     }
     $cc_change = get_cc_change_confirm($login_booking_id,$booking_id);
-    check($cc_change);
+
     $myself = $cc_change['my_self'];
     $target = $cc_change['target'];
     ?>
@@ -80,7 +80,7 @@ require_once __DIR__ . '/functions/functions.php';
         </div>
         <div class="student-require-edit-btn">
             <div class="student-require-edit-btn-flex">
-                <a href="#">
+                <a href="./php_do/cc_edit_require_do.php">
                     <button type="btn" class="btn-require-edit">変更申請</button>
                 </a>
                 <a href="./student_cc_detail_require.php?selected_date=<?= $selected_date ?>&booking_id=<?= $login_booking_id ?>">

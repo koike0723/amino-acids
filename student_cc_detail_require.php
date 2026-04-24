@@ -38,19 +38,6 @@ $times = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 	?>
 
-	<?php //foreach($cc_require_student as $day){
-	//check($day);
-	//foreach($day as $times){
-	// check($times);
-	// foreach($times as $stu){
-	//    check($stu);
-	//    check($stu['student_id']);
-	// }
-	// }
-	// } 
-
-	?>
-
 	<main class="container py-4">
 		<section class="student-required-cc-section">
 			<div class="row justify-content-center">
