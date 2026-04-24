@@ -38,6 +38,9 @@ if ((int)$detail['status_id'] === 1) {
 
 // 新規（1）・未対応（2）のみ操作可能
 $is_unresolved = in_array($detail['status_id'], [1, 2]);
+$back_query = $_GET;
+unset($back_query['request_id']);
+$back_url = './admin_message.php' . (!empty($back_query) ? '?' . http_build_query($back_query) : '');
 ?>
 
 <!doctype html>
@@ -213,7 +216,7 @@ $is_unresolved = in_array($detail['status_id'], [1, 2]);
           <?php endif; ?>
 
           <div class="text-center mt-3">
-            <a href="./admin_message.php" class="btn btn-secondary">一覧に戻る</a>
+            <a href="<?= h($back_url) ?>" class="btn btn-secondary">一覧に戻る</a>
           </div>
 
         </div>
