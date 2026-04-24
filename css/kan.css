@@ -1,7 +1,38 @@
-.cc-detail-table-area-hum{
-    display: flex;
-    justify-content: center;
+/* まとめて設定系 */
+a {
+    display: block;
 }
+select {
+    background-color: rgb(183, 183, 183);
+}
+
+td {
+    padding: 3px;
+}
+td p{
+    font-size: 0.5em;
+}
+
+
+
+
+
+/* フレックス・レイアウト系 */
+.cc-plus-list-flex {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.content-wrap {
+    width: 89.33333%;
+    max-width: 1000px;
+    margin-inline: auto;
+}
+
+
+
+
+/* ボタン系 */
 .kan_btn {
     display: inline-block;
     border: 2px solid black;
@@ -9,14 +40,118 @@
     border-radius: 5px;
     box-shadow: 1px 1px 1px 1px rgb(133, 133, 133);
 }
-.kan_btn button {
+
+.kan_btn> :first-child {
     padding: 2px 5px;
+    color: black;
 }
-.kan_open-btn{
+
+.kan_open-btn {
+    position: fixed;
+    left: 0;
+    bottom: 0;
     background-color: rgb(213, 255, 255);
 }
-.kan_close-btn{
+
+.kan_close-btn {
     white-space: nowrap;
-    align-self:flex-end;
+    align-self: flex-start;
     background-color: white;
+}
+
+.kan_back-btn {
+    background-color: rgb(164, 164, 164);
+}
+
+.kan_back-btn> :first-child {
+    font-size: 1.5rem;
+}
+
+.kan_btn-confirm {
+    background-color: #26ff43;
+}
+
+.kan_btn-confirm> :first-child {
+    font-size: 1.5rem;
+}
+
+
+
+
+
+/*全体の表関係 */
+.cc-detail-student-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    /* 6.25rem => 100px */
+    width: clamp(3rem, 1.856rem + 4.883vw, 6.25rem);
+    height: clamp(6.25rem, 5.810rem + 1.878vw, 7.5rem);
+}
+
+
+
+
+
+/* 任意キャリコン関係 */
+.cc-plus-table-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #cdefff8a;
+}
+.cc-plus-table {
+    border-collapse: collapse;
+    border: 1px solid #000;
+    margin-bottom: 5px;
+}
+
+
+
+
+/* 必須キャリコン関係のCSS */
+.cc-detail-table-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 380px;
+    border-radius: 5px;
+    border: 2px solid black;
+}
+.cc_slot{
+    display: flex;
+    flex-direction: column;
+    justify-self: start;
+    align-items: center;
+    margin-bottom: 10px;
+    background-color: rgb(179, 255, 214);
+    border-radius: 5px;
+    padding: 5px;
+}
+.select_bix_area{
+    align-self: flex-start;
+}
+
+
+
+
+
+/* drawer処理 */
+.cc-plus-table-area {
+    position: fixed;
+    left: -200%;
+    width: 100vw;
+    /* 画面外に隠す */
+    bottom: 0;
+    transition: 0.3s;
+}
+.open .cc-plus-table-area {
+    left: 0;
+}
+.open .kan_open-btn {
+    display: none;
 }

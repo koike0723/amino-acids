@@ -12,11 +12,12 @@
     }
 
     // session の student_id を使ってDBから取得
-    // $student = get_student($_SESSION['student_id']);
-    $student = get_student(1);
+    $student = get_student($_SESSION['student_id']);
+    // $student = get_student(1);
 
     $cc_date = $_GET['cc_date'];
     $cc_time = $_GET['cc_time'];
+
 
     // 配列の中身確認
     check($cc_date);
@@ -26,6 +27,7 @@
 
  <!doctype html>
  <html lang="ja">
+
 
  <head>
      <title>予約一覧</title>
@@ -37,7 +39,14 @@
 
  <body>
      <?php include('./inc/student_header.php'); ?>
-
+     <?php
+        $student = get_student($_SESSION['student_id']);
+        if (!isset($_SESSION['student_id'])) {
+            header('location:./inc/login.php');
+            exit();
+        }
+        check($student);
+        ?>
      <main class="container py-5">
          <section class="reservation-detail-section">
              <div class="row justify-content-center">
@@ -74,7 +83,10 @@
                      </div>
 
                      <div class="text-center d-flex justify-content-center gap-3">
-                         <a href="./php_do/reserve_del_do.php" class="btn btn-warning fw-bold">キャンセル申請</a>
+                         <a href="./php_do/reserve_del_do.php?student_id=<?php echo urlencode($student['student_id']); ?>&booking_id=<?php echo urlencode($booking['booking_id']); ?>"
+                             class="btn btn-warning fw-bold">
+                             キャンセル申請
+                         </a>
                          <a href="index.php" class="btn btn-secondary">戻る</a>
                      </div>
 

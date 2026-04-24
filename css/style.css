@@ -234,7 +234,7 @@ summary::-webkit-details-marker {
 .h1 {
   text-align: center;
   font-size: 48px;
-  padding-block: 210px 50px;
+  padding-block: 180px 50px;
 }
 
 .cc-area {
@@ -315,6 +315,32 @@ th.ad-index-th {
 
 /* admin_index.php終了 */
 
+/* admin_consultant_list.phpスタート */
+table.ad-cc-list-table {
+  width: 90%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  font-size: 20px;
+}
+
+th.ad-cc-list-th {
+  background-color: #9C9C9C;
+  border: 1px solid #000;
+  text-align: center;
+  padding-block: 10px;
+}
+
+td.ad-cc-list-td {
+  border: 1px solid #000;
+  text-align: center;
+  padding-block: 10px;
+}
+
+tr.ad-cc-list-tr:nth-child(even) {
+  background-color: #DEDEDE;
+}
+
+/* admin_consultant_list.php終了 */
 
 /* admin_student_list.phpスタート */
 .admin-student-list {
@@ -468,6 +494,7 @@ tr.ad-stu-list-tr:nth-child(even) {
   padding: 10px;
   box-sizing: border-box;
 }
+
 .student-edit-number {
   border: 1px solid #000;
   width: 70vw;
@@ -619,13 +646,6 @@ tr.cc-req-list-headTr {
   text-align: center;
 }
 
-.cc-detail-table {
-  width: 95%;
-  margin: 0 auto;
-  border-collapse: collapse;
-  border: 1px solid #000;
-}
-
 thead.cc-detail-thead,
 th.cc-detail-th {
   border: 1px solid #000;
@@ -680,13 +700,6 @@ th.cc-detail-th-size {
 
 .cc-detail-optional-openBtn:hover {
   border: 1px solid #000;
-}
-
-.cc-detail-table-area-hum {
-  display: flex;
-  padding: 20px 30px 5px 70px;
-  background-color: #CDEFFF;
-  width: 100%;
 }
 
 /* テーブル用ハンバーガーメニューここから */
@@ -865,55 +878,104 @@ input[type="checkbox"] {
 /* admin_student_detailここまで */
 
 /* index.php ここから*/
-/* calender section ここから*/
-.calendar-table th,
-.calendar-table td {
-  width: 14.285%;
+.student-index-section{
+  text-align: center;
 }
 
-.calendar-table td {
-  height: 100px;
-  vertical-align: top;
-  padding: 6px 8px;
-  font-size: 14px;
+.student-index-reserve-area{
+  padding-block-end: 100px;
 }
 
-.calendar-table .date-number {
-  display: block;
-  margin-bottom: 4px;
+.student-index-reserve-detail{
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  width: 1000px;
+  margin: 0 auto;
 }
 
-.calendar-table .other-month {
-  color: #adb5bd;
+.student-index-h1{
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  padding-block-start: 30px;
 }
 
-.calendar-table .event-item {
-  font-size: 11px;
-  line-height: 1.4;
-  margin-bottom: 2px;
-  word-break: break-all;
+.student-index-flex-area{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 24px;
+  padding-block-start: 50px;
 }
 
-.calendar-heading-number {
-  font-size: 3rem;
-  line-height: 1;
+.student-index-flex{
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding-block-end: 30px;
 }
 
-.calendar-heading-month {
-  font-size: 1.5rem;
+.student-index-flex-text{
+  padding-block-end: 30px;
 }
 
-.calendar-heading-year {
-  font-size: 2rem;
-  line-height: 1;
+.student-index-text-color1{
+  color: #008CFF;
+}
+.student-index-text-color2{
+  color: red;
+}
+.student-index-flex-notice{
+  color: rgba(255, 0, 0, 0.7);
 }
 
+.student-index-flex-btn-change{
+  background-color: #88B3EC;
+  border: 0;
+  border-radius: 5px;
+  padding: 3px;
+  font-size: 24px;
+}
 
+.student-index-flex-btn-cancel{
+  background-color: #F59870;
+  border: 0;
+  border-radius: 5px;
+  padding: 3px;
+  font-size: 24px;
+}
 
-/* calender section ここまで*/
+.cc-plus-section {
+  padding-block-start: 100px;
+}
 
+.cc-plus-section-h1 {
+  font-size: 24px;
+}
+
+.cc-plus-list-ul {
+  list-style: none;
+  font-size: 20px;
+  color: #000;
+  text-align: center;
+}
+
+.cc-plus-list-li {
+  padding-block: 30px;
+  color: #00bfff;
+}
+
+.cc-plus-list-li a:hover{
+  text-decoration: underline;
+}
+
+.cc-plus-list-li::before {
+  content: '・';
+  color: #000;
+  text-decoration: none;
+  display: inline-block;
+}
 /* index.php  ここまで*/
-
 
 /*login.php ここから  */
 /* ログイン共通 */
@@ -1151,22 +1213,23 @@ input[type="checkbox"] {
 
 /* admin_student_add.phpここから */
 .student-add-icon-buttons {
-    gap: 16px;
+  gap: 16px;
 }
 
 .student-add-icon-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
 }
 
 .student-add-icon-btn img {
-    width: 48px;
-    height: 48px;
-    object-fit: contain;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
 }
+
 /* admin_student_add.phpここまで */

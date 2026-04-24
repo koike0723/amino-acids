@@ -1,4 +1,5 @@
 <!-- http://localhost:8080/amino-acids/admin_cc_detail.php?cc_date=2026-04-25 -->
+<!-- http://localhost:8080/amino-acids/cc_detail_student_add.php -->
 <!-- 必須キャリコンをドラック&ドロップで管理できる管理者画面 -->
 <?php require_once __DIR__ . '/functions/functions.php'; ?>
 <?php
@@ -20,7 +21,7 @@ try {
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     // SQL
-    $sql = 'SELECT id, CONCAT(last_name, first_name) AS name FROM m_consultants';
+    $sql = 'SELECT id, last_name, first_name, CONCAT(last_name, first_name) AS name FROM m_consultants';
     $stmt = $db->prepare($sql);
     $stmt->execute();
     $cc_teachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -63,7 +64,18 @@ try {
 } catch (PDOException $e) {
     exit('任意キャリコンのラインの取得に失敗しました: ' . $e->getMessage());
 }
-
+try {
+    $cc_all_bookings = get_cc_bookings(["slot_date" => $cc_date]);
+} catch (PDOException $e) {
+    exit('キャリコンの予約の取得に失敗しました: ' . $e->getMessage());
+}
+echo "------------------------------------------------------------------";
+check($cc_plus_slots[0]);
+echo "------------------------------------------------------------------";
+check($cc_all_bookings[$cc_plus_slots[0]["slot_id"]]["10:00:00"]["bookings"][0]);
+echo "------------------------------------------------------------------";
+check($cc_all_bookings[1]["10:00:00"]["bookings"][0]);
+echo "------------------------------------------------------------------";
 ?>
 
 
@@ -85,100 +97,337 @@ try {
 <body>
     <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
     <main>
+
         <div class="cc-mgmt">
             <p class="cc-head-text">キャリコン・ライン管理</p>
             <p class="cc-head-date"><?= format_japanese_date($cc_date); ?></p>
+            <div class="kan_btn kan_back-btn"><a href="admin_index.php">一覧へ戻る</a></div>
         </div>
-        <div class="previous-btn cc-detail-btn-area">
-            <a href="admin_index.php">
-                <button type="btn" class="prev-btn cc-detail-btn">戻る</button>
-            </a>
-            <div class="cc-detail-optional-open">
-                <?php require_once __DIR__ . '/inc/cc_table.php'; ?>
-            </div>
-        </div>
-        <div class="cc-detail-table-area">
-            <table class="cc-detail-table">
-                <thead class="cc-detail-thead">
-                    <tr class="cc-detail-headTr">
-                        <th class="cc-detail-th">教室</th>
-                        <th class="cc-detail-th">講師</th>
-                        <?php foreach ($cc_times as $cc_time): ?>
-                            <th class="cc-detail-th"><?= $cc_time["name"] ?></th>
+        <div class="kan_btn kan_open-btn" id="open_btn"><button type="button">任意キャリコンを開く ▶</button></div>
+
+        <div class="content-wrap" id="drag_drop_area">
+            <form action="php_do/cc_detail_edit_do.php">
+
+                <div class="kan_btn kan_btn-confirm"><input type="submit" name="update" value="編集確定する"></div>
+
+
+                <div class="cc-plus-table-area" id="drawer_area">
+                    <div class="content-wrap">
+                        <div class="cc-plus-list-flex">
+                            <div class="kan_btn kan_close-btn"><button type="button" id="close_btn">◀ 閉じる</button></div>
+                            <div>任意キャリコン枠</div>
+                        </div>
+                        <?php foreach ($cc_plus_slots as $key => $cc_plus_slot): ?>
+                            <table class="cc-plus-table" style="background-color: white;">
+                                <thead class="cc-detail-thead">
+                                    <tr class="cc-detail-headTr">
+                                        <?php foreach ($cc_times as $cc_time): ?>
+                                            <th class="cc-detail-th"><?= $cc_time["name"] ?></th>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </thead>
+                                <tbody class="cc-detail-tbody">
+                                    <tr class="cc-detail-tr">
+                                        <!-- 10:00:00 -->
+                                        <?php $time = "10:00:00"; ?>
+                                        <td class="cc-detail-td">
+                                            <?php if (empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
+                                                <a href="cc_detail_student_add.php">
+                                                    <div class="cc-detail-student-card">
+                                                        <p class="cc-detail-student">空き</p>
+                                                    </div>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
+                                                <div class="cc-detail-student-card">
+                                                    <p class="cc-detail-student">
+                                                        <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
+                                                    </p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <!-- 11:00:00 -->
+                                        <?php $time = "11:00:00"; ?>
+                                        <td class="cc-detail-td">
+                                            <?php if (empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
+                                                <a href="cc_detail_student_add.php">
+                                                    <div class="cc-detail-student-card">
+                                                        <p class="cc-detail-student">空き</p>
+                                                    </div>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
+                                                <div class="cc-detail-student-card">
+                                                    <p class="cc-detail-student">
+                                                        <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
+                                                    </p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <!-- 12:00:00 -->
+                                        <?php $time = "12:00:00"; ?>
+                                        <td class="cc-detail-td">
+                                            <?php if (empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
+                                                <a href="cc_detail_student_add.php">
+                                                    <div class="cc-detail-student-card">
+                                                        <p class="cc-detail-student">空き</p>
+                                                    </div>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
+                                                <div class="cc-detail-student-card">
+                                                    <p class="cc-detail-student">
+                                                        <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
+                                                    </p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <!-- 14:00:00 -->
+                                        <?php $time = "14:00:00"; ?>
+                                        <td class="cc-detail-td">
+                                            <?php if (empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
+                                                <a href="cc_detail_student_add.php">
+                                                    <div class="cc-detail-student-card">
+                                                        <p class="cc-detail-student">空き</p>
+                                                    </div>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
+                                                <div class="cc-detail-student-card">
+                                                    <p class="cc-detail-student">
+                                                        <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
+                                                    </p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <!-- 15:00:00 -->
+                                        <?php $time = "15:00:00"; ?>
+                                        <td class="cc-detail-td">
+                                            <?php if (empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
+                                                <a href="cc_detail_student_add.php">
+                                                    <div class="cc-detail-student-card">
+                                                        <p class="cc-detail-student">空き</p>
+                                                    </div>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
+                                                <div class="cc-detail-student-card">
+                                                    <p class="cc-detail-student">
+                                                        <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
+                                                    </p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <!-- 16:00:00 -->
+                                        <?php $time = "16:00:00"; ?>
+                                        <td class="cc-detail-td">
+                                            <?php if (empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
+                                                <a href="cc_detail_student_add.php">
+                                                    <div class="cc-detail-student-card">
+                                                        <p class="cc-detail-student">空き</p>
+                                                    </div>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
+                                                <div class="cc-detail-student-card">
+                                                    <p class="cc-detail-student">
+                                                        <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
+                                                    </p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         <?php endforeach; ?>
-                    </tr>
-                </thead>
-                <tbody class="cc-detail-tbody">
+                    </div>
+                </div>
+
+                <div class="cc-detail-table-area">
                     <?php foreach ($cc_slots as $cc_slot): ?>
-                        <tr class="cc-detail-tr">
-                            <td class="cc-detail-td cc-detail-td-app va-middle">
+                        <div class="cc_slot">
+                            <div class="select_box_area">
                                 <label for="cc-detail-select-class">
+                                    教室
                                     <select name="cc-detail-select-class" id="cc-detail-select-class" class="cc-detail_selectStyle">
+                                        <option value="" selected disabled>未選択</option>
                                         <?php foreach ($rooms as $room): ?>
                                             <option value='<?= $room["id"] ?>'><?= $room["name"] ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </label>
-                            </td>
-                            <td class="cc-detail-td cc-detail-td-app va-middle">
                                 <label for="cc-detail-select-teacher">
+                                    CC講師
                                     <select name="cc-detail-select-teacher" id="cc-detail-select-teacher" class="cc-detail_selectStyle">
+                                        <option value="" selected disabled>未選択</option>
                                         <?php foreach ($cc_teachers as $cc_teacher): ?>
-                                            <option value='<?= $cc_teacher["id"] ?>'><?= $cc_teacher["name"] ?></option>
+                                            <option value='<?= $cc_teacher["id"] ?>'><?= $cc_teacher["last_name"] ?><br><?= $cc_teacher["first_name"] ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </label>
-                            </td>
-                            <td class="cc-detail-td">
-                                <div class="cc-detail-student-card">
-                                    <p class="cc-detail-student">6c</p>
-                                    <p class="cc-detail-student">リカレント太郎</p>
-                                    <p class="cc-detail-student">対面</p>
-                                </div>
-                            </td>
-                            <td class="cc-detail-td">
-                                <div class="cc-detail-student-card">
-                                    <p class="cc-detail-student">6c</p>
-                                    <p class="cc-detail-student">リカレント太郎</p>
-                                    <p class="cc-detail-student">対面</p>
-                                </div>
-                            </td>
-                            <td class="cc-detail-td">
-                                <div class="cc-detail-student-card">
-                                    <p class="cc-detail-student">6c</p>
-                                    <p class="cc-detail-student">リカレント太郎</p>
-                                    <p class="cc-detail-student">対面</p>
-                                </div>
-                            </td>
-                            <td class="cc-detail-td">
-                                <div class="cc-detail-student-card">
-                                    <p class="cc-detail-student">6c</p>
-                                    <p class="cc-detail-student">リカレント太郎</p>
-                                    <p class="cc-detail-student">対面</p>
-                                </div>
-                            </td>
-                            <td class="cc-detail-td">
-                                <div class="cc-detail-student-card">
-                                    <p class="cc-detail-student">6c</p>
-                                    <p class="cc-detail-student">リカレント太郎</p>
-                                    <p class="cc-detail-student">対面</p>
-                                </div>
-                            </td>
-                            <td class="cc-detail-td">
-                                <div class="cc-detail-student-card">
-                                    <p class="cc-detail-student">6c</p>
-                                    <p class="cc-detail-student">リカレント太郎</p>
-                                    <p class="cc-detail-student">対面</p>
-                                </div>
-                            </td>
-                        </tr>
+                            </div>
+                            <table class="cc-detail-table">
+                                <thead class="cc-detail-thead">
+                                    <tr class="cc-detail-headTr">
+                                        <?php foreach ($cc_times as $cc_time): ?>
+                                            <th class="cc-detail-th"><?= $cc_time["name"] ?></th>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </thead>
+                                <tbody class="cc-detail-tbody">
+                                    <tr class="cc-detail-tr">
+                                        <!-- 10:00:00 -->
+                                        <?php $time = "10:00:00"; ?>
+                                        <td class="cc-detail-td">
+                                            <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
+                                                <a href="cc_detail_student_add.php">
+                                                    <div class="cc-detail-student-card">
+                                                        <p class="cc-detail-student">空き</p>
+                                                    </div>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
+                                                <div class="cc-detail-student-card">
+                                                    <p class="cc-detail-student">
+                                                        <?= explode("/", $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
+                                                    </p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <!-- 11:00:00 -->
+                                        <?php $time = "11:00:00"; ?>
+                                        <td class="cc-detail-td">
+                                            <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
+                                                <a href="cc_detail_student_add.php">
+                                                    <div class="cc-detail-student-card">
+                                                        <p class="cc-detail-student">空き</p>
+                                                    </div>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
+                                                <div class="cc-detail-student-card">
+                                                    <p class="cc-detail-student">
+                                                        <?= explode("/", $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
+                                                    </p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <!-- 12:00:00 -->
+                                        <?php $time = "12:00:00"; ?>
+                                        <td class="cc-detail-td">
+                                            <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
+                                                <a href="cc_detail_student_add.php">
+                                                    <div class="cc-detail-student-card">
+                                                        <p class="cc-detail-student">空き</p>
+                                                    </div>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
+                                                <div class="cc-detail-student-card">
+                                                    <p class="cc-detail-student">
+                                                        <?= explode("/", $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
+                                                    </p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <!-- 14:00:00 -->
+                                        <?php $time = "14:00:00"; ?>
+                                        <td class="cc-detail-td">
+                                            <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
+                                                <a href="cc_detail_student_add.php">
+                                                    <div class="cc-detail-student-card">
+                                                        <p class="cc-detail-student">空き</p>
+                                                    </div>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
+                                                <div class="cc-detail-student-card">
+                                                    <p class="cc-detail-student">
+                                                        <?= explode("/", $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
+                                                    </p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <!-- 15:00:00 -->
+                                        <?php $time = "15:00:00"; ?>
+                                        <td class="cc-detail-td">
+                                            <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
+                                                <a href="cc_detail_student_add.php">
+                                                    <div class="cc-detail-student-card">
+                                                        <p class="cc-detail-student">空き</p>
+                                                    </div>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
+                                                <div class="cc-detail-student-card">
+                                                    <p class="cc-detail-student">
+                                                        <?= explode("/", $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
+                                                    </p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <!-- 16:00:00 -->
+                                        <?php $time = "16:00:00"; ?>
+                                        <td class="cc-detail-td">
+                                            <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
+                                                <a href="cc_detail_student_add.php">
+                                                    <div class="cc-detail-student-card">
+                                                        <p class="cc-detail-student">空き</p>
+                                                    </div>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
+                                                <div class="cc-detail-student-card">
+                                                    <p class="cc-detail-student">
+                                                        <?= explode("/", $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
+                                                    </p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
+                                                    <p class="cc-detail-student"><?= $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     <?php endforeach; ?>
-                </tbody>
-            </table>
+                    <div class="mt-3 text-center" id="display_parent">
+                        <a href="#" id="add_btn"><img src="img/add_btn.png" alt=""></a>
+                    </div>
+                </div>
+
+            </form>
+
+
+
         </div>
     </main>
     <script src="js/drag_and_drop.js"></script>
+    <script src="js/drawer.js"></script>
     <script src="js/hamburger.js"></script>
+    <script src="js/add_cc_slot.js"></script>
 </body>
 
 </html>

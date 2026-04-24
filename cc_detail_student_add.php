@@ -176,16 +176,12 @@ $filtered_students = array_filter($students, function ($student) use ($date, $st
                                     <?= h($student['room_name']); ?>&nbsp;/&nbsp;<?= h($student['course_name']); ?>
                                 </td>
                                 <td class="ad-stu-list-td"><?= h($student['status_name']); ?></td>
-                                <td class="ad-stu-list-td td-btn-flex">
-                                    <a href="./admin_student_edit.php?id=<?= h($student['student_id']); ?>">
-                                        <button type="button" class="controle-btn controle-edit">編集</button>
+                                <td class="ad-stu-list-td">
+                                    <?php if(($student['status_name'] == "在校中") || ($student['status_name'] == "終了")): ?>
+                                    <a href="admin_cc_detail.php?id=<?= h($student['student_id']); ?>">
+                                        <button type="button" class="controle-btn controle-edit" style="background-color: #0084ffaa;">追加</button>
                                     </a>
-                                    <a href="./admin_student_detail.php?id=<?= h($student['student_id']); ?>">
-                                        <button type="button" class="controle-btn controle-detail">詳細</button>
-                                    </a>
-                                    <a href="./admin_student_del_confirm.php?id=<?= h($student['student_id']); ?>">
-                                        <button type="button" class="controle-btn controle-delete">削除</button>
-                                    </a>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -195,7 +191,7 @@ $filtered_students = array_filter($students, function ($student) use ($date, $st
         </div>
 
         <div class="previous-btn">
-            <a href="./admin_index.php">
+            <a href="admin_cc_detail.php">
                 <button type="button" class="prev-btn">戻る</button>
             </a>
         </div>

@@ -112,13 +112,17 @@ if (isset($timeId) || isset($date)) {
                     <div class="student-reservation-apply-buttons d-flex justify-content-center gap-3 mt-4">
                         <a href="">
                             <?php if ($booking_id): ?>
-                                <button type="submit" class="btn btn-success student-reservation-apply-submit">
-                                    変更申請
-                                </button>
+                                <a href="./php_do/reserve_edit_do.php">
+                                    <button type="submit" class="btn btn-success student-reservation-apply-submit">
+                                        変更申請
+                                    </button>
+                                </a>
                             <?php else: ?>
-                                <button type="submit" class="btn btn-success student-reservation-apply-submit">
-                                    追加申請
-                                </button>
+                                <a href="./php_do/reserve_do.php">
+                                    <button type="submit" class="btn btn-success student-reservation-apply-submit">
+                                        追加申請
+                                    </button>
+                                </a>
                             <?php endif; ?>
                         </a>
                         <a href="student_reserve.php?selected_date=<?= $selected_date ?>" class="btn btn-secondary">戻る</a>
