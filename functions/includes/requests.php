@@ -359,7 +359,6 @@ function approve_cc_plus_change(int $request_id): bool
 
         $db->commit();
         return true;
-
     } catch (Exception $e) {
         $db->rollBack();
         return false;
@@ -408,7 +407,6 @@ function reject_cc_plus_change(int $request_id): bool
 
         $db->commit();
         return true;
-
     } catch (Exception $e) {
         $db->rollBack();
         return false;
@@ -744,9 +742,13 @@ function _fetch_cc_change_detail(PDO $db, array $request): array
         return [];
     }
 
-    $bookings = array_column($rows, null, 'booking_id');
-    $a = $bookings[$request['booking_id_a']]; // 申請者
-    $b = $bookings[$request['booking_id_b']]; // 相手
+    $bookings     = array_column($rows, null, 'booking_id');
+    $a            = $bookings[$request['booking_id_a']];
+    $b            = $bookings[$request['booking_id_b']];
+
+    // swap後はstudent_idが入れ替わるため、申請者以外の方をtargetとして特定
+    $applicant_id = (int) $request['student_id'];
+    $target_data  = ((int) $a['student_id'] !== $applicant_id) ? $a : $b;
 
     return [
         'my_self' => [
@@ -758,8 +760,8 @@ function _fetch_cc_change_detail(PDO $db, array $request): array
         ],
         'target' => [
             'booking_id'       => $b['booking_id'],
-            'student_name'     => $b['student_name'],
-            'course_full_name' => $b['course_full_name'],
+            'student_name'     => $target_data['student_name'],
+            'course_full_name' => $target_data['course_full_name'],
             'from_cc_date'     => $b['cc_date'],
             'from_cc_time'     => $b['cc_time'],
             'to_cc_date'       => $a['cc_date'],
@@ -836,10 +838,10 @@ function reject_cc_plus(int $request_id): bool
         }
 
         $db->prepare('DELETE FROM t_cc_bookings WHERE id = :booking_id')
-           ->execute([':booking_id' => $request['booking_id_a']]);
+            ->execute([':booking_id' => $request['booking_id_a']]);
 
         $db->prepare('UPDATE t_cc_requests SET status_id = 4 WHERE id = :id')
-           ->execute([':id' => $request_id]);
+            ->execute([':id' => $request_id]);
 
         $db->commit();
         return true;
@@ -875,10 +877,10 @@ function approve_cc_plus_cancel(int $request_id): bool
         }
 
         $db->prepare('DELETE FROM t_cc_bookings WHERE id = :booking_id')
-           ->execute([':booking_id' => $request['booking_id_a']]);
+            ->execute([':booking_id' => $request['booking_id_a']]);
 
         $db->prepare('UPDATE t_cc_requests SET status_id = 3 WHERE id = :id')
-           ->execute([':id' => $request_id]);
+            ->execute([':id' => $request_id]);
 
         $db->commit();
         return true;
@@ -937,7 +939,7 @@ function approve_cc_change(int $request_id): bool
         }
 
         $db->prepare('UPDATE t_cc_requests SET status_id = 3 WHERE id = :id')
-           ->execute([':id' => $request_id]);
+            ->execute([':id' => $request_id]);
 
         return true;
     } catch (Exception $e) {

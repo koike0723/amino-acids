@@ -189,37 +189,40 @@ $back_url = './admin_message.php' . (!empty($back_query) ? '?' . http_build_quer
               <p class="text-muted mb-4">キャンセル対象の予約は削除されました。</p>
             <?php endif; ?>
 
-          <?php elseif ((int)$detail['type_id'] === 4): // 必須CC変更申請 
+          <?php elseif ((int)$detail['type_id'] === 4): // 必須CC変更申請
           ?>
             <div class="row mb-4">
               <div class="col-md-6">
                 <h5 class="mb-3">申請者（<?= h($detail['student_name']) ?>）</h5>
                 <table class="table table-bordered">
-                  <tr>
-                    <th class="table-secondary">現在の日時</th>
-                    <td><?= h($detail['detail']['my_self']['from_cc_date']) ?></td>
-                  </tr>
+                  <?php if (in_array($detail['status_id'], [1, 2, 4])): ?>
+                    <tr>
+                      <th class="table-secondary">現在の日時</th>
+                      <td><?= h($detail['detail']['my_self']['from_cc_date']) ?> <?= h($detail['detail']['my_self']['from_cc_time']) ?></td>
+                    </tr>
+                  <?php endif; ?>
                   <tr>
                     <th class="table-secondary">変更後の日時</th>
-                    <td><?= h($detail['detail']['my_self']['to_cc_date']) ?></td>
+                    <td><?= h($detail['detail']['my_self']['to_cc_date']) ?> <?= h($detail['detail']['my_self']['to_cc_time']) ?></td>
                   </tr>
                 </table>
               </div>
               <div class="col-md-6">
                 <h5 class="mb-3">相手（<?= h($detail['detail']['target']['student_name']) ?>）</h5>
                 <table class="table table-bordered">
-                  <tr>
-                    <th class="table-secondary">現在の日時</th>
-                    <td><?= h($detail['detail']['target']['from_cc_date']) ?></td>
-                  </tr>
+                  <?php if (in_array($detail['status_id'], [1, 2, 4])): ?>
+                    <tr>
+                      <th class="table-secondary">現在の日時</th>
+                      <td><?= h($detail['detail']['target']['from_cc_date']) ?> <?= h($detail['detail']['target']['from_cc_time']) ?></td>
+                    </tr>
+                  <?php endif; ?>
                   <tr>
                     <th class="table-secondary">変更後の日時</th>
-                    <td><?= h($detail['detail']['target']['to_cc_date']) ?></td>
+                    <td><?= h($detail['detail']['target']['to_cc_date']) ?> <?= h($detail['detail']['target']['to_cc_time']) ?></td>
                   </tr>
                 </table>
               </div>
             </div>
-
           <?php endif; ?>
 
           <!-- 操作ボタン（未解決のみ表示） -->
