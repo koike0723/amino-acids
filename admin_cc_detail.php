@@ -69,13 +69,6 @@ try {
 } catch (PDOException $e) {
     exit('キャリコンの予約の取得に失敗しました: ' . $e->getMessage());
 }
-echo "------------------------------------------------------------------";
-check($cc_plus_slots[0]);
-echo "------------------------------------------------------------------";
-check($cc_all_bookings[$cc_plus_slots[0]["slot_id"]]["10:00:00"]["bookings"][0]);
-echo "------------------------------------------------------------------";
-check($cc_all_bookings[1]["10:00:00"]["bookings"][0]);
-echo "------------------------------------------------------------------";
 ?>
 
 
@@ -133,13 +126,13 @@ echo "------------------------------------------------------------------";
                                         <td class="cc-detail-td">
                                             <?php if (empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
                                                 <a href="cc_detail_student_add.php">
-                                                    <div class="cc-detail-student-card">
+                                                    <div class="cc-detail-student-card" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                         <p class="cc-detail-student">空き</p>
                                                     </div>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
-                                                <div class="cc-detail-student-card">
+                                                <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                     <p class="cc-detail-student">
                                                         <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
                                                     </p>
@@ -153,13 +146,13 @@ echo "------------------------------------------------------------------";
                                         <td class="cc-detail-td">
                                             <?php if (empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
                                                 <a href="cc_detail_student_add.php">
-                                                    <div class="cc-detail-student-card">
+                                                    <div class="cc-detail-student-card" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                         <p class="cc-detail-student">空き</p>
                                                     </div>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
-                                                <div class="cc-detail-student-card">
+                                                <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                     <p class="cc-detail-student">
                                                         <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
                                                     </p>
@@ -173,13 +166,13 @@ echo "------------------------------------------------------------------";
                                         <td class="cc-detail-td">
                                             <?php if (empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
                                                 <a href="cc_detail_student_add.php">
-                                                    <div class="cc-detail-student-card">
+                                                    <div class="cc-detail-student-card" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                         <p class="cc-detail-student">空き</p>
                                                     </div>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
-                                                <div class="cc-detail-student-card">
+                                                <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                     <p class="cc-detail-student">
                                                         <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
                                                     </p>
@@ -193,13 +186,13 @@ echo "------------------------------------------------------------------";
                                         <td class="cc-detail-td">
                                             <?php if (empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
                                                 <a href="cc_detail_student_add.php">
-                                                    <div class="cc-detail-student-card">
+                                                    <div class="cc-detail-student-card" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                         <p class="cc-detail-student">空き</p>
                                                     </div>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
-                                                <div class="cc-detail-student-card">
+                                                <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                     <p class="cc-detail-student">
                                                         <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
                                                     </p>
@@ -213,13 +206,13 @@ echo "------------------------------------------------------------------";
                                         <td class="cc-detail-td">
                                             <?php if (empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
                                                 <a href="cc_detail_student_add.php">
-                                                    <div class="cc-detail-student-card">
+                                                    <div class="cc-detail-student-card" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                         <p class="cc-detail-student">空き</p>
                                                     </div>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
-                                                <div class="cc-detail-student-card">
+                                                <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                     <p class="cc-detail-student">
                                                         <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
                                                     </p>
@@ -233,13 +226,13 @@ echo "------------------------------------------------------------------";
                                         <td class="cc-detail-td">
                                             <?php if (empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
                                                 <a href="cc_detail_student_add.php">
-                                                    <div class="cc-detail-student-card">
+                                                    <div class="cc-detail-student-card" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                         <p class="cc-detail-student">空き</p>
                                                     </div>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
-                                                <div class="cc-detail-student-card">
+                                                <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                     <p class="cc-detail-student">
                                                         <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
                                                     </p>
@@ -293,13 +286,13 @@ echo "------------------------------------------------------------------";
                                         <td class="cc-detail-td">
                                             <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
                                                 <a href="cc_detail_student_add.php">
-                                                    <div class="cc-detail-student-card">
+                                                    <div class="cc-detail-student-card" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                         <p class="cc-detail-student">空き</p>
                                                     </div>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (!empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
-                                                <div class="cc-detail-student-card">
+                                                <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                     <p class="cc-detail-student">
                                                         <?= explode("/", $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
                                                     </p>
@@ -313,13 +306,13 @@ echo "------------------------------------------------------------------";
                                         <td class="cc-detail-td">
                                             <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
                                                 <a href="cc_detail_student_add.php">
-                                                    <div class="cc-detail-student-card">
+                                                    <div class="cc-detail-student-card" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                         <p class="cc-detail-student">空き</p>
                                                     </div>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (!empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
-                                                <div class="cc-detail-student-card">
+                                                <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                     <p class="cc-detail-student">
                                                         <?= explode("/", $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
                                                     </p>
@@ -333,13 +326,13 @@ echo "------------------------------------------------------------------";
                                         <td class="cc-detail-td">
                                             <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
                                                 <a href="cc_detail_student_add.php">
-                                                    <div class="cc-detail-student-card">
+                                                    <div class="cc-detail-student-card" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                         <p class="cc-detail-student">空き</p>
                                                     </div>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (!empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
-                                                <div class="cc-detail-student-card">
+                                                <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                     <p class="cc-detail-student">
                                                         <?= explode("/", $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
                                                     </p>
@@ -353,13 +346,13 @@ echo "------------------------------------------------------------------";
                                         <td class="cc-detail-td">
                                             <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
                                                 <a href="cc_detail_student_add.php">
-                                                    <div class="cc-detail-student-card">
+                                                    <div class="cc-detail-student-card" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                         <p class="cc-detail-student">空き</p>
                                                     </div>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (!empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
-                                                <div class="cc-detail-student-card">
+                                                <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                     <p class="cc-detail-student">
                                                         <?= explode("/", $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
                                                     </p>
@@ -373,13 +366,13 @@ echo "------------------------------------------------------------------";
                                         <td class="cc-detail-td">
                                             <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
                                                 <a href="cc_detail_student_add.php">
-                                                    <div class="cc-detail-student-card">
+                                                    <div class="cc-detail-student-card" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                         <p class="cc-detail-student">空き</p>
                                                     </div>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (!empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
-                                                <div class="cc-detail-student-card">
+                                                <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                     <p class="cc-detail-student">
                                                         <?= explode("/", $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
                                                     </p>
@@ -393,13 +386,13 @@ echo "------------------------------------------------------------------";
                                         <td class="cc-detail-td">
                                             <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
                                                 <a href="cc_detail_student_add.php">
-                                                    <div class="cc-detail-student-card">
+                                                    <div class="cc-detail-student-card" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                         <p class="cc-detail-student">空き</p>
                                                     </div>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (!empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
-                                                <div class="cc-detail-student-card">
+                                                <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
                                                     <p class="cc-detail-student">
                                                         <?= explode("/", $cc_all_bookings[$cc_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
                                                     </p>
