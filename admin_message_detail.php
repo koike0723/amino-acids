@@ -23,6 +23,19 @@ if (empty($detail)) {
   exit;
 }
 
+// 新規（1）の場合のみ未対応（2）に更新し、再取得
+if ((int)$detail['status_id'] === 1) {
+  try {
+    $db = db_connect();
+    $stmt = $db->prepare('UPDATE t_cc_requests SET status_id = 2 WHERE id = :id AND status_id = 1');
+    $stmt->execute([':id' => $request_id]);
+    // 更新後の状態を再取得して画面に反映
+    $detail = get_cc_request_detail($request_id);
+  } catch (PDOException $e) {
+    // 更新失敗しても画面表示は続行
+  }
+}
+
 // 新規（1）・未対応（2）のみ操作可能
 $is_unresolved = in_array($detail['status_id'], [1, 2]);
 ?>
