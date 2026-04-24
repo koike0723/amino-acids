@@ -28,6 +28,7 @@
  <!doctype html>
  <html lang="ja">
 
+
  <head>
      <title>予約一覧</title>
      <link rel="stylesheet" href="./css/style.css">
@@ -38,7 +39,14 @@
 
  <body>
      <?php include('./inc/student_header.php'); ?>
-
+     <?php
+        $student = get_student($_SESSION['student_id']);
+        if (!isset($_SESSION['student_id'])) {
+            header('location:./inc/login.php');
+            exit();
+        }
+        check($student);
+        ?>
      <main class="container py-5">
          <section class="reservation-detail-section">
              <div class="row justify-content-center">
