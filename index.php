@@ -61,7 +61,7 @@ require_once __DIR__ . '/functions/functions.php';
                                                 <button
                                                     type="button"
                                                     class="student-index-flex-btn-change"
-                                                    onclick="location.href='./student_cc_detail_require.php?selected_date=<?php echo ($booking['cc_date']); ?>'">
+                                                    onclick="location.href='./student_cc_detail_require.php?selected_date=<?php echo ($booking['cc_date']); ?>&booking_id=<?= $booking['booking_id'] ?>'">
                                                     変更
                                                 </button>
                                             <?php endif; ?>

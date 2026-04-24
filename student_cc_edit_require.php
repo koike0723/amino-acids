@@ -3,18 +3,6 @@
 require_once __DIR__ . '/functions/functions.php';
 ?>
 
-<?php
-//$student_before = $_GET[''];
-//$student_after = $_GET[''];
-
-//if(!empty($student_before) || !empty($student_after)){
-$student_1 = get_student(1);
-$student_2 = get_student(2);
-
-check($student_1);
-//}
-?>
-
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -29,27 +17,23 @@ check($student_1);
 </head>
 
 <body>
-    <?php
-    $myself = [
-        'course_name' => 'web',
-        'student_name' => '梅崎',
-        'from_date' => '2026-4-20',
-        'to_date' => '2026-4-25',
-    ];
-    $target = [
-        'course_name' => 'webpuro',
-        'student_name' => '江原',
-        'from_date' => '2026-4-25',
-        'to_date' => '2026-5-3',
-    ];
-    ?>
     <?php require_once __DIR__ . '/inc/student_header.php'; ?>
     <?php
     $student = $_SESSION['student_id'];
-    if (!isset($_SESSION['student_id'])) {
+    $selected_date = $_GET['selected_date'];
+    $login_student = $_SESSION['student_id'];
+    $login_booking_id = $_GET['login_booking_id'];
+    $booking_id = $_GET['booking_id'];
+    if(!isset($_SESSION['student_id'])){
         header('location:./inc/login.php');
         exit();
+    }else{
+        $student = get_student($login_student);
     }
+    $cc_change = get_cc_change_confirm($login_booking_id,$booking_id);
+    check($cc_change);
+    $myself = $cc_change['my_self'];
+    $target = $cc_change['target'];
     ?>
     <main>
         <p class="student-require-edit-h1">変更申請</p>
@@ -65,11 +49,11 @@ check($student_1);
                 </div>
                 <div class="student-requier-edit-flex-con">
                     <dt class="student-require-edit-dt">変更前日時：</dt>
-                    <dd class="student-require-edit-dd"><?= $myself['from_date'] ?></dd>
+                    <dd class="student-require-edit-dd"><?= $myself['from_datetime'] ?></dd>
                 </div>
                 <div class="student-requier-edit-flex-con">
                     <dt class="student-require-edit-dt">変更後日時：</dt>
-                    <dd class="student-require-edit-dd"><?= $myself['to_date'] ?></dd>
+                    <dd class="student-require-edit-dd"><?= $myself['to_datetime'] ?></dd>
                 </div>
             </dl>
         </div>
@@ -86,11 +70,11 @@ check($student_1);
                 </div>
                 <div class="student-requier-edit-flex-con">
                     <dt class="student-require-edit-dt">変更前日時：</dt>
-                    <dd class="student-require-edit-dd"><?= $target['from_date'] ?></dd>
+                    <dd class="student-require-edit-dd"><?= $target['from_datetime'] ?></dd>
                 </div>
                 <div class="student-requier-edit-flex-con">
                     <dt class="student-require-edit-dt">変更後日時：</dt>
-                    <dd class="student-require-edit-dd"><?= $target['to_date'] ?></dd>
+                    <dd class="student-require-edit-dd"><?= $target['to_datetime'] ?></dd>
                 </div>
             </dl>
         </div>
@@ -99,7 +83,7 @@ check($student_1);
                 <a href="#">
                     <button type="btn" class="btn-require-edit">変更申請</button>
                 </a>
-                <a href="#">
+                <a href="./student_cc_detail_require.php?selected_date=<?= $selected_date ?>&booking_id=<?= $login_booking_id ?>">
                     <button type="btn" class="btn-require-prev">戻る</button>
                 </a>
             </div>
