@@ -17,7 +17,6 @@ try {
 } catch (PDOException $e) {
   $detail = [];
 }
-check($detail);
 
 if (empty($detail)) {
   header('Location: ./admin_message.php');
@@ -184,11 +183,11 @@ $is_unresolved = in_array($detail['status_id'], [1, 2]);
 
           <!-- 操作ボタン（未解決のみ表示） -->
           <?php if ($is_unresolved): ?>
-            <div class="d-flex justify-content-center gap-3 mb-4">
+            <div class="d-flex justify-content-center mb-4">
               <form action="./admin_message_do.php" method="post">
                 <input type="hidden" name="request_id" value="<?= $request_id ?>">
                 <input type="hidden" name="action" value="approve">
-                <button type="submit" class="btn btn-primary px-4"
+                <button type="submit" class="btn btn-primary px-4 mr-3"
                   onclick="return confirm('承認してよろしいですか？')">承認</button>
               </form>
               <form action="./admin_message_do.php" method="post">
