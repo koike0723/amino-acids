@@ -664,7 +664,11 @@ function _fetch_cc_plus_single_detail(PDO $db, array $request): array
  */
 function _fetch_cc_plus_change_detail(PDO $db, array $request): array
 {
-    if (!$request['booking_id_a'] || !$request['booking_id_b']) {
+    $booking_id_a = $request['booking_id_a'];
+    $booking_id_b = $request['booking_id_b'];
+
+    // 両方nullなら空配列
+    if (!$booking_id_a && !$booking_id_b) {
         return [];
     }
 
@@ -678,25 +682,23 @@ function _fetch_cc_plus_change_detail(PDO $db, array $request): array
             JOIN t_cc_slots       sl ON b.cc_slot_id = sl.id
             JOIN m_times          t  ON b.time_id    = t.id
             JOIN m_meating_styles ms ON b.style_id   = ms.id
-            WHERE b.id IN (:booking_id_a, :booking_id_b)';
+            WHERE b.id = :booking_id';
 
-    $stmt = $db->prepare($sql);
-    $stmt->execute([
-        ':booking_id_a' => $request['booking_id_a'],
-        ':booking_id_b' => $request['booking_id_b'],
-    ]);
-    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $result = ['before' => [], 'after' => []];
 
-    if (count($rows) !== 2) {
-        return [];
+    if ($booking_id_a) {
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':booking_id' => $booking_id_a]);
+        $result['before'] = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
     }
 
-    $bookings = array_column($rows, null, 'booking_id');
+    if ($booking_id_b) {
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':booking_id' => $booking_id_b]);
+        $result['after'] = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+    }
 
-    return [
-        'before' => $bookings[$request['booking_id_a']],
-        'after'  => $bookings[$request['booking_id_b']],
-    ];
+    return $result;
 }
 
 /**
