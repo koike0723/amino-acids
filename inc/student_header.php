@@ -3,10 +3,10 @@
 <header class="site-header">
     <div class="header-inner">
         <div class="student-nav-flex">
-            <a href="./index.php" style="text-decoration: none;">
+            <a href="./index.php" class="hover-disable">
                 <p class="user-name"><?= $_SESSION['student_name'] ?> さん</p>
             </a>
-            <a href="./php_do/logout.php">
+            <a href="./php_do/logout.php" class="hover-disable">
                 <p class="student-logout">ログアウト</p>
             </a>
         </div>
