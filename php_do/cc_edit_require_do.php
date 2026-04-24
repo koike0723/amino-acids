@@ -7,10 +7,6 @@ $login_student = $_SESSION['student_id'];
 $login_booking_id = $_GET['login_booking_id'];
 $booking_id = $_GET['booking_id'];
 
-check($login_student);
-check($login_booking_id);
-check($booking_id);
-
 if (!isset($login_student) || !isset($login_booking_id) || !isset($booking_id)) {
     header('location:../index.php');
     exit();
