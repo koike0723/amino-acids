@@ -149,25 +149,47 @@ function get_cc_schedule_list(
 
     $db = db_connect();
 
+    // コースIDが指定されている場合のプレースホルダー事前生成
+    $course_id_placeholders = [];
+    $course_id_params       = [];
+    if (!empty($course_ids)) {
+        foreach ($course_ids as $i => $id) {
+            $key = ':course_id_' . $i;
+            $course_id_placeholders[] = $key;
+            $course_id_params[$key]   = $id;
+        }
+    }
+    $in_clause = implode(', ', $course_id_placeholders);
+
     // --- 1. t_cc_slots から日付ごとの枠数を集計 ---
+    // course_ids 指定時：対象コースのCCがある日付のみに絞り込む
     $slot_sql = 'SELECT
                     date,
                     SUM(CASE WHEN is_cc_plus = 1 THEN 1 ELSE 0 END) AS cc_plus_count,
-                    COUNT(*) AS line_count
+                    SUM(CASE WHEN is_cc_plus = 0 THEN 1 ELSE 0 END) AS line_count
                  FROM t_cc_slots
                  WHERE date >= :base_date
-                   AND date <= :end_date
-                 GROUP BY date
-                 ORDER BY date ASC';
+                   AND date <= :end_date';
 
+    if (!empty($course_ids)) {
+        $slot_sql .= " AND date IN (
+            SELECT date FROM t_course_cc_schedules
+            WHERE course_id IN ({$in_clause})
+        )";
+    }
+
+    $slot_sql .= ' GROUP BY date ORDER BY date ASC';
+
+    $slot_params = array_merge(
+        [':base_date' => $base_date, ':end_date' => $end_date],
+        $course_id_params
+    );
     $slot_stmt = $db->prepare($slot_sql);
-    $slot_stmt->execute([
-        ':base_date' => $base_date,
-        ':end_date'  => $end_date,
-    ]);
+    $slot_stmt->execute($slot_params);
     $slot_rows = $slot_stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // --- 2. t_course_cc_schedules から必須CC開催コース一覧を取得 ---
+    // course_ids 指定時でも全コースを返す（同日開催の他コースも表示するため）
     $schedule_params = [
         ':base_date' => $base_date,
         ':end_date'  => $end_date,
@@ -181,20 +203,8 @@ function get_cc_schedule_list(
                      JOIN m_courses c ON s.course_id = c.id
                      LEFT JOIN m_rooms r ON c.room_id = r.id
                      WHERE s.date >= :base_date
-                       AND s.date <= :end_date';
-
-    // コースIDが指定されている場合は絞り込む
-    if (!empty($course_ids)) {
-        $id_placeholders = [];
-        foreach ($course_ids as $i => $id) {
-            $key = ':course_id_' . $i;
-            $id_placeholders[] = $key;
-            $schedule_params[$key] = $id;
-        }
-        $schedule_sql .= ' AND s.course_id IN (' . implode(', ', $id_placeholders) . ')';
-    }
-
-    $schedule_sql .= ' ORDER BY s.date ASC';
+                       AND s.date <= :end_date
+                     ORDER BY s.date ASC';
 
     $schedule_stmt = $db->prepare($schedule_sql);
     $schedule_stmt->execute($schedule_params);
@@ -217,10 +227,12 @@ function get_cc_schedule_list(
     }
 
     // t_course_cc_schedules の情報を cc_list に追加
-    // ※ t_cc_slots に対応する日付がない場合も許容（カウントは 0 で初期化）
+    // ※ course_ids 未指定時のみ、t_cc_slots に対応する日付がない場合も許容（カウントは 0 で初期化）
+    // ※ course_ids 指定時は slot_rows で絞り込み済みの日付のみ対象とする（余分な日付の混入を防ぐ）
     foreach ($schedule_rows as $row) {
         [$y, $m, $d] = $split_date($row['date']);
         if (!isset($result[$y][$m][$d])) {
+            if (!empty($course_ids)) continue;
             $result[$y][$m][$d] = [
                 'cc_list'       => [],
                 'cc_plus_count' => 0,
