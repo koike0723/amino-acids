@@ -1,4 +1,4 @@
-const ccDate = document.querySelector('input[name="cc_date"]').value;
+const ccDate = CC_DATE;
 
 document.getElementById('add_btn').addEventListener('click', async (e) => {
     e.preventDefault();

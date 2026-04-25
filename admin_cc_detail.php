@@ -82,10 +82,7 @@ try {
     <div class="kan_btn kan_open-btn" id="open_btn"><button type="button">任意キャリコンを開く ▶</button></div>
 
     <div class="content-wrap" id="drag_drop_area">
-      <form method="POST" action="php_do/cc_detail_edit_do.php">
-        <input type="hidden" name="cc_date" value="<?= h($cc_date) ?>">
-
-        <div class="kan_btn kan_btn-confirm"><input type="submit" name="update" value="編集確定する"></div>
+      <script>const CC_DATE = "<?= h($cc_date) ?>";</script>
 
 
         <div class="cc-plus-table-area" id="drawer_area">
@@ -379,7 +376,6 @@ try {
           </div>
         </div>
 
-      </form>
 
 
 
@@ -389,6 +385,7 @@ try {
   <script src="js/drawer.js"></script>
   <script src="js/hamburger.js"></script>
   <script src="js/add_cc_slot.js"></script>
+  <script src="js/cc_slot_select_save.js"></script>
 </body>
 
 </html>

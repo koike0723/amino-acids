@@ -6,7 +6,7 @@ a {
     display: block;
 }
 select {
-    background-color: rgb(183, 183, 183);
+    background-color: white;
 }
 
 td {
@@ -131,7 +131,7 @@ td p{
     flex-direction: column;
     align-items: center;
     padding: 1rem;
-    margin-bottom:clamp(15.625rem, 14.525rem + 4.695vw, 18.75rem);
+    margin-bottom: 1rem;
     border-radius: 5px;
     border: 2px solid black;
 }
@@ -175,6 +175,7 @@ td p{
     /* 画面外に隠す */
     bottom: 0;
     transition: 0.3s;
+    z-index: 100;
 }
 .open .cc-plus-table-area {
     left: 0;
