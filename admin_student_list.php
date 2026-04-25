@@ -108,8 +108,8 @@ $courses = get_courses();
               <thead>
                 <tr>
                   <th class="col-1 ad-index-th">コース教室</th>
-                  <th class="col-4 ad-index-th">コース名</th>
-                  <th class="col-2 ad-index-th">生徒名</th>
+                  <th class="col-2 ad-index-th">コース名</th>
+                  <th class="col-4 ad-index-th">生徒名</th>
                   <th class="col-1 ad-index-th">状態</th>
                   <th class="col-2 ad-index-th">操作</th>
                 </tr>
