@@ -229,7 +229,8 @@ try {
         <div class="cc-detail-table-area">
           <?php foreach ($cc_slots as $cc_slot): ?>
             <?php $slot_id = $cc_slot["slot_id"]; ?>
-            <div class="cc_slot">
+            <div class="cc_slot" data-slot-id="<?= $slot_id ?>">
+              <button type="button" class="cc-slot-delete-btn" data-slot-id="<?= $slot_id ?>">×</button>
               <div class="select_box_area">
                 <label for="cc-detail-select-class-<?= $slot_id ?>">
                   教室

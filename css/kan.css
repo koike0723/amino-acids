@@ -136,6 +136,7 @@ td p{
     border: 2px solid black;
 }
 .cc_slot{
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-self: start;
@@ -144,6 +145,19 @@ td p{
     background-color: rgb(179, 255, 214);
     border-radius: 5px;
     padding: 5px;
+}
+
+.cc-slot-delete-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 1px 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
 }
 .select_bix_area{
     align-self: flex-start;

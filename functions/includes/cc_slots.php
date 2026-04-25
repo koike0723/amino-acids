@@ -367,3 +367,40 @@ function update_cc_plus_slot_count(string $date, int $cc_plus_count): bool
         return false;
     }
 }
+
+/**
+ * 必須CCスロットを削除
+ *
+ * 指定した必須CCスロット（is_cc_plus=0）を削除する。
+ * 紐づく予約（t_cc_bookings）も合わせて削除する。
+ * t_cc_requests の booking_id_a/b は FK ON DELETE SET NULL により自動でNULLになる。
+ *
+ * @param  int  $slot_id 削除対象のスロットID
+ * @return bool          成功時 true、失敗時 false
+ */
+function delete_cc_slot(int $slot_id): bool
+{
+    $db = db_connect();
+    try {
+        $db->beginTransaction();
+
+        $check = $db->prepare('SELECT id FROM t_cc_slots WHERE id = :id AND is_cc_plus = 0');
+        $check->execute([':id' => $slot_id]);
+        if (!$check->fetch()) {
+            $db->rollBack();
+            return false;
+        }
+
+        $db->prepare('DELETE FROM t_cc_bookings WHERE cc_slot_id = :slot_id')
+           ->execute([':slot_id' => $slot_id]);
+
+        $db->prepare('DELETE FROM t_cc_slots WHERE id = :slot_id')
+           ->execute([':slot_id' => $slot_id]);
+
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
