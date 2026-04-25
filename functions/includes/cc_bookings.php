@@ -46,7 +46,17 @@ function get_cc_bookings(array $filters = []): array
                 ms.id                             AS style_id,
                 ms.name                           AS style_name,
                 slot.id                           AS slot_id,
-                slot.date                         AS cc_date
+                slot.date                         AS cc_date,
+                EXISTS (
+                    SELECT 1 FROM t_cc_requests r2
+                    WHERE r2.booking_id_a = b.id
+                      AND r2.type_id      = 1
+                      AND r2.status_id    = 3
+                ) AS is_approved,
+                EXISTS (
+                    SELECT 1 FROM t_cc_bookings b2
+                    WHERE b2.cc_plus_booking_id = b.id
+                ) AS is_confirmed
             FROM t_cc_bookings b
             JOIN m_students        s    ON b.student_id = s.id
             JOIN m_courses         c    ON s.course_id  = c.id
@@ -109,6 +119,8 @@ function get_cc_bookings(array $filters = []): array
             'course_data'  => $row['course_data'],
             'style_id'     => $row['style_id'],
             'style_name'   => $row['style_name'],
+            'is_approved'  => (bool) $row['is_approved'],
+            'is_confirmed' => (bool) $row['is_confirmed'],
         ];
     }
 

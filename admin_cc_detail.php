@@ -114,12 +114,13 @@ try {
                           </div>
                       <?php endif; ?>
                       <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
-                        <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
-                          <p class="cc-detail-student">
-                            <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
-                          </p>
-                          <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
-                          <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                        <?php $cp_booking = $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]; ?>
+                        <div class="cc-detail-student-card<?= $cp_booking['is_confirmed'] ? ' opacity-50' : (!$cp_booking['is_approved'] ? ' cc-unapproved' : '') ?>"
+                             <?= ($cp_booking['is_approved'] && !$cp_booking['is_confirmed']) ? 'draggable="true" data-is-cc-plus="1"' : '' ?>
+                             data-booking-id="<?= $cp_booking['booking_id'] ?? 'empty' ?>">
+                          <p class="cc-detail-student"><?= explode("/", $cp_booking["course_data"])[0]; ?></p>
+                          <p class="cc-detail-student"><?= $cp_booking["student_name"]; ?></p>
+                          <p class="cc-detail-student"><?= $cp_booking["style_name"]; ?></p>
                         </div>
                       <?php endif; ?>
                     </td>
@@ -132,12 +133,13 @@ try {
                           </div>
                       <?php endif; ?>
                       <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
-                        <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
-                          <p class="cc-detail-student">
-                            <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
-                          </p>
-                          <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
-                          <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                        <?php $cp_booking = $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]; ?>
+                        <div class="cc-detail-student-card<?= $cp_booking['is_confirmed'] ? ' opacity-50' : (!$cp_booking['is_approved'] ? ' cc-unapproved' : '') ?>"
+                             <?= ($cp_booking['is_approved'] && !$cp_booking['is_confirmed']) ? 'draggable="true" data-is-cc-plus="1"' : '' ?>
+                             data-booking-id="<?= $cp_booking['booking_id'] ?? 'empty' ?>">
+                          <p class="cc-detail-student"><?= explode("/", $cp_booking["course_data"])[0]; ?></p>
+                          <p class="cc-detail-student"><?= $cp_booking["student_name"]; ?></p>
+                          <p class="cc-detail-student"><?= $cp_booking["style_name"]; ?></p>
                         </div>
                       <?php endif; ?>
                     </td>
@@ -150,12 +152,13 @@ try {
                           </div>
                       <?php endif; ?>
                       <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
-                        <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
-                          <p class="cc-detail-student">
-                            <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
-                          </p>
-                          <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
-                          <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                        <?php $cp_booking = $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]; ?>
+                        <div class="cc-detail-student-card<?= $cp_booking['is_confirmed'] ? ' opacity-50' : (!$cp_booking['is_approved'] ? ' cc-unapproved' : '') ?>"
+                             <?= ($cp_booking['is_approved'] && !$cp_booking['is_confirmed']) ? 'draggable="true" data-is-cc-plus="1"' : '' ?>
+                             data-booking-id="<?= $cp_booking['booking_id'] ?? 'empty' ?>">
+                          <p class="cc-detail-student"><?= explode("/", $cp_booking["course_data"])[0]; ?></p>
+                          <p class="cc-detail-student"><?= $cp_booking["student_name"]; ?></p>
+                          <p class="cc-detail-student"><?= $cp_booking["style_name"]; ?></p>
                         </div>
                       <?php endif; ?>
                     </td>
@@ -168,12 +171,13 @@ try {
                           </div>
                       <?php endif; ?>
                       <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
-                        <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
-                          <p class="cc-detail-student">
-                            <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
-                          </p>
-                          <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
-                          <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                        <?php $cp_booking = $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]; ?>
+                        <div class="cc-detail-student-card<?= $cp_booking['is_confirmed'] ? ' opacity-50' : (!$cp_booking['is_approved'] ? ' cc-unapproved' : '') ?>"
+                             <?= ($cp_booking['is_approved'] && !$cp_booking['is_confirmed']) ? 'draggable="true" data-is-cc-plus="1"' : '' ?>
+                             data-booking-id="<?= $cp_booking['booking_id'] ?? 'empty' ?>">
+                          <p class="cc-detail-student"><?= explode("/", $cp_booking["course_data"])[0]; ?></p>
+                          <p class="cc-detail-student"><?= $cp_booking["student_name"]; ?></p>
+                          <p class="cc-detail-student"><?= $cp_booking["style_name"]; ?></p>
                         </div>
                       <?php endif; ?>
                     </td>
@@ -186,12 +190,13 @@ try {
                           </div>
                       <?php endif; ?>
                       <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
-                        <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
-                          <p class="cc-detail-student">
-                            <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
-                          </p>
-                          <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
-                          <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                        <?php $cp_booking = $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]; ?>
+                        <div class="cc-detail-student-card<?= $cp_booking['is_confirmed'] ? ' opacity-50' : (!$cp_booking['is_approved'] ? ' cc-unapproved' : '') ?>"
+                             <?= ($cp_booking['is_approved'] && !$cp_booking['is_confirmed']) ? 'draggable="true" data-is-cc-plus="1"' : '' ?>
+                             data-booking-id="<?= $cp_booking['booking_id'] ?? 'empty' ?>">
+                          <p class="cc-detail-student"><?= explode("/", $cp_booking["course_data"])[0]; ?></p>
+                          <p class="cc-detail-student"><?= $cp_booking["student_name"]; ?></p>
+                          <p class="cc-detail-student"><?= $cp_booking["style_name"]; ?></p>
                         </div>
                       <?php endif; ?>
                     </td>
@@ -204,12 +209,13 @@ try {
                           </div>
                       <?php endif; ?>
                       <?php if (!empty($cc_all_bookings[$cc_plus_slot["slot_id"]][$time])): ?>
-                        <div class="cc-detail-student-card" draggable="true" data-booking-id="<?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["booking_id"] ?? "empty" ?>">
-                          <p class="cc-detail-student">
-                            <?= explode("/", $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["course_data"])[0]; ?>
-                          </p>
-                          <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["student_name"]; ?></p>
-                          <p class="cc-detail-student"><?= $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]["style_name"]; ?></p>
+                        <?php $cp_booking = $cc_all_bookings[$cc_plus_slot["slot_id"]][$time]["bookings"][0]; ?>
+                        <div class="cc-detail-student-card<?= $cp_booking['is_confirmed'] ? ' opacity-50' : (!$cp_booking['is_approved'] ? ' cc-unapproved' : '') ?>"
+                             <?= ($cp_booking['is_approved'] && !$cp_booking['is_confirmed']) ? 'draggable="true" data-is-cc-plus="1"' : '' ?>
+                             data-booking-id="<?= $cp_booking['booking_id'] ?? 'empty' ?>">
+                          <p class="cc-detail-student"><?= explode("/", $cp_booking["course_data"])[0]; ?></p>
+                          <p class="cc-detail-student"><?= $cp_booking["student_name"]; ?></p>
+                          <p class="cc-detail-student"><?= $cp_booking["style_name"]; ?></p>
                         </div>
                       <?php endif; ?>
                     </td>
