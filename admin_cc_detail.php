@@ -30,9 +30,10 @@ try {
 }
 try {
   $db = db_connect();
-  $stmt = $db->prepare('SELECT id, display_name AS name FROM m_times');
+  $stmt = $db->prepare('SELECT id, start_time, display_name AS name FROM m_times');
   $stmt->execute();
   $cc_times = $stmt->fetchAll();
+  $time_id_map = array_column($cc_times, 'id', 'start_time');
 } catch (PDOException $e) {
   exit('ccの時間情報（m_times）の取得に失敗しました: ' . $e->getMessage());
 }
@@ -255,7 +256,7 @@ try {
                   <tr class="cc-detail-tr">
                     <!-- 10:00:00 -->
                     <?php $time = "10:00:00"; ?>
-                    <td class="cc-detail-td">
+                    <td class="cc-detail-td" data-slot-id="<?= $slot_id ?>" data-time-id="<?= $time_id_map[$time] ?>">
                       <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
                           <div class="cc-detail-student-card" data-booking-id="empty">
                             <p class="cc-detail-student">空き</p>
@@ -273,7 +274,7 @@ try {
                     </td>
                     <!-- 11:00:00 -->
                     <?php $time = "11:00:00"; ?>
-                    <td class="cc-detail-td">
+                    <td class="cc-detail-td" data-slot-id="<?= $slot_id ?>" data-time-id="<?= $time_id_map[$time] ?>">
                       <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
                           <div class="cc-detail-student-card" data-booking-id="empty">
                             <p class="cc-detail-student">空き</p>
@@ -291,7 +292,7 @@ try {
                     </td>
                     <!-- 12:00:00 -->
                     <?php $time = "12:00:00"; ?>
-                    <td class="cc-detail-td">
+                    <td class="cc-detail-td" data-slot-id="<?= $slot_id ?>" data-time-id="<?= $time_id_map[$time] ?>">
                       <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
                           <div class="cc-detail-student-card" data-booking-id="empty">
                             <p class="cc-detail-student">空き</p>
@@ -309,7 +310,7 @@ try {
                     </td>
                     <!-- 14:00:00 -->
                     <?php $time = "14:00:00"; ?>
-                    <td class="cc-detail-td">
+                    <td class="cc-detail-td" data-slot-id="<?= $slot_id ?>" data-time-id="<?= $time_id_map[$time] ?>">
                       <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
                           <div class="cc-detail-student-card" data-booking-id="empty">
                             <p class="cc-detail-student">空き</p>
@@ -327,7 +328,7 @@ try {
                     </td>
                     <!-- 15:00:00 -->
                     <?php $time = "15:00:00"; ?>
-                    <td class="cc-detail-td">
+                    <td class="cc-detail-td" data-slot-id="<?= $slot_id ?>" data-time-id="<?= $time_id_map[$time] ?>">
                       <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
                           <div class="cc-detail-student-card" data-booking-id="empty">
                             <p class="cc-detail-student">空き</p>
@@ -345,7 +346,7 @@ try {
                     </td>
                     <!-- 16:00:00 -->
                     <?php $time = "16:00:00"; ?>
-                    <td class="cc-detail-td">
+                    <td class="cc-detail-td" data-slot-id="<?= $slot_id ?>" data-time-id="<?= $time_id_map[$time] ?>">
                       <?php if (empty($cc_all_bookings[$cc_slot["slot_id"]][$time])): ?>
                           <div class="cc-detail-student-card" data-booking-id="empty">
                             <p class="cc-detail-student">空き</p>
