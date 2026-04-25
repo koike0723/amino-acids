@@ -231,46 +231,21 @@ summary::-webkit-details-marker {
 /* header.phpここまで */
 
 /* admin_index.phpスタート */
-/* クラス絞り込み欄 開始 */
+
 .h1 {
   text-align: center;
   font-size: 48px;
   padding-block: 180px 50px;
 }
 
-.cc-area {
-  display: flex;
-  gap: 40px;
+.ad-index-filter-card {
   background-color: #CDFCFF;
+  border: 1px solid #b0eef5;
 }
 
-.cc-text {
-  margin: 0;
-  padding-block-end: 5px;
-}
-
-.cc-content_area {
-  text-align: left;
-  padding-block-end: 25px;
-}
-
-.cc-content_area:first-child {
-  padding-inline-start: 20px;
-}
-
-.cc-select_style {
-  background-color: #BBBBBB;
-  border: 2px solid #000;
-  appearance: auto;
-}
-
-/* クラス絞り込み欄ここまで */
-
-/* テーブルスタート */
+/* テーブル */
 table.ad-index-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 20px;
+  font-size: 15px;
 }
 
 td.td-year,
@@ -281,37 +256,31 @@ td.va-middle {
 
 th.ad-index-th,
 td.ad-index-td {
-  border: 1px solid #000;
-  padding: 8px;
   text-align: center;
-  padding-block: 30px;
+  padding: 8px 12px;
 }
 
 th.ad-index-th {
   background-color: #00F7FF;
+  white-space: nowrap;
 }
-
-/* .line-bold{
-  border-bottom: 5px solid #000;
-} */
 
 .cc-plus_select {
   appearance: auto;
 }
 
 .cc-plus-fz {
-  font-size: 24px;
+  font-size: 16px;
 }
 
 .ad-index-detailBtn {
   background-color: #51FF6B;
   color: #000;
   font-weight: bold;
-  font-size: 20px;
-  text-align: center;
+  font-size: 14px;
   border: 2px solid #000;
   border-radius: 5px;
-  width: fit-content;
+  white-space: nowrap;
 }
 
 /* admin_index.php終了 */
