@@ -113,11 +113,11 @@ try {
             <table class="table table-striped mt-3">
                 <thead>
                     <tr style="background-color: #a0a0a0;">
-                        <th>教室名</th>
-                        <th>訓練名</th>
-                        <th>訓練日時</th>
-                        <th>訓練タイプ</th>
-                        <th>操作</th>
+                        <th class="col-1">教室名</th>
+                        <th class="col-4">訓練名</th>
+                        <th class="col-2">訓練日時</th>
+                        <th class="col-2">訓練タイプ</th>
+                        <th class="col-3">操作</th>
                     </tr>
                 </thead>
                 <tbody>
