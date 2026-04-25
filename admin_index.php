@@ -5,7 +5,7 @@ require_once __DIR__ . '/functions/functions.php';
 // GETパラメータ取得・バリデーション
 $course_id_filter = isset($_GET['course_id']) && is_numeric($_GET['course_id'])
   ? (int) $_GET['course_id'] : null;
-$range      = in_array((int) ($_GET['range'] ?? 0), [2, 3]) ? (int) $_GET['range'] : 2;
+$range      = in_array((int) ($_GET['range'] ?? 0), [2, 3, 4, 6, 12]) ? (int) $_GET['range'] : 2;
 $start_date = preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['start_date'] ?? '')
   ? $_GET['start_date'] : date('Y-m-d');
 
@@ -17,12 +17,16 @@ $course_map = array_column($courses, null, 'course_id');
 $course_ids    = $course_id_filter ? [$course_id_filter] : null;
 $schedule_list = get_cc_schedule_list($start_date, $range, $course_ids);
 
-// rowspan 事前計算（月ごとの日数）
+// rowspan 事前計算（月ごとの日数・年ごとの合計日数）
 $rowspan_map = [];
+$year_rowspan_map = [];
 foreach ($schedule_list as $year => $months) {
+  $year_total = 0;
   foreach ($months as $month => $days) {
     $rowspan_map[$year][$month] = count($days);
+    $year_total += count($days);
   }
+  $year_rowspan_map[$year] = $year_total;
 }
 ?>
 
@@ -49,9 +53,9 @@ foreach ($schedule_list as $year => $months) {
       <div class="card mb-4 ad-index-filter-card">
         <div class="card-body">
           <form method="get" action="">
-            <div class="form-row align-items-end">
-              <div class="form-group col-md-4 mb-2">
-                <label class="mb-1">開催クラス</label>
+            <div class="form-row">
+              <div class="form-group col-md-4 mb-3">
+                <label class="mb-1">開催コース</label>
                 <select name="course_id" class="form-control">
                   <option value="">すべて</option>
                   <?php foreach ($courses as $course): ?>
@@ -62,20 +66,24 @@ foreach ($schedule_list as $year => $months) {
                   <?php endforeach; ?>
                 </select>
               </div>
-              <div class="form-group col-md-2 mb-2">
+              <div class="form-group col-md-2 mb-3">
                 <label class="mb-1">表示期間</label>
                 <select name="range" class="form-control">
                   <option value="2" <?= $range === 2 ? 'selected' : '' ?>>2カ月</option>
                   <option value="3" <?= $range === 3 ? 'selected' : '' ?>>3カ月</option>
+                  <option value="4" <?= $range === 4 ? 'selected' : '' ?>>4カ月</option>
+                  <option value="6" <?= $range === 6 ? 'selected' : '' ?>>6カ月</option>
+                  <option value="12" <?= $range === 12 ? 'selected' : '' ?>>1年</option>
                 </select>
               </div>
-              <div class="form-group col-md-3 mb-2">
+              <div class="form-group col-md-3 mb-3">
                 <label class="mb-1">表示開始日</label>
                 <input type="date" name="start_date" value="<?= h($start_date) ?>" class="form-control">
               </div>
-              <div class="form-group col-auto mb-2">
-                <button type="submit" class="btn btn-info">絞り込み</button>
-              </div>
+            </div>
+            <div class="d-flex">
+              <button type="submit" class="btn btn-info mr-2">絞り込み</button>
+              <a href="admin_index.php" class="btn btn-secondary">絞り込み解除</a>
             </div>
           </form>
         </div>
@@ -104,20 +112,23 @@ foreach ($schedule_list as $year => $months) {
                   </tr>
                 <?php endif; ?>
                 <?php foreach ($schedule_list as $year => $months): ?>
+                  <?php $is_first_in_year = true; ?>
                   <?php foreach ($months as $month => $days): ?>
                     <?php $is_first_in_month = true; ?>
                     <?php foreach ($days as $day => $data): ?>
                       <?php
-                      $rowspan    = $rowspan_map[$year][$month];
                       $date_str   = sprintf('%04d-%02d-%02d', $year, $month, $day);
                       $room_names = array_values($data['cc_list']);
                       ?>
                       <tr>
+                        <?php if ($is_first_in_year): ?>
+                          <td rowspan="<?= $year_rowspan_map[$year] ?>" class="ad-index-td line-bold td-year"><?= $year ?></td>
+                          <?php $is_first_in_year = false; ?>
+                        <?php endif; ?>
                         <?php if ($is_first_in_month): ?>
-                          <td rowspan="<?= $rowspan ?>" class="ad-index-td line-bold td-year"><?= $year ?></td>
-                          <td rowspan="<?= $rowspan ?>" class="ad-index-td line-bold td-month"><?= (int) $month ?></td>
-                        <?php $is_first_in_month = false;
-                        endif; ?>
+                          <td rowspan="<?= $rowspan_map[$year][$month] ?>" class="ad-index-td line-bold td-month"><?= (int) $month ?></td>
+                          <?php $is_first_in_month = false; ?>
+                        <?php endif; ?>
                         <td class="ad-index-td va-middle"><?= (int) $day ?></td>
                         <td class="ad-index-td va-middle"><?= implode(' / ', $room_names) ?: '—' ?></td>
                         <td class="ad-index-td cc-plus-fz va-middle">
@@ -135,9 +146,7 @@ foreach ($schedule_list as $year => $months) {
                         </td>
                         <td class="ad-index-td va-middle"><?= $data['line_count'] ?></td>
                         <td class="ad-index-td">
-                          <a href="admin_cc_detail.php?cc_date=<?= h($date_str) ?>">
-                            <button type="button" class="btn ad-index-detailBtn">詳細</button>
-                          </a>
+                          <a class="btn btn-info mx-1 my-1" href="admin_cc_detail.php?cc_date=<?= h($date_str) ?>">詳細</a>
                         </td>
                       </tr>
                     <?php endforeach; ?>
