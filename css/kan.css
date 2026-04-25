@@ -6,7 +6,7 @@ a {
     display: block;
 }
 select {
-    background-color: rgb(183, 183, 183);
+    background-color: white;
 }
 
 td {
@@ -17,6 +17,10 @@ td p{
 }
 .opacity-50 {
     opacity: 0.5;
+}
+.cc-unapproved {
+    background-color: #d6d6d6;
+    cursor: not-allowed;
 }
 .accent-cell{
     background-color: hsl(var(--hue, 0), 100%, 50%);
@@ -127,11 +131,12 @@ td p{
     flex-direction: column;
     align-items: center;
     padding: 1rem;
-    margin-bottom:clamp(15.625rem, 14.525rem + 4.695vw, 18.75rem);
+    margin-bottom: 1rem;
     border-radius: 5px;
     border: 2px solid black;
 }
 .cc_slot{
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-self: start;
@@ -140,6 +145,19 @@ td p{
     background-color: rgb(179, 255, 214);
     border-radius: 5px;
     padding: 5px;
+}
+
+.cc-slot-delete-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 1px 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
 }
 .select_bix_area{
     align-self: flex-start;
@@ -157,6 +175,7 @@ td p{
     /* 画面外に隠す */
     bottom: 0;
     transition: 0.3s;
+    z-index: 100;
 }
 .open .cc-plus-table-area {
     left: 0;
