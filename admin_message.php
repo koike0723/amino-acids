@@ -51,104 +51,112 @@ $status_labels = [
 
 <head>
   <title>予約一覧</title>
-  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/destyle.css@4.0.1/destyle.min.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=notifications" />
+  <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body>
   <?php require_once('./inc/admin_header.php'); ?>
 
-  <main class="container py-5">
-    <section class="message-section">
-      <div class="row justify-content-center">
-        <div class="col-12 col-lg-10 text-center">
-          <h1 class="mb-5 fs-2">メッセージ一覧</h1>
+  <main>
+    <div class="container-fluid px-4 py-4">
+      <h1 class="h3 font-weight-bold text-center mb-4">メッセージ一覧</h1>
 
-          <!-- 絞り込みフォーム -->
-          <form action="admin_message.php" method="get" class="row mb-4 justify-content-center">
-            <div class="col-auto">
-              <label for="status_filter" class="form-label">対応状況 / 状態</label>
-              <select name="status_filter" id="status_filter" class="form-control">
-                <option value="">全表示</option>
+      <!-- 絞り込みフォーム -->
+      <div class="card mb-4 ad-index-filter-card">
+        <div class="card-body">
+          <form action="admin_message.php" method="get">
+            <div class="form-row">
+              <div class="col-12 col-md-5 mb-3">
+                <label for="status_filter" class="form-label">対応状況 / 状態</label>
+                <select name="status_filter" id="status_filter" class="form-control">
+                  <option value="">全表示</option>
 
-                <optgroup label="── 対応状況 ──">
-                  <?php foreach ($status_labels as $sl): ?>
-                    <option value="label_<?= $sl['value'] ?>"
-                      <?= ($status_label_filter === $sl['value'] && $status_id_filter === '') ? 'selected' : '' ?>>
-                      <?= $sl['label'] ?>
+                  <optgroup label="── 対応状況 ──">
+                    <?php foreach ($status_labels as $sl): ?>
+                      <option value="label_<?= $sl['value'] ?>"
+                        <?= ($status_label_filter === $sl['value'] && $status_id_filter === '') ? 'selected' : '' ?>>
+                        <?= $sl['label'] ?>
+                      </option>
+                    <?php endforeach; ?>
+                  </optgroup>
+
+                  <optgroup label="── 状態 ──">
+                    <?php foreach ($statuses as $s): ?>
+                      <option value="status_<?= $s['id'] ?>"
+                        <?= ($status_id_filter === (string)$s['id']) ? 'selected' : '' ?>>
+                        <?= $s['name'] ?>
+                      </option>
+                    <?php endforeach; ?>
+                  </optgroup>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-3 mb-3">
+                <label for="type_id" class="form-label">種類</label>
+                <select name="type_id" id="type_id" class="form-control">
+                  <option value="">全表示</option>
+                  <?php foreach ($types as $t): ?>
+                    <option value="<?= $t['id'] ?>"
+                      <?= ((string)$type_id_filter === (string)$t['id']) ? 'selected' : '' ?>>
+                      <?= $t['name'] ?>
                     </option>
                   <?php endforeach; ?>
-                </optgroup>
-
-                <optgroup label="── 状態 ──">
-                  <?php foreach ($statuses as $s): ?>
-                    <option value="status_<?= $s['id'] ?>"
-                      <?= ($status_id_filter === (string)$s['id']) ? 'selected' : '' ?>>
-                      <?= $s['name'] ?>
-                    </option>
-                  <?php endforeach; ?>
-                </optgroup>
-              </select>
+                </select>
+              </div>
             </div>
 
-            <div class="col-auto">
-              <label for="type_id" class="form-label">種類</label>
-              <select name="type_id" id="type_id" class="form-control">
-                <option value="">全表示</option>
-                <?php foreach ($types as $t): ?>
-                  <option value="<?= $t['id'] ?>"
-                    <?= ((string)$type_id_filter === (string)$t['id']) ? 'selected' : '' ?>>
-                    <?= $t['name'] ?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-
-            <div class="col-auto d-flex align-items-end">
-              <input type="submit" value="絞り込む" class="btn btn-info">
+            <div class="d-flex">
+              <input type="submit" value="絞り込む" class="btn btn-info mr-2">
+              <a href="admin_message.php" class="btn btn-secondary">絞り込み解除</a>
             </div>
           </form>
-          <!-- /絞り込みフォーム -->
+        </div>
+      </div>
 
-          <div class="table-responsive d-flex justify-content-center">
-            <table class="table table-bordered align-middle text-center w-auto">
-              <thead class="table-secondary">
+      <!-- テーブル -->
+      <div class="card">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-bordered mb-0 ad-index-table">
+              <thead>
                 <tr>
-                  <th scope="col">対応状況</th>
-                  <th scope="col">状態</th>
-                  <th scope="col">種類</th>
-                  <th scope="col">コース</th>
-                  <th scope="col">申請者</th>
-                  <th scope="col">申請日時</th>
-                  <th scope="col">操作</th>
+                  <th class="ad-index-th">対応状況</th>
+                  <th class="ad-index-th">状態</th>
+                  <th class="ad-index-th">種類</th>
+                  <th class="ad-index-th">コース</th>
+                  <th class="ad-index-th">申請者</th>
+                  <th class="ad-index-th">申請日時</th>
+                  <th class="ad-index-th">操作</th>
                 </tr>
               </thead>
               <tbody>
                 <?php foreach ($requests as $request): ?>
                   <tr>
-                    <td><?php echo $request['status_label']; ?></td>
-                    <td><?php echo $request['status_name']; ?></td>
-                    <td><?php echo $request['type_name']; ?></td>
-                    <td><?php echo $request['room_name']; ?></td>
-                    <td><?php echo $request['student_name']; ?></td>
+                    <td class="ad-index-td"><?php echo $request['status_label']; ?></td>
+                    <td class="ad-index-td"><?php echo $request['status_name']; ?></td>
+                    <td class="ad-index-td"><?php echo $request['type_name']; ?></td>
+                    <td class="ad-index-td"><?php echo $request['room_name']; ?></td>
+                    <td class="ad-index-td"><?php echo $request['student_name']; ?></td>
                     <?php $datetime = date('Y/m/d H:i', strtotime($request['created_at'])); ?>
-                    <td><?php echo $datetime; ?></td>
-                    <td>
-                      <a href="./admin_message_detail.php?request_id=<?= $request['request_id'] ?>&<?= h($_SERVER['QUERY_STRING']) ?>" class="btn btn-success btn-sm">詳細</a>
+                    <td class="ad-index-td"><?php echo $datetime; ?></td>
+                    <td class="ad-index-td">
+                      <a class="btn btn-info mx-1 my-1" href="./admin_message_detail.php?request_id=<?= $request['request_id'] ?>&<?= h($_SERVER['QUERY_STRING']) ?>">詳細</a>
                     </td>
                   </tr>
                 <?php endforeach; ?>
               </tbody>
             </table>
           </div>
-
-          <div class="mt-5">
-            <a href="./admin_index.php" class="btn btn-secondary">戻る</a>
-          </div>
         </div>
       </div>
-    </section>
+
+      <div class="mt-4">
+        <a href="./admin_index.php" class="btn btn-secondary">トップへ戻る</a>
+      </div>
+    </div>
   </main>
 
   <script src="./js/script.js"></script>

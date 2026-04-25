@@ -41,7 +41,9 @@ function student_login($login_id, $password)
  * 'student_id',
  * 'student_name',
  * 'number',
+ * 'status_id',
  * 'status_name',
+ * 'course_id',
  * 'course_name',
  * 'room_name',
  * ]
@@ -56,11 +58,14 @@ function get_students($filters = [], $is_display_end = false)
 
     // ベースとなるSQL
     $sql = 'SELECT
-            s.id AS student_id, 
+            s.id AS student_id,
             CONCAT(s.last_name, s.first_name) AS student_name,
             s.number,
+            ss.id AS status_id,
             ss.name AS status_name,
+            c.id AS course_id,
             c.name AS course_name,
+            c.start_date,
             c.end_date,
             r.name AS room_name
             FROM m_students s
@@ -88,11 +93,14 @@ function get_students($filters = [], $is_display_end = false)
         }
     }
 
-    // 訓練修了済みの生徒を取得しない
-    $now_date = date('Y-m-d');
-    if (!$is_display_end) {
+    // 日付指定がある場合はその日付で範囲チェック、なければ今日以降のみ
+    if (isset($filters['date']) && $filters['date'] !== '') {
+        $where_clauses[] = 'c.start_date <= :date_start AND c.end_date >= :date_end';
+        $params[':date_start'] = $filters['date'];
+        $params[':date_end']   = $filters['date'];
+    } elseif (!$is_display_end) {
         $where_clauses[] = 'c.end_date >= :now_date';
-        $params[':now_date'] = $now_date;
+        $params[':now_date'] = date('Y-m-d');
     }
 
     // 3. WHERE句の組み立て
