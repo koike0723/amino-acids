@@ -42,107 +42,113 @@ foreach ($schedule_list as $year => $months) {
 <body>
   <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
   <main>
-    <div class="wrapper">
-      <p class="h1"><b>キャリコン管理</b></p>
-      <form method="get" action="">
-        <div class="cc-area">
-          <div class="cc-content_area">
-            <p class="cc-text">開催クラス</p>
-            <div class="cc-select">
-              <select name="course_id" class="cc-select_style">
-                <option value="">すべて</option>
-                <?php foreach ($courses as $course): ?>
-                  <option value="<?= h($course['course_id']) ?>"
-                    <?= $course_id_filter === (int) $course['course_id'] ? 'selected' : '' ?>>
-                    <?= h($course['room_name']) . ' / ' . h($course['course_name']) ?>
-                  </option>
+    <div class="container-fluid px-4 py-4">
+      <h1 class="h3 font-weight-bold text-center mb-4">キャリコン管理</h1>
+
+      <!-- 絞り込みカード -->
+      <div class="card mb-4 ad-index-filter-card">
+        <div class="card-body">
+          <form method="get" action="">
+            <div class="form-row align-items-end">
+              <div class="form-group col-md-4 mb-2">
+                <label class="mb-1">開催クラス</label>
+                <select name="course_id" class="form-control">
+                  <option value="">すべて</option>
+                  <?php foreach ($courses as $course): ?>
+                    <option value="<?= h($course['course_id']) ?>"
+                      <?= $course_id_filter === (int) $course['course_id'] ? 'selected' : '' ?>>
+                      <?= h($course['room_name']) . ' / ' . h($course['course_name']) ?>
+                    </option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+              <div class="form-group col-md-2 mb-2">
+                <label class="mb-1">表示期間</label>
+                <select name="range" class="form-control">
+                  <option value="2" <?= $range === 2 ? 'selected' : '' ?>>2カ月</option>
+                  <option value="3" <?= $range === 3 ? 'selected' : '' ?>>3カ月</option>
+                </select>
+              </div>
+              <div class="form-group col-md-3 mb-2">
+                <label class="mb-1">表示開始日</label>
+                <input type="date" name="start_date" value="<?= h($start_date) ?>" class="form-control">
+              </div>
+              <div class="form-group col-auto mb-2">
+                <button type="submit" class="btn btn-info">絞り込み</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- スケジュールテーブル -->
+      <div class="card">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-bordered mb-0 ad-index-table">
+              <thead>
+                <tr>
+                  <th class="ad-index-th">年</th>
+                  <th class="ad-index-th">月</th>
+                  <th class="ad-index-th">日</th>
+                  <th class="ad-index-th">必須キャリコン開催コース</th>
+                  <th class="ad-index-th">キャリコン+</th>
+                  <th class="ad-index-th">使用教室</th>
+                  <th class="ad-index-th">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if (empty($schedule_list)): ?>
+                  <tr>
+                    <td colspan="7" class="text-center py-3">該当するデータがありません</td>
+                  </tr>
+                <?php endif; ?>
+                <?php foreach ($schedule_list as $year => $months): ?>
+                  <?php foreach ($months as $month => $days): ?>
+                    <?php $is_first_in_month = true; ?>
+                    <?php foreach ($days as $day => $data): ?>
+                      <?php
+                      $rowspan    = $rowspan_map[$year][$month];
+                      $date_str   = sprintf('%04d-%02d-%02d', $year, $month, $day);
+                      $room_names = array_values($data['cc_list']);
+                      ?>
+                      <tr>
+                        <?php if ($is_first_in_month): ?>
+                          <td rowspan="<?= $rowspan ?>" class="ad-index-td line-bold td-year"><?= $year ?></td>
+                          <td rowspan="<?= $rowspan ?>" class="ad-index-td line-bold td-month"><?= (int) $month ?></td>
+                        <?php $is_first_in_month = false;
+                        endif; ?>
+                        <td class="ad-index-td va-middle"><?= (int) $day ?></td>
+                        <td class="ad-index-td va-middle"><?= implode(' / ', $room_names) ?: '—' ?></td>
+                        <td class="ad-index-td cc-plus-fz va-middle">
+                          <form method="post" action="php_do/cc_plus_count_do.php" style="display:inline">
+                            <input type="hidden" name="date" value="<?= h($date_str) ?>">
+                            <input type="hidden" name="course_id" value="<?= h($course_id_filter ?? '') ?>">
+                            <input type="hidden" name="range" value="<?= h($range) ?>">
+                            <input type="hidden" name="start_date" value="<?= h($start_date) ?>">
+                            <select name="cc_plus_count" class="form-control cc-plus_select d-inline-block w-auto" onchange="this.form.submit()">
+                              <?php for ($i = 0; $i <= 5; $i++): ?>
+                                <option value="<?= $i ?>" <?= $data['cc_plus_count'] === $i ? 'selected' : '' ?>><?= $i ?></option>
+                              <?php endfor; ?>
+                            </select>
+                          </form>
+                        </td>
+                        <td class="ad-index-td va-middle"><?= $data['line_count'] ?></td>
+                        <td class="ad-index-td">
+                          <a href="admin_cc_detail.php?cc_date=<?= h($date_str) ?>">
+                            <button type="button" class="btn ad-index-detailBtn">詳細</button>
+                          </a>
+                        </td>
+                      </tr>
+                    <?php endforeach; ?>
+                  <?php endforeach; ?>
                 <?php endforeach; ?>
-              </select>
-            </div>
-          </div>
-          <div class="cc-content_area">
-            <p class="cc-text">表示期間</p>
-            <div class="cc-select">
-              <select name="range" class="cc-select_style">
-                <option value="2" <?= $range === 2 ? 'selected' : '' ?>>2カ月</option>
-                <option value="3" <?= $range === 3 ? 'selected' : '' ?>>3カ月</option>
-              </select>
-            </div>
-          </div>
-          <div class="cc-content_area">
-            <p class="cc-text">表示開始日</p>
-            <div class="cc-select">
-              <input type="date" name="start_date" value="<?= h($start_date) ?>" class="cc-select_style">
-            </div>
-          </div>
-          <div class="cc-content_area">
-            <p class="cc-text">&nbsp;</p>
-            <button type="submit" class="ad-index-detailBtn">絞り込み</button>
+              </tbody>
+            </table>
           </div>
         </div>
-      </form>
-    </div>
-    <div class="wrapper">
-      <table class="ad-index-table">
-        <thead class="ad-index-thead">
-          <tr class="ad-index-headTr">
-            <th class="ad-index-th">年</th>
-            <th class="ad-index-th">月</th>
-            <th class="ad-index-th">日</th>
-            <th class="ad-index-th">必須キャリコン開催コース</th>
-            <th class="ad-index-th">キャリコン+</th>
-            <th class="ad-index-th">使用教室</th>
-            <th class="ad-index-th">操作</th>
-          </tr>
-        </thead>
-        <tbody class="ad-index-tbody">
-          <?php if (empty($schedule_list)): ?>
-            <tr>
-              <td colspan="7" class="ad-index-td" style="text-align:center;">該当するデータがありません</td>
-            </tr>
-          <?php endif; ?>
-          <?php foreach ($schedule_list as $year => $months): ?>
-            <?php foreach ($months as $month => $days): ?>
-              <?php $is_first_in_month = true; ?>
-              <?php foreach ($days as $day => $data): ?>
-                <?php
-                $rowspan    = $rowspan_map[$year][$month];
-                $date_str   = sprintf('%04d-%02d-%02d', $year, $month, $day);
-                $room_names = array_values($data['cc_list']);
-                ?>
-                <tr class="ad-index-tr">
-                  <?php if ($is_first_in_month): ?>
-                    <td rowspan="<?= $rowspan ?>" class="ad-index-td line-bold td-year"><?= $year ?></td>
-                    <td rowspan="<?= $rowspan ?>" class="ad-index-td line-bold td-month"><?= (int) $month ?></td>
-                  <?php $is_first_in_month = false;
-                  endif; ?>
-                  <td class="ad-index-td va-middle"><?= (int) $day ?></td>
-                  <td class="ad-index-td va-middle"><?= implode(' / ', $room_names) ?: '—' ?></td>
-                  <td class="ad-index-td cc-plus-fz va-middle">
-                    <form method="post" action="php_do/cc_plus_count_do.php" style="display:inline">
-                      <input type="hidden" name="date" value="<?= h($date_str) ?>">
-                      <input type="hidden" name="course_id" value="<?= h($course_id_filter ?? '') ?>">
-                      <input type="hidden" name="range" value="<?= h($range) ?>">
-                      <input type="hidden" name="start_date" value="<?= h($start_date) ?>">
-                      <select name="cc_plus_count" class="cc-plus_select" onchange="this.form.submit()">
-                        <?php for ($i = 0; $i <= 5; $i++): ?>
-                          <option value="<?= $i ?>" <?= $data['cc_plus_count'] === $i ? 'selected' : '' ?>><?= $i ?></option>
-                        <?php endfor; ?>
-                      </select>
-                    </form>
-                  </td>
-                  <td class="ad-index-td va-middle"><?= $data['line_count'] ?></td>
-                  <td class="ad-index-td">
-                    <a href="admin_cc_detail.php?cc_date=<?= h($date_str) ?>">
-                      <button type="button" class="ad-index-detailBtn">詳細</button>
-                    </a>
-                  </td>
-                </tr>
-              <?php endforeach; ?>
-            <?php endforeach; ?>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
+      </div>
+
     </div>
   </main>
   <script src="./js/script.js"></script>
