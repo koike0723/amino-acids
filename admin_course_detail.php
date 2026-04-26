@@ -29,7 +29,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>コース追加</title>
+    <title>コース詳細</title>
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=notifications" />
@@ -40,6 +40,11 @@ try {
     <?php if (isset($_GET["status"]) && $_GET["status"] === "success"): ?>
         <div class="alert alert-success">
             コースを編集しました！
+        </div>
+    <?php endif; ?>
+    <?php if (isset($_GET["status"]) && $_GET["status"] === "bulk_book_success"): ?>
+        <div class="alert alert-success">
+            必須CCを一括登録しました！
         </div>
     <?php endif; ?>
 
@@ -72,7 +77,7 @@ try {
         <?php if ($course["category_id"] == 1): ?>
             <dl class="course_cc col-8" id="cc_box">
                 <label for="course_days" class="form-label">キャリコンの日時</label>
-                <a class="course_cc_bulk" href="">一括登録</a>
+                <a class="course_cc_bulk" href="admin_cc_bulk_book.php?course_id=<?= h($course['course_id']) ?>">一括登録</a>
                 <div class="d-flex px-2 py-3" style="background-color: #bbd8ff; border-radius: 10px;">
                     <dl class="course_cc col-6">
                         <dt class="mb-1">キャリコン１</dt>
