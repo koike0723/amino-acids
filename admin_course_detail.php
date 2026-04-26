@@ -75,111 +75,57 @@ try {
             </p>
         </div>
         <?php if ($course["category_id"] == 1): ?>
-            <dl class="course_cc col-8" id="cc_box">
-                <label for="course_days" class="form-label">キャリコンの日時</label>
-                <a class="course_cc_bulk" href="admin_cc_bulk_book.php?course_id=<?= h($course['course_id']) ?>">一括登録</a>
-                <div class="d-flex px-2 py-3" style="background-color: #bbd8ff; border-radius: 10px;">
-                    <dl class="course_cc col-6">
-                        <dt class="mb-1">キャリコン１</dt>
-                        <dd class="cc1 mb-1 d-flex justify-content-around">
-                            <div class="1st_cc_day mt-1">
-                                <label for="cc1_1" class="form-label">１枠目</label>
-                                <p href="./admin_cc_course_list.php" id="cc1_1" class="form-control form-control-sm">
-                                    <?php
-                                    if (!empty($course["cc"][1][0]) && $course["cc"][1][0] != "0000-00-00") {
-                                        echo format_japanese_date($course["cc"][1][0]);
-                                    } else {
-                                        echo "未設定";
-                                    }
-                                    ?>
-                                </p>
-                            </div>
-                            <div class="2nd_cc_day mt-1">
-                                <label for="cc1_2" class="form-label">２枠目</label>
-                                <p href="./admin_cc_course_list.php" id="cc1_2" class="form-control form-control-sm">
-                                    <?php
-                                    if (!empty($course["cc"][1][1]) && $course["cc"][1][1] != "0000-00-00") {
-                                        echo format_japanese_date($course["cc"][1][1]);
-                                    } else {
-                                        echo "未設定";
-                                    }
-                                    ?>
-                                </p>
-                            </div>
-                        </dd>
-                        <dt class="mb-1">キャリコン２</dt>
-                        <div class="cc2 mb-1 d-flex justify-content-around">
-                            <div class="1st_cc_day mt-1">
-                                <label for="cc2_1" class="form-label">１枠目</label>
-                                <p href="./admin_cc_course_list.php" id="cc2_1" class="form-control form-control-sm">
-                                    <?php
-                                    if (!empty($course["cc"][2][0]) && $course["cc"][2][0] != "0000-00-00") {
-                                        echo format_japanese_date($course["cc"][2][0]);
-                                    } else {
-                                        echo "未設定";
-                                    }
-                                    ?>
-                                </p>
-                            </div>
-                            <div class="2nd_cc_day mt-1">
-                                <label for="cc2_2" class="form-label">２枠目</label>
-                                <p href="./admin_cc_course_list.php" id="cc2_2" class="form-control form-control-sm">
-                                    <?php
-                                    if (!empty($course["cc"][2][1]) && $course["cc"][2][1] != "0000-00-00") {
-                                        echo format_japanese_date($course["cc"][2][1]);
-                                    } else {
-                                        echo "未設定";
-                                    }
-                                    ?>
-                                </p>
-                            </div>
-                        </div>
-                        <dt class="mb-1">キャリコン３</dt>
-                        <div class="cc3 mb-1 d-flex justify-content-around">
-                            <div class="1st_cc_day mt-1">
-                                <label for="cc3_1" class="form-label">１枠目</label>
-                                <p href="./admin_cc_course_list.php" id="cc3_1" class="form-control form-control-sm">
-                                    <?php
-                                    if (!empty($course["cc"][3][0]) && $course["cc"][3][0] != "0000-00-00") {
-                                        echo format_japanese_date($course["cc"][3][0]);
-                                    } else {
-                                        echo "未設定";
-                                    }
-                                    ?>
-                                </p>
-                            </div>
-                            <div class="2nd_cc_day mt-1">
-                                <label for="cc3_2" class="form-label">２枠目</label>
-                                <p href="./admin_cc_course_list.php" id="cc3_2" class="form-control form-control-sm">
-                                    <?php
-                                    if (!empty($course["cc"][3][1]) && $course["cc"][3][1] != "0000-00-00") {
-                                        echo format_japanese_date($course["cc"][3][1]);
-                                    } else {
-                                        echo "未設定";
-                                    }
-                                    ?>
-                                </p>
-                            </div>
-                        </div>
-                    </dl>
-                    <div class="d-flex col-6 flex-column mb-4">
-                        <div class="mt-auto">
-                            <a href="admin_cc_course_list.php?<?= $course["course_id"] ?>" class="btn btn-info">
-                                キャリコン詳細へ
-                            </a>
+            <div class="col-8" id="cc_box">
+                <div class="d-flex align-items-center mb-2">
+                    <label class="form-label mb-0">キャリコンの日時</label>
+                    <a class="btn btn-primary course_cc_bulk ml-3" href="admin_cc_bulk_book.php?course_id=<?= h($course['course_id']) ?>">一括登録</a>
+                </div>
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-0 ad-index-table">
+                                <thead>
+                                    <tr>
+                                        <th class="ad-index-th">開催数</th>
+                                        <th class="ad-index-th">1枠目</th>
+                                        <th class="ad-index-th">2枠目</th>
+                                        <th class="ad-index-th">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if (empty($course["cc"])): ?>
+                                        <tr>
+                                            <td colspan="4" class="ad-index-td">スケジュール未設定</td>
+                                        </tr>
+                                    <?php else: ?>
+                                        <?php foreach ($course["cc"] as $cc_count => $dates): ?>
+                                            <tr>
+                                                <td class="ad-index-td">第<?= (int) $cc_count ?>回</td>
+                                                <td class="ad-index-td">
+                                                    <?= (!empty($dates[0]) && $dates[0] !== '0000-00-00') ? h(format_japanese_date($dates[0])) : '未設定' ?>
+                                                </td>
+                                                <td class="ad-index-td">
+                                                    <?= (!empty($dates[1]) && $dates[1] !== '0000-00-00') ? h(format_japanese_date($dates[1])) : '未設定' ?>
+                                                </td>
+                                                <td class="ad-index-td">
+                                                    <a href="admin_cc_course_list.php?course_id=<?= h($course['course_id']) ?>&cc_count=<?= (int) $cc_count ?>" class="btn btn-info btn-sm">
+                                                        詳細
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-
                 </div>
-            </dl>
+            </div>
         <?php endif; ?>
-        <div class="col-12 d-flex justify-content-center mt-4 mb-5">
-            <a class="btn btn-success btn-lg mr-5 my-1" href='admin_course_edit.php?course_id=<?= $course["course_id"] ?>'>編集</a>
-            <a class="btn btn-danger btn-lg ml-5 my-1" href='php_do/course_del_do.php?course_id=<?= $course["course_id"] ?>'>削除</a>
-        </div>
-        <div class="col-12 d-flex justify-content-center mt-4 mb-5">
-            <a href="admin_course_list.php" class="btn btn-secondary btn-lg px-3 mr-5">一覧へ戻る</a>
-
+        <div class="col-12 d-flex mt-4 mb-5" style="gap: 12px;">
+            <a href="admin_course_list.php" class="btn btn-secondary">一覧へ戻る</a>
+            <a href="admin_course_edit.php?course_id=<?= $course["course_id"] ?>" class="btn btn-success" style="margin-top: 10px;">編集</a>
+            <a href="php_do/course_del_do.php?course_id=<?= $course["course_id"] ?>" class="btn btn-danger" style="margin-top: 10px;">削除</a>
         </div>
     </div>
 

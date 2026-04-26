@@ -1,6 +1,26 @@
 <!-- 必須キャリコン一覧 -->
 <?php
 require_once __DIR__ . '/functions/functions.php';
+
+if (!isset($_GET['course_id']) || !ctype_digit((string) $_GET['course_id']) ||
+    !isset($_GET['cc_count'])  || !ctype_digit((string) $_GET['cc_count'])) {
+    header('Location: admin_course_list.php');
+    exit;
+}
+
+$course_id = (int) $_GET['course_id'];
+$cc_count  = (int) $_GET['cc_count'];
+
+try {
+    $course = get_course($course_id);
+} catch (PDOException $e) {
+    exit('コース情報の取得に失敗しました: ' . $e->getMessage());
+}
+
+if (empty($course)) {
+    header('Location: admin_course_list.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
