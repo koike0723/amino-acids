@@ -68,7 +68,7 @@ $courses = get_courses();
             <div class="form-row">
               <div class="col-12 col-md-5 col-lg-4 mb-3">
                 <label for="course" class="form-label">コース</label>
-                <select name="course" id="course" class="form-control">
+                <select name="course" id="course" class="custom-select">
                   <option value="">全表示</option>
                   <?php foreach ($courses as $course_item): ?>
                     <option value="<?= h($course_item["course_id"]); ?>" <?= ($course_id === (string)$course_item["course_id"]) ? 'selected' : ''; ?>>
@@ -80,7 +80,7 @@ $courses = get_courses();
 
               <div class="col-12 col-md-3 col-lg-2 mb-3">
                 <label for="status" class="form-label">状態</label>
-                <select name="status" id="status" class="form-control">
+                <select name="status" id="status" class="custom-select">
                   <option value="">全表示</option>
                   <?php foreach ($statuses as $s): ?>
                     <option value="<?= h($s['id']); ?>" <?= ($status_id === (string)$s['id']) ? 'selected' : ''; ?>>

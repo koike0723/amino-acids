@@ -60,7 +60,7 @@ foreach ($schedule_list as $year => $months) {
             <div class="form-row">
               <div class="form-group col-md-4 mb-3">
                 <label class="mb-1">開催コース</label>
-                <select name="course_id" class="form-control">
+                <select name="course_id" class="custom-select">
                   <option value="">すべて</option>
                   <?php foreach ($courses as $course): ?>
                     <option value="<?= h($course['course_id']) ?>"
@@ -72,7 +72,7 @@ foreach ($schedule_list as $year => $months) {
               </div>
               <div class="form-group col-md-2 mb-3">
                 <label class="mb-1">表示期間</label>
-                <select name="range" class="form-control">
+                <select name="range" class="custom-select">
                   <option value="2" <?= $range === 2 ? 'selected' : '' ?>>2カ月</option>
                   <option value="3" <?= $range === 3 ? 'selected' : '' ?>>3カ月</option>
                   <option value="4" <?= $range === 4 ? 'selected' : '' ?>>4カ月</option>
@@ -141,8 +141,8 @@ foreach ($schedule_list as $year => $months) {
                             <input type="hidden" name="course_id" value="<?= h($course_id_filter ?? '') ?>">
                             <input type="hidden" name="range" value="<?= h($range) ?>">
                             <input type="hidden" name="start_date" value="<?= h($start_date) ?>">
-                            <select name="cc_plus_count" class="form-control cc-plus_select d-inline-block w-auto" onchange="this.form.submit()">
-                              <?php for ($i = 0; $i <= 5; $i++): ?>
+                            <select name="cc_plus_count" class="custom-select d-inline-block w-auto" onchange="this.form.submit()">
+                              <?php for ($i = 0; $i <= 3; $i++): ?>
                                 <option value="<?= $i ?>" <?= $data['cc_plus_count'] === $i ? 'selected' : '' ?>><?= $i ?></option>
                               <?php endfor; ?>
                             </select>

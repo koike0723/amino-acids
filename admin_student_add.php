@@ -93,7 +93,7 @@ try {
 
             <div class="select_course form-group col-12 mb-3">
                 <label for="course_id" class="form-label">コース</label>
-                <select name="course_id" id="course_id" required class="form-control">
+                <select name="course_id" id="course_id" required class="custom-select">
                     <?php foreach ($courses as $course): ?>
                         <option value="<?php echo $course["course_id"]; ?>"><?php echo $course["room_name"] ?>｜<?php echo $course["course_name"] ?>｜<?php echo $course["start_date"] ?> ~ <?php echo $course["end_date"] ?></option>
                     <?php endforeach; ?>

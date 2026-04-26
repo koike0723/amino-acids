@@ -84,7 +84,7 @@ try {
             <div class="form-row">
               <div class="col-12 col-md-3 mb-3">
                 <label for="room_id" class="form-label">教室名</label>
-                <select name="room_id" id="room_id" class="form-control">
+                <select name="room_id" id="room_id" class="custom-select">
                   <option value="" <?= ($room_id == "") ? "selected" : "" ?>>全表示</option>
                   <?php foreach ($rooms as $room): ?>
                     <?php if ($room["id"] != 13): ?>
@@ -95,7 +95,7 @@ try {
               </div>
               <div class="col-12 col-md-4 mb-3">
                 <label for="category_id" class="form-label">訓練カテゴリー</label>
-                <select name="category_id" id="category_id" class="form-control">
+                <select name="category_id" id="category_id" class="custom-select">
                   <option value="" selected <?= ($category_id == "") ? "selected" : "" ?>>全表示</option>
                   <?php foreach ($categories as $category): ?>
                     <option value="<?php echo $category["id"]; ?>" <?= ($category_id == $category["id"]) ? "selected" : "" ?>><?php echo $category["name"]; ?></option>
