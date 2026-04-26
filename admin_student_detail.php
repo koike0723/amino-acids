@@ -35,21 +35,21 @@ if (!empty($_GET['id'])) {
 
         <h1 class="m-5">生徒詳細</h1>
 
-        <div class="col-12 mb-2">
-            <label class="form-label">名前</label>
-            <p class="form-control"><?= h($student['student_name']); ?></p>
+        <div class="d-flex align-items-baseline mb-2">
+            <label class="form-label mb-0 text-nowrap">名前：</label>
+            <p class="form-control-plaintext py-0 mb-0"><?= h($student['student_name']); ?></p>
         </div>
-        <div class="col-6 mb-3">
-            <label class="form-label">出席番号</label>
-            <p class="form-control"><?= h($student['number']); ?></p>
+        <div class="d-flex align-items-baseline mb-2">
+            <label class="form-label mb-0 text-nowrap">コース名：</label>
+            <p class="form-control-plaintext py-0 mb-0"><?= h($student['room_name']); ?> / <?= h($student['course_name']); ?></p>
         </div>
-        <div class="col-12 mb-3">
-            <label class="form-label">訓練名</label>
-            <p class="form-control"><?= h($student['room_name']); ?> / <?= h($student['course_name']); ?></p>
+        <div class="d-flex align-items-baseline mb-2">
+            <label class="form-label mb-0 text-nowrap">出席番号：</label>
+            <p class="form-control-plaintext py-0 mb-0"><?= h($student['number']); ?></p>
         </div>
-        <div class="col-6 mb-3">
-            <label class="form-label">状態</label>
-            <p class="form-control"><?= h($student['status_name']); ?></p>
+        <div class="d-flex align-items-baseline mb-3">
+            <label class="form-label mb-0 text-nowrap">状態：</label>
+            <p class="form-control-plaintext py-0 mb-0"><?= h($student['status_name']); ?></p>
         </div>
 
         <div class="col-12 mb-4">
@@ -87,8 +87,8 @@ if (!empty($_GET['id'])) {
         </div>
 
         <div class="col-12 d-flex mt-4 mb-5" style="gap: 12px;">
-            <a href="./admin_student_list.php" class="btn btn-secondary">一覧へ戻る</a>
-            <a href="admin_student_edit.php?id=<?= h($student['student_id']); ?>" class="btn btn-success" style="margin-top: 10px;">編集</a>
+            <a href="./admin_student_list.php" class="btn btn-secondary px-3 py-2">一覧へ戻る</a>
+            <a href="admin_student_edit.php?id=<?= h($student['student_id']); ?>" class="btn btn-success px-3 py-2" style="margin-top: 10px;">編集</a>
         </div>
 
     </div>

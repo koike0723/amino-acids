@@ -53,7 +53,7 @@ $student_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
 
             <div class="col-12 mb-3">
-                <label class="form-label">訓練名</label>
+                <label class="form-label">コース名</label>
                 <select name="course_id" class="form-control">
                     <?php foreach ($courses as $course): ?>
                         <option value="<?= h($course['course_id']); ?>" <?= ($student['course_id'] == $course['course_id']) ? 'selected' : ''; ?>>
@@ -80,8 +80,8 @@ $student_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
 
             <div class="col-12 d-flex mt-4 mb-5" style="gap: 12px;">
-                <a href="./admin_student_detail.php?id=<?= h($student['student_id']); ?>" class="btn btn-secondary py-2">詳細に戻る</a>
-                <button type="submit" class="btn btn-primary py-2" style="margin-top: 10px;">編集完了</button>
+                <a href="./admin_student_detail.php?id=<?= h($student['student_id']); ?>" class="btn btn-secondary px-3 py-2">詳細に戻る</a>
+                <button type="submit" class="btn btn-primary px-3 py-2" style="margin-top: 10px;">編集完了</button>
             </div>
 
         </form>

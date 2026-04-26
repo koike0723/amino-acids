@@ -64,7 +64,7 @@ try {
         <form action="php_do/student_add_do.php" method="post" enctype="multipart/form-data" class="row align-items-start">
 
             <div class="select_course form-group col-12 mb-5">
-                <label for="course_id" class="form-label">使用教室｜訓練名｜期間</label>
+                <label for="course_id" class="form-label">コース</label>
                 <select name="course_id" id="course_id" required class="form-control">
                     <?php foreach ($courses as $course): ?>
                         <option value="<?php echo $course["course_id"]; ?>"><?php echo $course["room_name"] ?>｜<?php echo $course["course_name"] ?>｜<?php echo $course["start_date"] ?> ~ <?php echo $course["end_date"] ?></option>
@@ -81,9 +81,9 @@ try {
                 <span style="font-size: xx-large;">CSVファイルをここにドロップ</span>
             </div>
 
-            <div class="col-12 d-flex justify-content-center mt-4 mb-5">
-                <a href="admin_student_list.php" class="btn btn-secondary px-3 mr-5">一覧へ戻る</a>
-                <input type="submit" value="生徒一括追加" class="btn btn-primary px-3 ml-5" style="background-color: #020bff;">
+            <div class="col-12 d-flex justify-content-left mt-4 mb-5" style="gap: 12px">
+                <a href="admin_student_list.php" class="btn btn-secondary px-3 py-2">一覧へ戻る</a>
+                <input type="submit" value="生徒一括追加" class="btn btn-primary px-3 py-2" style="margin-top: 10px;">
             </div>
 
         </form>
