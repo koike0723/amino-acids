@@ -141,7 +141,7 @@ $courses = get_courses();
       </div>
 
       <div class="mt-4">
-        <a href="./admin_index.php" class="btn btn-secondary">トップへ戻る</a>
+        <a href="./admin_index.php" class="btn btn-secondary px-3 py-2">トップへ戻る</a>
       </div>
     </div>
   </main>

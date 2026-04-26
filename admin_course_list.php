@@ -145,7 +145,7 @@ try {
       </div>
 
       <div class="mt-4">
-        <a class="btn btn-secondary" href="./admin_index.php">トップへ戻る</a>
+        <a class="btn btn-secondary px-3 py-2" href="./admin_index.php">トップへ戻る</a>
       </div>
     </div>
   </main>

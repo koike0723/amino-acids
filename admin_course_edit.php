@@ -171,8 +171,8 @@ try {
                 </div>
             </dl>
             <div class="col-12 d-flex justify-content-left mt-4 mb-5" style="gap: 12px">
-                <a href="admin_course_detail.php?course_id=<?= $course_id; ?>" class="btn btn-secondary px-3">詳細へ戻る</a>
-                <input type="submit" value="編集完了" class="btn btn-primary px-3" style="margin-top: 10px">
+                <a href="admin_course_detail.php?course_id=<?= $course_id; ?>" class="btn btn-secondary px-3 py-2">詳細へ戻る</a>
+                <input type="submit" value="編集完了" class="btn btn-primary px-3 py-2" style="margin-top: 10px">
             </div>
         </form>
     </div>
