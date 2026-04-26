@@ -1,4 +1,8 @@
-<?php require_once __DIR__ . '/functions/functions.php'; ?>
+<?php if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/functions/functions.php';
+require_admin_login(); ?>
 <?php
 if (!isset($_GET['course_id']) || !ctype_digit((string) $_GET['course_id'])) {
     header('Location: admin_course_list.php');

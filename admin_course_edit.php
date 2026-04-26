@@ -1,6 +1,10 @@
 <!-- http://localhost:8080/amino-acids/admin_course_edit.php -->
 <!-- コース編集画面 -->
-<?php require_once __DIR__ . '/functions/functions.php'; ?>
+<?php if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/functions/functions.php';
+require_admin_login(); ?>
 
 
 <?php

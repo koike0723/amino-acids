@@ -33,6 +33,7 @@ CREATE TABLE `m_admins` (
   `id` int(11) NOT NULL,
   `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) NOT NULL,
+  `login_id` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -42,8 +43,8 @@ CREATE TABLE `m_admins` (
 -- テーブルのデータのダンプ `m_admins`
 --
 
-INSERT INTO `m_admins` (`id`, `first_name`, `last_name`, `password`, `created_at`, `updated_at`) VALUES
-(1, '管理', '太郎', 'password', '2026-04-13 11:12:42', '2026-04-13 11:24:55');
+INSERT INTO `m_admins` (`id`, `first_name`, `last_name`, `login_id`, `password`, `created_at`, `updated_at`) VALUES
+(1, '管理', '太郎', 'admin001', '$2y$10$GY7eTaGqtBEc9P.ofQkNJes6xAjtgSflhv1vHiyJXAkPJWDplGRui', '2026-04-13 11:12:42', '2026-04-13 11:24:55');
 
 -- --------------------------------------------------------
 

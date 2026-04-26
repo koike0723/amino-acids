@@ -7,7 +7,11 @@
 => 1,2,3,4,5…（生徒を追加するコースのid）
 ------------------------------------------------->
 
-<?php require_once __DIR__ . '/functions/functions.php'; ?>
+<?php if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/functions/functions.php';
+require_admin_login(); ?>
 <?php
 
 /////////////////////////////////////////////////////
