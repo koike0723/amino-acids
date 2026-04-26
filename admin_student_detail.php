@@ -93,11 +93,26 @@ if (!empty($_GET['id'])) {
         <div class="col-12 d-flex mt-4 mb-5" style="gap: 12px;">
             <a href="./admin_student_list.php" class="btn btn-secondary px-3 py-2">一覧へ戻る</a>
             <a href="admin_student_edit.php?id=<?= h($student['student_id']); ?>" class="btn btn-success px-3 py-2" style="margin-top: 10px;">編集</a>
+            <button type="button" class="btn btn-danger px-3 py-2" style="margin-top: 10px;"
+                data-toggle="modal" data-target="#deleteModal"
+                data-message="生徒「<?= h($student['student_name']) ?>」を削除してもよいですか？">
+                削除
+            </button>
         </div>
 
     </div>
+    <?php require_once __DIR__ . '/inc/delete_modal.php'; ?>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <script src="./js/script.js"></script>
     <script src="./js/hamburger.js"></script>
+    <script>
+        $('#deleteModal').on('show.bs.modal', function(event) {
+            var message = $(event.relatedTarget).data('message');
+            $(this).find('#deleteModalMessage').text(message);
+        });
+    </script>
 </body>
 
 </html>

@@ -133,7 +133,9 @@ $courses = get_courses();
                       <td class="ad-index-td">
                         <a class="btn btn-info mx-1 my-1" href="./admin_student_detail.php?id=<?= h($student['student_id']); ?>">詳細</a>
                         <a class="btn btn-success mx-1 my-1" href="./admin_student_edit.php?id=<?= h($student['student_id']); ?>">編集</a>
-                        <a class="btn btn-danger mx-1 my-1" href="./admin_student_del_confirm.php?id=<?= h($student['student_id']); ?>">削除</a>
+                        <button type="button" class="btn btn-danger mx-1 my-1"
+                            data-toggle="modal" data-target="#deleteModal"
+                            data-message="生徒「<?= h($student['student_name']) ?>」を削除してもよいですか？">削除</button>
                       </td>
                     </tr>
                   <?php endforeach; ?>
@@ -149,8 +151,18 @@ $courses = get_courses();
       </div>
     </div>
   </main>
+  <?php require_once __DIR__ . '/inc/delete_modal.php'; ?>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
   <script src="./js/script.js"></script>
   <script src="./js/hamburger.js"></script>
+  <script>
+    $('#deleteModal').on('show.bs.modal', function (event) {
+      var message = $(event.relatedTarget).data('message');
+      $(this).find('#deleteModalMessage').text(message);
+    });
+  </script>
 </body>
 
 </html>
