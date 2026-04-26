@@ -40,7 +40,6 @@ $student_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <main>
         <p class="student-edit-h1">生徒編集</p>
-        <?php check($student); ?>
         <form action="./php_do/student_edit_do.php" method="post">
             <input type="hidden" name="student_id" value="<?= h($student['student_id']); ?>">
 

@@ -33,7 +33,6 @@ if (!empty($_GET['id'])) {
 <body>
     <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
     <main>
-        <?php check($student); ?>
         <p class="student-detail-h1">生徒詳細</p>
         <div class="student-detail-dl-area">
             <dl class="student-detail-dl">
