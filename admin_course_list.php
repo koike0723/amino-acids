@@ -84,7 +84,7 @@ try {
             <div class="form-row">
               <div class="col-12 col-md-3 mb-3">
                 <label for="room_id" class="form-label">教室名</label>
-                <select name="room_id" id="room_id" class="form-control">
+                <select name="room_id" id="room_id" class="custom-select">
                   <option value="" <?= ($room_id == "") ? "selected" : "" ?>>全表示</option>
                   <?php foreach ($rooms as $room): ?>
                     <?php if ($room["id"] != 13): ?>
@@ -95,7 +95,7 @@ try {
               </div>
               <div class="col-12 col-md-4 mb-3">
                 <label for="category_id" class="form-label">訓練カテゴリー</label>
-                <select name="category_id" id="category_id" class="form-control">
+                <select name="category_id" id="category_id" class="custom-select">
                   <option value="" selected <?= ($category_id == "") ? "selected" : "" ?>>全表示</option>
                   <?php foreach ($categories as $category): ?>
                     <option value="<?php echo $category["id"]; ?>" <?= ($category_id == $category["id"]) ? "selected" : "" ?>><?php echo $category["name"]; ?></option>
@@ -138,7 +138,9 @@ try {
                     <td class="ad-index-td">
                       <a class="btn btn-info mx-1 my-1" href='admin_course_detail.php?course_id=<?= $course["course_id"] ?>'>詳細</a>
                       <a class="btn btn-success mx-1 my-1" href='admin_course_edit.php?course_id=<?= $course["course_id"] ?>'>編集</a>
-                      <a class="btn btn-danger mx-1 my-1" href='php_do/course_del_do.php?course_id=<?= $course["course_id"] ?>'>削除</a>
+                      <button type="button" class="btn btn-danger mx-1 my-1"
+                          data-toggle="modal" data-target="#deleteModal"
+                          data-message="コース「<?= h($course['course_name']) ?>」を削除してもよいですか？">削除</button>
                     </td>
                   </tr>
                 <?php endforeach; ?>
@@ -154,9 +156,19 @@ try {
     </div>
   </main>
   <!-- kan-to-do:余力があればリアルタイムで変わるようにする -->
+  <?php require_once __DIR__ . '/inc/delete_modal.php'; ?>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
   <script src="./js/script.js"></script>
   <script src="./js/admin_course_search.js"></script>
   <script src="./js/hamburger.js"></script>
+  <script>
+    $('#deleteModal').on('show.bs.modal', function (event) {
+      var message = $(event.relatedTarget).data('message');
+      $(this).find('#deleteModalMessage').text(message);
+    });
+  </script>
 </body>
 
 </html>

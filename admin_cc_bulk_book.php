@@ -116,14 +116,14 @@ $student_count = count($students);
             </p>
 
             <div class="d-flex align-items-center mt-3" style="gap: 12px;">
+                <a href="admin_course_detail.php?course_id=<?= h($course_id) ?>"
+                    class="btn btn-secondary px-3 py-2">
+                    詳細へ戻る
+                </a>
                 <form method="POST" action="./php_do/cc_bulk_book_do.php" class="m-0">
                     <input type="hidden" name="course_id" value="<?= h($course_id) ?>">
-                    <button type="submit" class="btn btn-primary px-4 py-2" style="margin-top: 10px;">一括登録</button>
+                    <button type="submit" class="btn btn-primary px-3 py-2" style="margin-top: 10px;">一括登録</button>
                 </form>
-                <a href="admin_course_detail.php?course_id=<?= h($course_id) ?>"
-                    class="btn btn-secondary px-4 py-2">
-                    戻る
-                </a>
             </div>
         </div>
     </main>

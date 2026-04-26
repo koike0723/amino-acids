@@ -75,7 +75,7 @@ $status_labels = [
             <div class="form-row">
               <div class="col-12 col-md-5 mb-3">
                 <label for="status_filter" class="form-label">対応状況 / 状態</label>
-                <select name="status_filter" id="status_filter" class="form-control">
+                <select name="status_filter" id="status_filter" class="custom-select">
                   <option value="">全表示</option>
 
                   <optgroup label="── 対応状況 ──">
@@ -100,7 +100,7 @@ $status_labels = [
 
               <div class="col-12 col-md-3 mb-3">
                 <label for="type_id" class="form-label">種類</label>
-                <select name="type_id" id="type_id" class="form-control">
+                <select name="type_id" id="type_id" class="custom-select">
                   <option value="">全表示</option>
                   <?php foreach ($types as $t): ?>
                     <option value="<?= $t['id'] ?>"

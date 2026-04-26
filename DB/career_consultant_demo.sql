@@ -168,7 +168,7 @@ CREATE TABLE `t_reset_requests` (
 
 -- m_admins（パスワード 'password' のbcryptハッシュ）
 INSERT INTO `m_admins` (`id`, `first_name`, `last_name`, `login_id`, `password`, `created_at`, `updated_at`) VALUES
-(1, '管理', '太郎', 'admin001', '$2y$10$GY7eTaGqtBEc9P.ofQkNJes6xAjtgSflhv1vHiyJXAkPJWDplGRui', '2026-04-26 09:00:00', '2026-04-26 09:00:00');
+(1, '太郎', '管理', 'admin001', '$2y$10$GY7eTaGqtBEc9P.ofQkNJes6xAjtgSflhv1vHiyJXAkPJWDplGRui', '2026-04-26 09:00:00', '2026-04-26 09:00:00');
 
 -- m_consultants
 INSERT INTO `m_consultants` (`id`, `first_name`, `last_name`, `created_at`, `updated_at`) VALUES
@@ -326,9 +326,9 @@ INSERT INTO `t_cc_slots` (`id`, `date`, `is_cc_plus`, `consultant_id`, `room_id`
 (14, '2026-04-25', 0, 1, 13, '2026-04-05 10:00:00', '2026-04-05 10:00:00'),
 (15, '2026-04-25', 0, 2, 13, '2026-04-05 10:00:00', '2026-04-05 10:00:00'),
 (16, '2026-04-25', 0, 3, NULL,'2026-04-05 10:00:00', '2026-04-05 10:00:00'),
--- CC+枠 (2026-05-09, 未来)
-(17, '2026-05-09', 1, NULL,NULL,'2026-04-09 10:00:00', '2026-04-09 10:00:00'),
-(18, '2026-05-09', 1, NULL,NULL,'2026-04-09 10:00:00', '2026-04-09 10:00:00'),
+-- CC+枠 (2026-05-23, 未来)
+(17, '2026-05-23', 1, NULL,NULL,'2026-04-09 10:00:00', '2026-04-09 10:00:00'),
+(18, '2026-05-23', 1, NULL,NULL,'2026-04-09 10:00:00', '2026-04-09 10:00:00'),
 -- コース2 第3回-day1 (2026-05-23, 未来, slot×2)
 (19, '2026-05-23', 0, NULL,NULL,'2026-04-26 09:00:00', '2026-04-26 09:00:00'),
 (20, '2026-05-23', 0, NULL,NULL,'2026-04-26 09:00:00', '2026-04-26 09:00:00'),

@@ -127,12 +127,24 @@ try {
         <div class="col-12 d-flex mt-4 mb-5" style="gap: 12px;">
             <a href="admin_course_list.php" class="btn btn-secondary px-3 py-2">一覧へ戻る</a>
             <a href="admin_course_edit.php?course_id=<?= $course["course_id"] ?>" class="btn btn-success px-3 py-2" style="margin-top: 10px;">編集</a>
-            <a href="php_do/course_del_do.php?course_id=<?= $course["course_id"] ?>" class="btn btn-danger px-3 py-2" style="margin-top: 10px;">削除</a>
+            <button type="button" class="btn btn-danger px-3 py-2" style="margin-top: 10px;"
+                data-toggle="modal" data-target="#deleteModal"
+                data-message="コース「<?= h($course['course_name']) ?>」を削除してもよいですか？">削除</button>
         </div>
     </div>
 
+    <?php require_once __DIR__ . '/inc/delete_modal.php'; ?>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <script src="./js/script.js"></script>
     <script src="./js/hamburger.js"></script>
+    <script>
+        $('#deleteModal').on('show.bs.modal', function(event) {
+            var message = $(event.relatedTarget).data('message');
+            $(this).find('#deleteModalMessage').text(message);
+        });
+    </script>
 </body>
 
 </html>

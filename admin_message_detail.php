@@ -4,7 +4,7 @@ session_start();
 $flash = $_SESSION['flash'] ?? '';
 unset($_SESSION['flash']);
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+  session_start();
 }
 require_once __DIR__ . '/functions/functions.php';
 require_admin_login();
@@ -57,6 +57,7 @@ $back_url = './admin_message.php' . (!empty($back_query) ? '?' . http_build_quer
   <title>メッセージ詳細</title>
   <link rel="stylesheet" href="./css/style.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=notifications" />
 </head>
 
 <body>

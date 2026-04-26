@@ -58,7 +58,7 @@ $student_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <div class="col-12 mb-3">
                 <label class="form-label">コース名</label>
-                <select name="course_id" class="form-control">
+                <select name="course_id" class="custom-select">
                     <?php foreach ($courses as $course): ?>
                         <option value="<?= h($course['course_id']); ?>" <?= ($student['course_id'] == $course['course_id']) ? 'selected' : ''; ?>>
                             <?= h($course['room_name']) . ' / ' . h($course['course_name']); ?>
@@ -74,7 +74,7 @@ $student_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <div class="col-6 mb-3">
                 <label class="form-label">状態</label>
-                <select name="status_id" class="form-control">
+                <select name="status_id" class="custom-select">
                     <?php foreach ($student_status as $status): ?>
                         <option value="<?= h($status['id']); ?>" <?= ($student['status_id'] == $status['id']) ? 'selected' : ''; ?>>
                             <?= h($status['name']); ?>

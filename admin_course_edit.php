@@ -107,7 +107,7 @@ try {
             </div>
             <div class="course_room form-group col-6 mb-3">
                 <label for="room_id" class="form-label">教室名</label>
-                <select name="room_id" id="room_id" required class="form-control">
+                <select name="room_id" id="room_id" required class="custom-select">
                     <?php foreach ($rooms as $room): ?>
                         <?php if ($room["id"] != 13): ?>
                             <option value="<?php echo $room["id"]; ?>" <?= ($course["room_id"] == $room["id"]) ? "selected" : "" ?>><?php echo $room["name"]; ?></option>
@@ -117,7 +117,7 @@ try {
             </div>
             <div class="course_category form-group col-6 mb-3">
                 <label for="category_id" class="form-label">訓練カテゴリー</label>
-                <select name="category_id" id="category_id" required class="form-control">
+                <select name="category_id" id="category_id" required class="custom-select">
                     <?php foreach ($categories as $category): ?>
                         <option value="<?php echo $category["id"]; ?>" <?= ($course["category_id"] == $category["id"]) ? "selected" : "" ?>><?php echo $category["name"]; ?></option>
                     <?php endforeach; ?>
