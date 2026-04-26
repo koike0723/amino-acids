@@ -32,8 +32,7 @@ if (!empty($_GET['id'])) {
 <body>
     <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
     <main>
-        <?php check($student); ?>
-        <p class="student-detail-h1">ほんまに消してええんか？</p>
+        <p class="student-detail-h1">この生徒を削除しますか？</p>
         <div class="student-detail-dl-area">
             <dl class="student-detail-dl">
                 <div class="student-detail-dl-flex">

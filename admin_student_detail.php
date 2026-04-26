@@ -23,7 +23,6 @@ if (!empty($_GET['id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/destyle.css@4.0.1/destyle.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=notifications" />
     <link rel="stylesheet" href="./css/style.css">
@@ -32,44 +31,67 @@ if (!empty($_GET['id'])) {
 
 <body>
     <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
-    <main>
-        <?php check($student); ?>
-        <p class="student-detail-h1">生徒詳細</p>
-        <div class="student-detail-dl-area">
-            <dl class="student-detail-dl">
-                <div class="student-detail-dl-flex">
-                    <dt class="student-detail-dt">名前：</dt>
-                    <dd class="student-detail-dd"><?= h($student['student_name']); ?></dd>
+    <div class="content-wrap" style="width: 89.33333%; max-width: 1000px; margin-inline: auto;">
+
+        <h1 class="m-5">生徒詳細</h1>
+
+        <div class="col-12 mb-2">
+            <label class="form-label">名前</label>
+            <p class="form-control"><?= h($student['student_name']); ?></p>
+        </div>
+        <div class="col-6 mb-3">
+            <label class="form-label">出席番号</label>
+            <p class="form-control"><?= h($student['number']); ?></p>
+        </div>
+        <div class="col-12 mb-3">
+            <label class="form-label">訓練名</label>
+            <p class="form-control"><?= h($student['room_name']); ?> / <?= h($student['course_name']); ?></p>
+        </div>
+        <div class="col-6 mb-3">
+            <label class="form-label">状態</label>
+            <p class="form-control"><?= h($student['status_name']); ?></p>
+        </div>
+
+        <div class="col-12 mb-4">
+            <label class="form-label">キャリコン履歴</label>
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0 ad-index-table">
+                            <thead>
+                                <tr>
+                                    <th class="ad-index-th">種別</th>
+                                    <th class="ad-index-th">日付</th>
+                                    <th class="ad-index-th">時間</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($student['bookings'])): ?>
+                                    <tr>
+                                        <td colspan="3" class="ad-index-td">キャリコン履歴なし</td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($student['bookings'] as $booking): ?>
+                                        <tr>
+                                            <td class="ad-index-td"><?= $booking['is_cc_plus'] ? 'cc+' : 'cc'; ?></td>
+                                            <td class="ad-index-td"><?= h($booking['cc_date']); ?></td>
+                                            <td class="ad-index-td"><?= h($booking['cc_time']); ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="student-detail-dl-flex">
-                    <dt class="student-detail-dt">出席番号:</dt>
-                    <dd class="student-detail-dd"><?= h($student['number']); ?></dd>
-                </div>
-                <div class="student-detail-dl-flex">
-                    <dt class="student-detail-dt">訓練名:</dt>
-                    <dd class="student-detail-dd"><?= h($student['room_name']); ?> / <?= h($student['course_name']) ?></dd>
-                </div>
-                <div class="student-detail-dl-flex">
-                    <dt class="student-detail-dt">状態：</dt>
-                    <dd class="student-detail-dd"><?= h($student['status_name']); ?></dd>
-                </div>
-                <div class="student-detail-dl-flex">
-                    <dt class="student-detail-dt">キャリコン履歴：</dt>
-                    <?php foreach ($student['bookings'] as $booking): ?>
-                        <dd class="student-detail-dd"><?= h($booking['cc_date']); ?>&nbsp;<?= $booking['cc_time']; ?></dd>
-                    <?php endforeach; ?>
-                </div>
-            </dl>
-            <div class="student-detail-controle-area">
-                <a href="admin_student_edit.php?id=<?= h($student['student_id']); ?>">
-                    <button type="btn" class="student-detail-editBtn">編集画面へ</button>
-                </a>
-                <a href="./admin_student_list.php">
-                    <button type="btn" class="prev-btn" style="border-radius: 5px;">戻る</button>
-                </a>
             </div>
         </div>
-    </main>
+
+        <div class="col-12 d-flex mt-4 mb-5" style="gap: 12px;">
+            <a href="./admin_student_list.php" class="btn btn-secondary">一覧へ戻る</a>
+            <a href="admin_student_edit.php?id=<?= h($student['student_id']); ?>" class="btn btn-success" style="margin-top: 10px;">編集</a>
+        </div>
+
+    </div>
     <script src="./js/script.js"></script>
     <script src="./js/hamburger.js"></script>
 </body>

@@ -5,16 +5,16 @@ require_once __DIR__ . '/functions/functions.php';
 /* -----------------------------
    絞り込み条件の受け取り
 ----------------------------- */
-$date      = $_GET['date']   ?? '';
+$date      = $_GET['date']   ?? date('Y-m-d');
 $status_id = $_GET['status'] ?? '';
 $course_id = $_GET['course'] ?? '';
-$date_display = $date !== '' ? $date : date('Y-m-d');
+$date_display = $date;
 
 /* -----------------------------
    フィルタを組み立てて生徒一覧取得
 ----------------------------- */
 $filters = [];
-if ($date !== '')      $filters['date']      = $date;
+$filters['date'] = $date;
 if ($status_id !== '') $filters['status_id'] = (int)$status_id;
 if ($course_id !== '') $filters['course_id'] = (int)$course_id;
 

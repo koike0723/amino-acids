@@ -25,24 +25,6 @@
 /////////////////////データベース処理/////////////////
 ////////////////////////////////////////////////////
 try {
-    // $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
-    // $db = new PDO($dsn, DB_USER, DB_PASS);
-    // $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    // $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    // // SQL
-    // $sql = 'SELECT
-    // c.id AS course_id,
-    // c.start_date,
-    // c.end_date,
-    // c.name AS course_name,
-    // r.name AS room_name
-    // FROM m_courses c
-    // INNER JOIN m_rooms r
-    // ON c.room_id = r.id
-    // WHERE c.end_date >= CURDATE()';
-    // $stmt = $db->prepare($sql);
-    // $stmt->execute();
-    // $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $courses = get_courses(date("Y-m-d"), true, null, null);
 } catch (PDOException $e) {
     exit('訓練コース一覧の取得に失敗しました: ' . $e->getMessage());
@@ -59,9 +41,10 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>生徒追加</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <title>-管理者- 生徒追加</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/destyle.css@4.0.1/destyle.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=notifications" />
 </head>
 

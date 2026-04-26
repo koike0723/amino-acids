@@ -47,7 +47,7 @@ try {
     $result = update_student((int)$student_id, $data);
 
     if ($result) {
-        header('Location: ../admin_student_list.php');
+        header('Location: ../admin_student_detail.php?id='.$student_id);
         exit();
     } else {
         header('Location: ../admin_student_edit.php?id=' . urlencode($student_id) . '&status=error');

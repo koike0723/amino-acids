@@ -7,7 +7,7 @@ $id = $_GET['id'] ?? '';
 if (!empty($id)) {
     try {
         $student = get_student($id);
-        $courses = get_courses();
+        $courses = get_courses(null, true);
     } catch (PDOException $e) {
         check($e);
     }
@@ -28,7 +28,6 @@ $student_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/destyle.css@4.0.1/destyle.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=notifications" />
     <link rel="stylesheet" href="./css/style.css">
@@ -37,89 +36,56 @@ $student_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
     <?php require_once __DIR__ . '/inc/admin_header.php'; ?>
+    <div class="content-wrap" style="width: 89.33333%; max-width: 1000px; margin-inline: auto;">
 
-    <main>
-        <p class="student-edit-h1">生徒編集</p>
-        <?php check($student); ?>
+        <h1 class="m-5">生徒編集</h1>
+
         <form action="./php_do/student_edit_do.php" method="post">
             <input type="hidden" name="student_id" value="<?= h($student['student_id']); ?>">
 
-            <div class="student-edit-area">
-                <div class="student-edit-flex">
-                    <div class="style-area" style="padding-block-end: 1.3rem;">
-                        <label class="student-edit-title">
-                            <span class="student-edit-span">姓</span>
-                            <input
-                                type="text"
-                                name="last_name"
-                                class="student-edit-name"
-                                value="<?= h($student['last_name'] ?? ''); ?>">
-                        </label>
-
-                        <label class="student-edit-title">
-                            <span class="student-edit-span">名</span>
-                            <input
-                                type="text"
-                                name="first_name"
-                                class="student-edit-name"
-                                value="<?= h($student['first_name'] ?? ''); ?>">
-                        </label>
-
-                    </div>
-
-                    <label class="student-edit-title mb-4">
-                        <span class="student-edit-spanstudent-edit-span">訓練名</span>
-                        <select name="course_id" class="student-edit-option-select" style="width: fit-content;">
-                            <?php foreach ($courses as $course): ?>
-                                <option value="<?= h($course['course_id']); ?>" <?= ($student['course_id'] == $course['course_id']) ? 'selected' : ''; ?>>
-                                    <?= h($course['course_name']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </label>
-                    <div class="student-edit-title student-edit-class-wrap mb-4">
-                        <p class="student-edit-class mb-0">
-                            <span class="student-edit-class-label">クラス：</span>
-                            <span class="student-edit-class-value"><?= h($student["room_name"]); ?></span>
-                        </p>
-                    </div>
-                    <div class="student-edit-title student-edit-class-wrap mb-4">
-                        <p class="student-edit-class mb-0">
-                            <span class="student-edit-class-label">出席番号：</span>
-                            <span class="student-edit-class-value"><?= h($student["number"]); ?></span>
-                        </p>
-                    </div>
-                </div>
+            <div class="col-6 mb-3">
+                <label class="form-label">姓</label>
+                <input type="text" name="last_name" class="form-control" value="<?= h($student['last_name'] ?? ''); ?>">
+            </div>
+            <div class="col-6 mb-3">
+                <label class="form-label">名</label>
+                <input type="text" name="first_name" class="form-control" value="<?= h($student['first_name'] ?? ''); ?>">
             </div>
 
-            <div class="student-edit-option-area">
-                <div class="student-edit-option-flex">
-                    <div class="student-edit-option-con-flex">
-                        <span class="student-edit-option-span">状態</span>
-                        <label class="student-edit-option-label">
-                            <select name="status_id" class="student-edit-option-select">
-                                <?php foreach ($student_status as $status): ?>
-                                    <option value="<?= h($status['id']); ?>" <?= ($student['status_id'] == $status['id']) ? 'selected' : ''; ?>>
-                                        <?= h($status['name']); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </label>
-                    </div>
-                </div>
+            <div class="col-12 mb-3">
+                <label class="form-label">訓練名</label>
+                <select name="course_id" class="form-control">
+                    <?php foreach ($courses as $course): ?>
+                        <option value="<?= h($course['course_id']); ?>" <?= ($student['course_id'] == $course['course_id']) ? 'selected' : ''; ?>>
+                            <?= h($course['room_name']) . ' / ' . h($course['course_name']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
-            <div class="student-edit-controle-area">
-                <div class="student-edit-controle-flex">
-                    <a href="./admin_student_detail.php?id=<?= h($student['student_id']); ?>">
-                        <button type="button" class="seb-prev">キャンセル</button>
-                    </a>
-
-                    <button type="submit" class="seb-next">確定</button>
-                </div>
+            <div class="col-6 mb-3">
+                <label class="form-label">出席番号</label>
+                <p class="form-control"><?= h($student["number"]); ?></p>
             </div>
+
+            <div class="col-6 mb-3">
+                <label class="form-label">状態</label>
+                <select name="status_id" class="form-control">
+                    <?php foreach ($student_status as $status): ?>
+                        <option value="<?= h($status['id']); ?>" <?= ($student['status_id'] == $status['id']) ? 'selected' : ''; ?>>
+                            <?= h($status['name']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="col-12 d-flex mt-4 mb-5" style="gap: 12px;">
+                <a href="./admin_student_detail.php?id=<?= h($student['student_id']); ?>" class="btn btn-secondary py-2">詳細に戻る</a>
+                <button type="submit" class="btn btn-primary py-2" style="margin-top: 10px;">編集完了</button>
+            </div>
+
         </form>
-    </main>
+    </div>
     <script src="./js/script.js"></script>
     <script src="./js/hamburger.js"></script>
 </body>
