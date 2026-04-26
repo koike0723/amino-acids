@@ -52,27 +52,25 @@ try {
 
         <h1 class="m-5">コース詳細</h1>
 
-        <div class="course_name col-12 mb-2">
-            <label for="course_name" class="form-label">訓練名</label>
-            <p id="course_name" class="form-control"><?= $course["course_name"] ?></p>
+        <div class="d-flex align-items-baseline mb-2">
+            <label class="form-label mb-0 text-nowrap">訓練名：</label>
+            <p class="form-control-plaintext py-0 mb-0"><?= h($course["course_name"]) ?></p>
         </div>
-        <div class="course_room form-group col-6 mb-3">
-            <label for="room_id" class="form-label">教室名</label>
-            <p name="room_id" id="room_id" class="form-control"><?= $course["room_name"] ?></p>
+        <div class="d-flex align-items-baseline mb-2">
+            <label class="form-label mb-0 text-nowrap">教室名：</label>
+            <p class="form-control-plaintext py-0 mb-0"><?= h($course["room_name"]) ?></p>
         </div>
-        <div class="course_category form-group col-6 mb-3">
-            <label for="category_id" class="form-label">訓練カテゴリー</label>
-            <p id="category_id" class="form-control"><?= $course["category_name"] ?></p>
+        <div class="d-flex align-items-baseline mb-2">
+            <label class="form-label mb-0 text-nowrap">訓練カテゴリー：</label>
+            <p class="form-control-plaintext py-0 mb-0"><?= h($course["category_name"]) ?></p>
         </div>
-        <div class="course_term col-4">
-            <label for="course_start" class="form-label mt-1">訓練開始日</label>
-            <p>
-                <span id="course_start" required class="form-control form-control-sm"><?= $course["start_date"] ?></span>
-            </p>
-            <label for="course_finish" class="form-label mt-1">訓練終了日</label>
-            <p>
-                <span id="course_finish" required class="form-control form-control-sm"><?= $course["end_date"] ?></span>
-            </p>
+        <div class="d-flex align-items-baseline mb-2">
+            <label class="form-label mb-0 text-nowrap">訓練開始日：</label>
+            <p class="form-control-plaintext py-0 mb-0"><?= h($course["start_date"]) ?></p>
+        </div>
+        <div class="d-flex align-items-baseline mb-3">
+            <label class="form-label mb-0 text-nowrap">訓練終了日：</label>
+            <p class="form-control-plaintext py-0 mb-0"><?= h($course["end_date"]) ?></p>
         </div>
         <?php if ($course["category_id"] == 1): ?>
             <div class="col-8" id="cc_box">
@@ -123,9 +121,9 @@ try {
             </div>
         <?php endif; ?>
         <div class="col-12 d-flex mt-4 mb-5" style="gap: 12px;">
-            <a href="admin_course_list.php" class="btn btn-secondary">一覧へ戻る</a>
-            <a href="admin_course_edit.php?course_id=<?= $course["course_id"] ?>" class="btn btn-success" style="margin-top: 10px;">編集</a>
-            <a href="php_do/course_del_do.php?course_id=<?= $course["course_id"] ?>" class="btn btn-danger" style="margin-top: 10px;">削除</a>
+            <a href="admin_course_list.php" class="btn btn-secondary px-3 py-2">一覧へ戻る</a>
+            <a href="admin_course_edit.php?course_id=<?= $course["course_id"] ?>" class="btn btn-success px-3 py-2" style="margin-top: 10px;">編集</a>
+            <a href="php_do/course_del_do.php?course_id=<?= $course["course_id"] ?>" class="btn btn-danger px-3 py-2" style="margin-top: 10px;">削除</a>
         </div>
     </div>
 
