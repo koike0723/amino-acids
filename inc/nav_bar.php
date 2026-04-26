@@ -33,6 +33,13 @@
                 <a href="./admin_consultant_list.php">コンサルタント一覧</a>
             </div>
         </details>
+        <details>
+            <summary>管理者</summary>
+            <div class="hamburger-details">
+                <a href="./admin_admin_list.php">管理者一覧</a><br>
+                <a href="./admin_admin_add.php">管理者追加</a>
+            </div>
+        </details>
         <a href="./admin_index.php" class="btn btn-secondary">トップページ</a>
     </nav>
 </div>

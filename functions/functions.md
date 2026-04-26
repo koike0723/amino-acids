@@ -10,7 +10,8 @@ includes/
 ├── courses.php     # コース管理
 ├── cc_slots.php    # CC枠管理
 ├── cc_bookings.php # CC予約管理
-└── requests.php    # 申請管理（cc_bookings.phpをrequire）
+├── requests.php    # 申請管理（cc_bookings.phpをrequire）
+└── admins.php      # 管理者管理
 ```
 
 ---
@@ -67,6 +68,14 @@ includes/
 | [`bulk_book_cc($course_id)`](#bulk_book_ccint-course_id-bool) | 指定コースの全生徒に必須CC予約を一括登録 |
 | [`get_course_cc_bookings($course_id, $cc_count)`](#get_course_cc_bookingsint-course_id-int-cc_count-array) | 必須CC予約を日付・時間・予約の階層構造で取得 |
 | [`get_course_cc_bookings_by_student($student_id, $date)`](#get_course_cc_bookings_by_studentint-student_id-string-date-array) | 生徒IDと日付から必須CC予約一覧を取得するラッパー |
+
+**管理者管理（admins.php）**
+| 関数名 | 説明 |
+|---|---|
+| [`get_admins()`](#get_admins) | 管理者一覧を取得 |
+| [`get_admin($admin_id)`](#get_adminadmin_id) | 管理者IDから詳細情報を1件取得 |
+| [`add_admin($data)`](#add_admindata) | 管理者を登録。パスワードは自動でハッシュ化 |
+| [`update_admin($admin_id, $data)`](#update_adminint-admin_id-array-data-bool) | 管理者情報を部分更新。パスワード変更にも対応 |
 
 **申請管理（requests.php）**
 | 関数名 | 説明 |
@@ -1212,3 +1221,96 @@ $result = reject_cc_change(request_id: 5);
 | | |
 |---|---|
 | 戻り値 | `bool` 成功時 `true`（対象申請なし・DB失敗時は `false`） |
+
+---
+
+## 管理者管理（admins.php）
+
+### `get_admins()`
+管理者一覧を `id` 昇順で返す。
+
+```php
+$admins = get_admins();
+foreach ($admins as $admin) {
+    echo $admin['last_name'] . $admin['first_name'];
+}
+```
+
+| | |
+|---|---|
+| 戻り値 | `array[]` 管理者情報の配列（下記構造） |
+
+**返却データ構造**
+```php
+[
+    'admin_id'   => 1,
+    'last_name'  => '太郎',
+    'first_name' => '管理',
+    'login_id'   => 'admin001',
+]
+```
+
+---
+
+### `get_admin($admin_id)`
+管理者IDから1件の詳細情報を取得する。
+
+```php
+$admin = get_admin(1);
+echo $admin['login_id'];
+```
+
+| 引数 | 型 | 説明 |
+|---|---|---|
+| `$admin_id` | `int` | 取得する管理者のID |
+
+| | |
+|---|---|
+| 戻り値 | `array` 管理者情報（`admin_id`, `first_name`, `last_name`, `login_id`）。該当なしは空配列 |
+
+---
+
+### `add_admin($data)`
+管理者を1件登録する。パスワードは `password_hash()` でハッシュ化して保存される。
+
+```php
+add_admin([
+    'first_name' => '管理',
+    'last_name'  => '太郎',
+    'login_id'   => 'admin002',
+    'password'   => 'securepass',
+]);
+```
+
+| 引数 | 型 | 説明 |
+|---|---|---|
+| `$data` | `array` | `first_name`, `last_name`, `login_id`, `password` を含む連想配列 |
+
+| | |
+|---|---|
+| 戻り値 | `bool` 成功時 `true` |
+
+---
+
+### `update_admin(int $admin_id, array $data): bool`
+管理者情報を部分更新する。渡したキーのみ更新される。`password` キーが含まれる場合はハッシュ化して更新する。
+
+```php
+// 名前だけ変更
+update_admin(1, ['first_name' => '新名前']);
+
+// パスワード変更
+update_admin(1, ['password' => 'newpassword']);
+
+// 複数カラムを同時変更
+update_admin(1, ['login_id' => 'admin_new', 'last_name' => '新姓']);
+```
+
+| 引数 | 型 | 説明 |
+|---|---|---|
+| `$admin_id` | `int` | 更新対象の管理者ID |
+| `$data` | `array` | 更新するカラムと値（更新可能: `first_name`, `last_name`, `login_id`, `password`） |
+
+| | |
+|---|---|
+| 戻り値 | `bool` 1件以上更新された場合 `true` |
