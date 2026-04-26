@@ -178,9 +178,9 @@ try {
                     </a>
                 </div>
             </dl>
-            <div class="col-12 d-flex justify-content-center mt-4 mb-5">
-                <a href="admin_course_list.php" class="btn btn-secondary px-3 mr-5">一覧へ戻る</a>
-                <input type="submit" value="編集完了" class="btn btn-success px-3 ml-5">
+            <div class="col-12 d-flex justify-content-left mt-4 mb-5" style="gap: 12px">
+                <a href="admin_course_detail.php?course_id=<?= $course_id; ?>" class="btn btn-secondary px-3">詳細へ戻る</a>
+                <input type="submit" value="編集完了" class="btn btn-primary px-3" style="margin-top: 10px">
             </div>
         </form>
     </div>
