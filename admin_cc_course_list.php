@@ -1,6 +1,10 @@
 <!-- 必須キャリコン一覧 -->
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . '/functions/functions.php';
+require_admin_login();
 
 if (!isset($_GET['course_id']) || !ctype_digit((string) $_GET['course_id']) ||
     !isset($_GET['cc_count'])  || !ctype_digit((string) $_GET['cc_count'])) {

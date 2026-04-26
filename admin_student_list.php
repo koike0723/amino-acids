@@ -1,6 +1,10 @@
 <!-- 管理者側 生徒一覧画面 -->
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . '/functions/functions.php';
+require_admin_login();
 
 /* -----------------------------
    絞り込み条件の受け取り

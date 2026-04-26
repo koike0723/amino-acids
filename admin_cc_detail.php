@@ -1,6 +1,10 @@
 <!-- http://localhost:8080/amino-acids/admin_cc_detail.php?cc_date=2026-04-25 -->
 <!-- 必須キャリコンをドラック&ドロップで管理できる管理者画面 -->
-<?php require_once __DIR__ . '/functions/functions.php'; ?>
+<?php if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/functions/functions.php';
+require_admin_login(); ?>
 <?php
 // GETパラメータのバリデーション
 if (!isset($_GET['cc_date']) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['cc_date'])) {

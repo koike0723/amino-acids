@@ -1,6 +1,10 @@
 <!-- 管理者トップページ -->
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . '/functions/functions.php';
+require_admin_login();
 
 // GETパラメータ取得・バリデーション
 $course_id_filter = isset($_GET['course_id']) && is_numeric($_GET['course_id'])

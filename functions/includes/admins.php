@@ -53,6 +53,34 @@ function add_admin(array $data): bool
 }
 
 /**
+ * 管理者ログイン
+ *
+ * login_id でDBを検索し password_verify() で検証する。
+ * 成功時は $_SESSION['admin_id'] と $_SESSION['admin_name'] をセットする。
+ *
+ * @param  string $login_id ログインID
+ * @param  string $password 平文パスワード
+ * @return bool   成功時 true、失敗時 false
+ */
+function admin_login(string $login_id, string $password): bool
+{
+    $db   = db_connect();
+    $sql  = 'SELECT id AS admin_id, last_name, first_name, password FROM m_admins WHERE login_id = :login_id';
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':login_id', $login_id, PDO::PARAM_STR);
+    $stmt->execute();
+    $admin = $stmt->fetch();
+
+    if (!$admin || !password_verify($password, $admin['password'])) {
+        return false;
+    }
+
+    $_SESSION['admin_id']   = $admin['admin_id'];
+    $_SESSION['admin_name'] = $admin['last_name'] . ' ' . $admin['first_name'];
+    return true;
+}
+
+/**
  * 管理者情報の更新
  *
  * 渡されたキーのみ動的にUPDATEする。

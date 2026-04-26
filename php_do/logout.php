@@ -3,12 +3,15 @@
 require_once __DIR__ . '/../functions/functions.php';
 
 session_start();
-if (isset($_SESSION["student_id"])) {
+if (isset($_SESSION['admin_id'])) {
     $_SESSION = array();
     session_destroy();
+    header('Location: ../inc/admin_login.php');
+} else {
+    $_SESSION = array();
+    session_destroy();
+    header('Location: ../inc/login.php');
 }
-
-header("location:../inc/login.php");
 exit();
 
 ?>

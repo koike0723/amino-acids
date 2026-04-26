@@ -3,7 +3,11 @@
 session_start();
 $flash = $_SESSION['flash'] ?? '';
 unset($_SESSION['flash']);
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . '/functions/functions.php';
+require_admin_login();
 
 /////////////////////////////////////////////////
 // GET通信処理

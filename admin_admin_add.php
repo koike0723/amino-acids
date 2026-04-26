@@ -1,5 +1,9 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . '/functions/functions.php';
+require_admin_login();
 ?>
 
 <!DOCTYPE html>
@@ -41,7 +45,7 @@ require_once __DIR__ . '/functions/functions.php';
 
       <div class="col-12 d-flex mt-4 mb-5" style="gap: 12px;">
         <a href="./admin_admin_list.php" class="btn btn-secondary px-3 py-2">一覧へ戻る</a>
-        <button type="submit" class="btn btn-primary px-3 py-2">追加完了</button>
+        <button type="submit" class="btn btn-primary px-3 py-2" style="margin-top: 10px;">追加完了</button>
       </div>
     </form>
 
