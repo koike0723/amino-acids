@@ -129,45 +129,37 @@ try {
 
             <dl class="course_cc col-8" id="cc_box" style="<?= ($course['category_id'] == 1) ? '' : 'display:none;' ?>">
                 <label for="course_cc" class="form-label">キャリコンの日時設定</label>
-                <div class="card mb-2 px-1 py-1">
-                    <dt class="mb-1">キャリコン１</dt>
-                    <dd class="cc1 mb-1 d-flex justify-content-around">
-                        <div class="1st_cc_day mt-1">
-                            <label for="cc1_1" class="form-label">１枠目</label>
-                            <input type="date" name="cc1_1" id="cc1_1" value="<?= $course["cc"][1][0] ?>" class="form-control form-control-sm">
+                <?php if (!empty($course["cc"])): ?>
+                    <?php foreach ($course["cc"] as $cc_count => $dates): ?>
+                        <div class="card mb-2 px-1 py-1">
+                            <dt class="mb-1">キャリコン<?= (int)$cc_count ?></dt>
+                            <div class="cc<?= (int)$cc_count ?> mb-1 d-flex justify-content-around">
+                                <div class="1st_cc_day mt-1">
+                                    <label for="cc<?= (int)$cc_count ?>_1" class="form-label">１枠目</label>
+                                    <input type="date" name="cc<?= (int)$cc_count ?>_1" id="cc<?= (int)$cc_count ?>_1" value="<?= h($dates[0] ?? '') ?>" class="form-control form-control-sm">
+                                </div>
+                                <div class="2nd_cc_day mt-1">
+                                    <label for="cc<?= (int)$cc_count ?>_2" class="form-label">２枠目</label>
+                                    <input type="date" name="cc<?= (int)$cc_count ?>_2" id="cc<?= (int)$cc_count ?>_2" value="<?= h($dates[1] ?? '') ?>" class="form-control form-control-sm">
+                                </div>
+                            </div>
                         </div>
-                        <div class="2nd_cc_day mt-1">
-                            <label for="cc1_2" class="form-label">２枠目</label>
-                            <input type="date" name="cc1_2" id="cc1_2" value="<?= $course["cc"][1][1] ?>" class="form-control form-control-sm">
-                        </div>
-                    </dd>
-                </div>
-                <div class="card mb-2 px-1 py-1">
-                    <dt class="mb-1">キャリコン２</dt>
-                    <div class="cc2 mb-1 d-flex justify-content-around">
-                        <div class="1st_cc_day mt-1">
-                            <label for="cc2_1" class="form-label">１枠目</label>
-                            <input type="date" name="cc2_1" id="cc2_1" value="<?= $course["cc"][2][0] ?>" class="form-control form-control-sm">
-                        </div>
-                        <div class="2nd_cc_day mt-1">
-                            <label for="cc2_2" class="form-label">２枠目</label>
-                            <input type="date" name="cc2_2" id="cc2_2" value="<?= $course["cc"][2][1] ?>" class="form-control form-control-sm">
-                        </div>
-                    </div>
-                </div>
-                <div class="card mb-2 px-1 py-1">
-                    <dt class="mb-1">キャリコン３</dt>
-                    <div class="cc3 mb-1 d-flex justify-content-around">
-                        <div class="1st_cc_day mt-1">
-                            <label for="cc3_1" class="form-label">１枠目</label>
-                            <input type="date" name="cc3_1" id="cc3_1" value="<?= $course["cc"][3][0] ?>" class="form-control form-control-sm">
-                        </div>
-                        <div class="2nd_cc_day mt-1">
-                            <label for="cc3_2" class="form-label">２枠目</label>
-                            <input type="date" name="cc3_2" id="cc3_2" value="<?= $course["cc"][3][1] ?>" class="form-control form-control-sm">
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="card mb-2 px-1 py-1">
+                        <dt class="mb-1">キャリコン1</dt>
+                        <div class="cc1 mb-1 d-flex justify-content-around">
+                            <div class="1st_cc_day mt-1">
+                                <label for="cc1_1" class="form-label">１枠目</label>
+                                <input type="date" name="cc1_1" id="cc1_1" value="" class="form-control form-control-sm">
+                            </div>
+                            <div class="2nd_cc_day mt-1">
+                                <label for="cc1_2" class="form-label">２枠目</label>
+                                <input type="date" name="cc1_2" id="cc1_2" value="" class="form-control form-control-sm">
+                            </div>
                         </div>
                     </div>
-                </div>
+                <?php endif; ?>
                 <!-- 追加・削除ボタン -->
                 <div id="display_parent" class="d-flex justify-content-center align-items-center mt-3 student-add-icon-buttons ">
                     <a href="#" id="add_btn" class="student-add-icon-btn">
@@ -178,9 +170,9 @@ try {
                     </a>
                 </div>
             </dl>
-            <div class="col-12 d-flex justify-content-center mt-4 mb-5">
-                <a href="admin_course_list.php" class="btn btn-secondary px-3 mr-5">一覧へ戻る</a>
-                <input type="submit" value="編集完了" class="btn btn-success px-3 ml-5">
+            <div class="col-12 d-flex justify-content-left mt-4 mb-5" style="gap: 12px">
+                <a href="admin_course_detail.php?course_id=<?= $course_id; ?>" class="btn btn-secondary px-3">詳細へ戻る</a>
+                <input type="submit" value="編集完了" class="btn btn-primary px-3" style="margin-top: 10px">
             </div>
         </form>
     </div>

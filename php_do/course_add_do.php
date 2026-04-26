@@ -23,32 +23,37 @@ $start_date = $_POST["course_start"];
 $finish_date = $_POST["course_finish"];
 $room_id = $_POST["room_id"];
 $category_id = $_POST["category_id"];
-$cc1_1 = $_POST["cc1_1"];
-$cc1_2 = $_POST["cc1_2"];
-$cc2_1 = $_POST["cc2_1"];
-$cc2_2 = $_POST["cc2_2"];
-$cc3_1 = $_POST["cc3_1"];
-$cc3_2 = $_POST["cc3_2"];
+
+// cc{N}_1 / cc{N}_2 形式のPOSTデータを動的に収集
+$raw_cc = [];
+foreach ($_POST as $key => $value) {
+    if (preg_match('/^cc(\d+)_([12])$/', $key, $matches)) {
+        $raw_cc[(int)$matches[1]][(int)$matches[2]] = $value;
+    }
+}
+ksort($raw_cc);
+
+// $cc の組み立て・重複チェック用日付収集
+$cc_days = [];
+$cc = [];
+foreach ($raw_cc as $cc_count => $slots) {
+    $date1 = $slots[1] ?? '';
+    $date2 = $slots[2] ?? '';
+    $filtered = array_values(array_filter([$date1, $date2]));
+    if (!empty($filtered)) {
+        $cc[$cc_count] = $filtered;
+    }
+    if (!empty($date1)) $cc_days[] = $date1;
+    if (!empty($date2)) $cc_days[] = $date2;
+}
+
 $course = [
     'name' => $_POST["course_name"],
     'start_date' => $start_date,
     'end_date' => $finish_date,
     'room_id' => $room_id,
     'category_id' => $category_id,
-    'cc' => [
-        1 => [
-            $cc1_1,
-            $cc1_2,
-        ],
-        2 => [
-            $cc2_1,
-            $cc2_2,
-        ],
-        3 => [
-            $cc3_1,
-            $cc3_2,
-        ],
-    ]
+    'cc' => $cc,
 ];
 
 // コース開始日と終了日の入力値チェック
@@ -58,9 +63,7 @@ if (strtotime($start_date) > strtotime($finish_date)) {
 }
 
 //キャリコンの日がかぶっていないかチェック
-$cc_days = [$cc1_1, $cc1_2, $cc2_1, $cc2_2, $cc3_1, $cc3_2];
-$real_cc_days = array_filter($cc_days, fn($v) => !empty($v));
-if (count($real_cc_days) != count(array_unique($real_cc_days))) {
+if (count($cc_days) != count(array_unique($cc_days))) {
     header("Location: ../admin_course_add.php?status=error&message=error_cc_date");
     exit;
 }

@@ -55,25 +55,12 @@ if (
     exit;
 }
 if ($old_course["category_id"] == 1) {
-    if (!empty($old_course["cc"])) {
-        if ($old_course["cc"][1][0] == "0000-00-00") {
-            $old_course["cc"][1][0] = "";
-        };
-        if ($old_course["cc"][1][1] == "0000-00-00") {
-            $old_course["cc"][1][1] = "";
-        };
-        if ($old_course["cc"][2][0] == "0000-00-00") {
-            $old_course["cc"][2][0] = "";
-        };
-        if ($old_course["cc"][2][1] == "0000-00-00") {
-            $old_course["cc"][2][1] = "";
-        };
-        if ($old_course["cc"][3][0] == "0000-00-00") {
-            $old_course["cc"][3][0] = "";
-        };
-        if ($old_course["cc"][3][1] == "0000-00-00") {
-            $old_course["cc"][3][1] = "";
-        };
+    foreach ($old_course["cc"] as $cc_count => $dates) {
+        foreach ($dates as $i => $date) {
+            if ($date === "0000-00-00") {
+                $old_course["cc"][$cc_count][$i] = "";
+            }
+        }
     }
 }
 
@@ -83,13 +70,28 @@ $start_date = $_POST["course_start"];
 $finish_date = $_POST["course_finish"];
 $room_id = $_POST["room_id"];
 $category_id = $_POST["category_id"];
-$cc1_1 = $_POST["cc1_1"];
-$cc1_2 = $_POST["cc1_2"];
-$cc2_1 = $_POST["cc2_1"];
-$cc2_2 = $_POST["cc2_2"];
-$cc3_1 = $_POST["cc3_1"];
-$cc3_2 = $_POST["cc3_2"];
+// cc{N}_1 / cc{N}_2 形式のPOSTデータを動的に収集
+$raw_cc = [];
+foreach ($_POST as $key => $value) {
+    if (preg_match('/^cc(\d+)_([12])$/', $key, $matches)) {
+        $raw_cc[(int)$matches[1]][(int)$matches[2]] = $value;
+    }
+}
+ksort($raw_cc);
+
+// $new_cc の組み立て・重複チェック用日付収集
+$cc_days = [];
 $new_cc = [];
+foreach ($raw_cc as $cc_count => $slots) {
+    $date1 = $slots[1] ?? '';
+    $date2 = $slots[2] ?? '';
+    $filtered = array_values(array_filter([$date1, $date2]));
+    if (!empty($filtered)) {
+        $new_cc[$cc_count] = $filtered;
+    }
+    if (!empty($date1)) $cc_days[] = $date1;
+    if (!empty($date2)) $cc_days[] = $date2;
+}
 $course = [];
 
 if ($old_course["course_name"] != $course_name) {
@@ -113,13 +115,6 @@ if ($old_course["category_id"] != $category_id) {
 }
 
 if ($category_id == 1) {
-
-    $new_cc = [
-        1 => array_values(array_filter([$cc1_1, $cc1_2])),
-        2 => array_values(array_filter([$cc2_1, $cc2_2])),
-        3 => array_values(array_filter([$cc3_1, $cc3_2])),
-    ];
-
     if ($old_course["cc"] != $new_cc) {
         $course["cc"] = $new_cc;
     }
@@ -137,9 +132,7 @@ if (strtotime($start_date) > strtotime($finish_date)) {
 }
 
 //キャリコンの日がかぶっていないかチェック
-$cc_days = [$cc1_1, $cc1_2, $cc2_1, $cc2_2, $cc3_1, $cc3_2];
-$real_cc_days = array_filter($cc_days, fn($v) => !empty($v));
-if (count($real_cc_days) != count(array_unique($real_cc_days))) {
+if (count($cc_days) != count(array_unique($cc_days))) {
     header("Location: ../admin_course_edit.php?course_id=" . $course_id . "&status=error&message=error_cc_date");
     exit;
 }
