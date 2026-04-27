@@ -11,7 +11,7 @@
 
 - 管理者側
   - トップページ：admin_index.php
-  - ログインID：admin01
+  - ログインID：admin001
   - パスワード：password
 - 生徒側
   - トップページ：index.php
